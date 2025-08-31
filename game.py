@@ -52,9 +52,11 @@ CONFIRM_OPTIONS = [
 
 #----Function Variables----#
 def LINE():
+    ''''creates line spacing'''
     print(f"{Colours.BOLD}{Colours.MAGENTA}======----------================----------======")
 
 class Colours:
+    '''colours for texts'''
     RED = '\033[91m'
     GREEN = '\033[92m'
     YELLOW = '\033[93m'
@@ -75,26 +77,9 @@ class Colours:
     RESET = '\033[0m'
 
 def clear_screen():
+    ''''clear screen function'''
     os.system('cls' if os.name == 'nt' else 'clear') # function to clear screen
 
-# Unix key pressing
-def key_press():
-    fd = sys.stdin.fileno() # sets variable for key input
-    old_settings = termios.tcgetattr(fd) # saves the old state of the terminal
-    try:
-        tty.setraw(sys.stdin.fileno()) # sets terminal in "raw mode" for tracking
-        key = sys.stdin.read(1) # reads only 1 keyboard input
-    finally:
-        termios.tcsetattr(fd, termios.TCSADRAIN, old_settings) # restores to old state
-    return key
-
-'''windows key pressing
-def get_keypress():
-    if msvcrt.kbhit():
-        key = msvcrt.getch()
-        return key.decode('utf-8')
-    return None
-'''
 #----Function Variables----#
 
 #----Card Deck----#
@@ -123,11 +108,9 @@ def main_game():
     '''Ride the Bus game'''
     pass
 
-
-
-
 #----Arrow Key Menu System----#
 def arrow_key():
+    '''reads and looks for arrow press'''
     fd = sys.stdin.fileno() # find  keyboard format
     old_settings = termios.tcgetattr(fd) # saves old terminal
     try:
@@ -224,7 +207,7 @@ def name_pick():
     global USER_NAME
     LINE()
     print(f"{Colours.YELLOW}✏️ What would you like your name to be? ✏️{Colours.RESET}")
-    if USER_NAME == None:
+    if USER_NAME is None:
         print(f"{Colours.BOLD}(You can change this later)")
     USER_NAME = input(f"{Colours.BOLD}> {Colours.RESET}")
     print(f"{Colours.BOLD}{Colours.RED}YOU HAVE SELECTED: {Colours.RESET}{USER_NAME}\n")
