@@ -2,9 +2,15 @@
 import json
 import base64
 import os
+
+#linux + macos
 import sys
 import tty
 import termios
+
+'''windows
+import msvcrt
+'''
 #----Import Python Packages----#
 
 #----Save File Money----#
@@ -15,7 +21,7 @@ def load_game(filename="savefile.json"): # access save file -JSON
             encoded_bytes = f.read() # convert value string to bytes "f"
             json_str = base64.b64decode(encoded_bytes).decode('utf-8') # decodes
             data = json.loads(json_str) # changes value to "data"
-            print(f"Save file loaded") # confirm message
+            print("Save file loaded") # confirm message
             return data.get("money", 500), data.get("name", None) # normal value
     except FileNotFoundError: # New player detection
         print("New player - no save file found") # confirmation message
@@ -38,19 +44,24 @@ def save_game(money, name, filename="savefile.json"): # access save file + value
 USER_WALLET, USER_NAME = load_game()  # Load both money and name from save file
 CARD_SUITS = ("S", "D", "H", "C") # creates suits for card deck creation
 SUIT_SYMBOLS = {'S': '♠','D': '♦', 'H': '♥', 'C': '♣'}
+CONFIRM_OPTIONS = [
+        "✅ Confirm",
+        "❌ Redo"
+    ]
+#----Variables----#
 
+#----Function Variables----#
 def LINE():
-    print(f"{Colors.BOLD}{Colors.MAGENTA}======----------================----------======")
+    print(f"{Colours.BOLD}{Colours.MAGENTA}======----------================----------======")
 
-class Colors:
+class Colours:
     RED = '\033[91m'
     GREEN = '\033[92m'
     YELLOW = '\033[93m'
     BLUE = '\033[94m'
     MAGENTA = '\033[95m'
     CYAN = '\033[96m'
-    BOLD = '\033[1m'
-    RESET = '\033[0m'
+    WHITE = '\033[97m'
     
     BG_RED = '\033[101m'
     BG_GREEN = '\033[102m'
@@ -65,7 +76,26 @@ class Colors:
 
 def clear_screen():
     os.system('cls' if os.name == 'nt' else 'clear') # function to clear screen
-#----Variables----#
+
+# Unix key pressing
+def key_press():
+    fd = sys.stdin.fileno() # sets variable for key input
+    old_settings = termios.tcgetattr(fd) # saves the old state of the terminal
+    try:
+        tty.setraw(sys.stdin.fileno()) # sets terminal in "raw mode" for tracking
+        key = sys.stdin.read(1) # reads only 1 keyboard input
+    finally:
+        termios.tcsetattr(fd, termios.TCSADRAIN, old_settings) # restores to old state
+    return key
+
+'''windows key pressing
+def get_keypress():
+    if msvcrt.kbhit():
+        key = msvcrt.getch()
+        return key.decode('utf-8')
+    return None
+'''
+#----Function Variables----#
 
 #----Card Deck----#
 CardDeck = {}
@@ -81,31 +111,140 @@ for suit in CARD_SUITS:
     CardDeck[f"{suit}A"] = 14
 #----Card Deck----#
 
+#----
 def start_game():
     LINE()
-    print(f"{Colors.BOLD}{Colors.CYAN}🎰 RIDE THE DUCK 🎰{Colors.RESET}\n"
-        f"{Colors.GREEN}💰 Your Money: ${USER_WALLET}{Colors.RESET}\n"
-        f"{Colors.YELLOW}🏷️  Your  Name: {USER_NAME}{Colors.RESET}"
+    print(f"{Colours.BOLD}{Colours.CYAN}🎰 RIDE THE DUCK 🎰{Colours.RESET}\n"
+        f"{Colours.GREEN}💰 Your Money: ${USER_WALLET}{Colours.RESET}\n"
+        f"{Colours.YELLOW}🏷️  Your  Name: {USER_NAME}{Colours.RESET}"
     )
 
 def main_game():
     '''Ride the Bus game'''
     pass
 
+
+
+
+#----Arrow Key Menu System----#
+def arrow_key():
+    fd = sys.stdin.fileno() # find  keyboard format
+    old_settings = termios.tcgetattr(fd) # saves old terminal
+    try:
+        tty.setraw(sys.stdin.fileno()) # tunrs on "raw mode"
+        key = sys.stdin.read(1) # reads first input
+        
+        # Check for escape sequence (arrow keys)
+        if ord(key) == 27:  # ESC
+            key += sys.stdin.read(2)  # Read the next 2 characters (for arrows)
+            
+        return key
+    finally:
+        termios.tcsetattr(fd, termios.TCSADRAIN, old_settings) # restores old settings
+
+def arrow_menu(options):
+    """generic arrow key menu system"""
+    selected = 0
+    
+    while True:
+        # Display menu options
+        for i, option in enumerate(options):
+            if i == selected:
+                print(f"{Colours.BOLD}{Colours.YELLOW}► {option}{Colours.RESET}")
+            else:
+                print(f"{Colours.WHITE}  {option}{Colours.RESET}")
+        
+        LINE()
+        print(f"{Colours.MAGENTA}Use ↑↓ arrows, Enter to select, ESC to cancel{Colours.RESET}")
+        
+        key = arrow_key()
+        
+        if key == '\x1b[A':  # Up arrow
+            selected = (selected - 1) % len(options)
+        elif key == '\x1b[B':  # Down arrow
+            selected = (selected + 1) % len(options)
+        elif ord(key[0]) == 13:  # Enter
+            return selected
+        elif len(key) == 1 and ord(key) == 27:  # ESC alone
+            return -1
+
+def main_menu():
+    """Main game menu with arrow navigation"""
+    
+    options = [
+        "🎮 Play Ride the Duck",
+        "📊 View Statistics", 
+        "✏️  Change Name",
+        "💾 Save Game",
+        "🚪 Quit Game"
+    ]
+    
+    while True:
+        choice = arrow_menu(options)
+        
+        if choice == 0:  # Play Game
+            main_game()
+        elif choice == 1:  # View Stats
+            show_stats()
+        elif choice == 2:  # Change Name
+            name_pick()
+            save_game(USER_WALLET, USER_NAME)
+        elif choice == 3:  # Save Game
+            save_game(USER_WALLET, USER_NAME)
+            print(f"{Colours.GREEN}Game saved successfully!{Colours.RESET}")
+            input("Press Enter to continue...")
+        elif choice == 4 or choice == -1:  # Quit
+            print(f"{Colours.RED}Thanks for playing! Goodbye!{Colours.RESET}")
+            exit()
+
+def show_stats():
+    """Display player statistics"""
+    clear_screen()
+    LINE()
+    print(f"{Colours.BOLD}{Colours.CYAN}📊 PLAYER STATISTICS 📊{Colours.RESET}")
+    LINE()
+    print(f"{Colours.GREEN}💰 Money: ${USER_WALLET}{Colours.RESET}")
+    print(f"{Colours.YELLOW}🏷️  Name: {USER_NAME}{Colours.RESET}")
+    print(f"{Colours.BLUE}🎮 Games Played: Coming Soon{Colours.RESET}")
+    print(f"{Colours.MAGENTA}🏆 Wins: Coming Soon{Colours.RESET}")
+    LINE()
+    print(f"{Colours.BOLD}Press any key to return to menu...{Colours.RESET}")
+    key_press()
+
+def yes_no_menu():
+    """Yes/No question with arrow navigation"""
+    options = ["Yes", "No"]
+    choice = arrow_menu(options)
+    return choice == 0  # True if Yes, False if No
+#----Arrow Key Menu System----#
+
 #----Name Function----#
 def name_pick():
+    '''Lets user pick a name'''
     global USER_NAME
     LINE()
-    print(f"{Colors.YELLOW}✏️ What would you like your name to be? ✏️{Colors.RESET}\n"
-          f"{Colors.BOLD}(You can change this later)"
-    )
-    USER_NAME = input(f"{Colors.BOLD}> {Colors.RESET}")
-    print(f"{Colors.BOLD}{Colors.RED}YOU HAVE SELECTED: {Colors.RESET}{USER_NAME}")
+    print(f"{Colours.YELLOW}✏️ What would you like your name to be? ✏️{Colours.RESET}")
+    if USER_NAME == None:
+        print(f"{Colours.BOLD}(You can change this later)")
+    USER_NAME = input(f"{Colours.BOLD}> {Colours.RESET}")
+    print(f"{Colours.BOLD}{Colours.RED}YOU HAVE SELECTED: {Colours.RESET}{USER_NAME}\n")
+    while True:
+        choice = arrow_menu(CONFIRM_OPTIONS)
+        
+        if choice == 0:
+            main_menu()
+        elif choice == 1:
+            name_pick()
 #----Name Function----#
+
 
 # Test the functions
 if __name__ == "__main__":
+    clear_screen()
     start_game()
     if USER_NAME is None:
         name_pick()
         save_game(USER_WALLET, USER_NAME)
+    
+    # Start the main menu system
+    main_menu()
