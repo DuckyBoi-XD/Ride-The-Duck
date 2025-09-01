@@ -24,6 +24,7 @@ class Colours:
     MAGENTA = '\033[95m'
     CYAN = '\033[96m'
     WHITE = '\033[97m'
+    GOLD = '\033[38;5;220m'
     
     BG_RED = '\033[101m'
     BG_GREEN = '\033[102m'
@@ -86,17 +87,32 @@ def load_game(filename="savefile.json"): # access save file -JSON
             json_str = decode_save(encoded_bytes) # grabs decoded data
             data = json.loads(json_str) # changes value to "data"
             print("Save file loaded") # confirm message
-            return data.get("money", 500), data.get("name", None) # normal value
+            return (data.get("money", 500), # defaul value
+                    data.get("name", None),
+                    data.get("games played", 0),
+                    data.get("x2 Wins", 0),
+                    data.get("x3 Wins", 0),
+                    data.get("x4 Wins", 0),
+                    data.get("x10 Wins", 0))
     except FileNotFoundError: # New player detection
         print("New player - no save file found") # confirmation message
-        return 500, None # starting items (money, name)
+        return 500, None, 0, 0, 0, 0, 0 # starting items
     except (ValueError, json.JSONDecodeError) as e: # corruption detection
         print(f"Corrupted save file - using defaults. Error: {e}") # confirmation message
-        return 500, None # reset values (money, name)
+        return 500, None, 0, 0, 0, 0, 0 # reset values
 
-def save_game(money, name, filename="savefile.json"): # access save file + values (money, name)
-    '''saving game money and name'''
-    data = {"money": money, "name": name} # creates dictionary
+def save_game(money, name, game_played=0,
+            win2=0, win3=0, win4=0, win10=0, filename="savefile.json"):
+    '''saving game data'''
+    data = {
+        "money": money, 
+        "name": name, 
+        "games played": game_played, 
+        "x2 Wins": win2, 
+        "x3 Wins": win3, 
+        "x4 Wins": win4, 
+        "x10 Wins": win10
+    }
     json_str = json.dumps(data) # turns into "data" value
     encoded_bytes = encode_save(json_str) # grabs the encoded data
     with open(filename, "wb") as f: # opens file to prep writing
@@ -105,10 +121,11 @@ def save_game(money, name, filename="savefile.json"): # access save file + value
 #----Save File Money----#
 
 #----Variables----#
-USER_WALLET, USER_NAME = load_game()  # Load both money and name from save file
+USER_WALLET, USER_NAME, GAMES_PLAYED, WIN_X2, WIN_X3, WIN_X4, WIN_X10 = load_game()  # Load both money and name from save file
 CARD_SUITS = ("S", "D", "H", "C") # creates suits for card deck creation
 SUIT_SYMBOLS = {'S': '♠','D': '♦', 'H': '♥', 'C': '♣'}
 USER_NAME_KNOWLEDGE = False
+WINS_TOTAL = WIN_X2 + WIN_X3 + WIN_X4 + WIN_X10
 #----Variables----#
 
 #----Function Variables----#
@@ -263,10 +280,10 @@ def main_menu():
         elif choice == 2:  # Change Name
             clear_screen()
             name_pick()
-            save_game(USER_WALLET, USER_NAME)
+            save_game(USER_WALLET, USER_NAME, GAMES_PLAYED, WIN_X2, WIN_X3, WIN_X4, WIN_X10)
         elif choice == 3:  # Save Game
             clear_screen()
-            save_game(USER_WALLET, USER_NAME)
+            save_game(USER_WALLET, USER_NAME, GAMES_PLAYED, WIN_X2, WIN_X3, WIN_X4, WIN_X10)
             print(f"{Colours.GREEN}Game saved successfully!{Colours.RESET}")
             input("Press Enter to continue...")
         elif choice == 4 or choice == -1:  # Quit
@@ -282,10 +299,16 @@ def show_stats():
     LINE()
     print(f"{Colours.BOLD}{Colours.CYAN}📊 PLAYER STATISTICS 📊{Colours.RESET}")
     LINE()
-    print(f"{Colours.GREEN}💰 Money: ${USER_WALLET}{Colours.RESET}")
-    print(f"{Colours.YELLOW}🏷️  Name: {USER_NAME}{Colours.RESET}")
-    print(f"{Colours.BLUE}🎮 Games Played: Coming Soon{Colours.RESET}")
-    print(f"{Colours.MAGENTA}🏆 Wins: Coming Soon{Colours.RESET}")
+    print(f"{Colours.GREEN}💰 Money: ${USER_WALLET}{Colours.RESET}\n"
+        f"{Colours.YELLOW}🏷️  Name: {USER_NAME}{Colours.RESET}\n"
+        f"{Colours.BLUE}🎮 Games Played: {GAMES_PLAYED}{Colours.RESET}\n"
+        f"{Colours.GOLD}🏆 Wins Toal: {WINS_TOTAL}{Colours.RESET}\n"
+        f"{Colours.GOLD}🏆 x2 Wins: {WIN_X2}{Colours.RESET}\n"
+        f"{Colours.GOLD}🏆 x3 Wins: {WIN_X3}{Colours.RESET}\n"
+        f"{Colours.GOLD}🏆 x4 Wins: {WIN_X4}{Colours.RESET}\n"
+        f"{Colours.GOLD}🏆 x10 Wins: {WIN_X10}{Colours.RESET}\n"
+
+    )
     LINE()
     print(f"{Colours.BOLD}Press any key to return to menu...{Colours.RESET}")
     key_press()
@@ -322,6 +345,6 @@ if __name__ == "__main__":
     start_game()
     if USER_NAME is None:
         name_pick()
-    save_game(USER_WALLET, USER_NAME)
+    save_game(USER_WALLET, USER_NAME, GAMES_PLAYED, WIN_X2, WIN_X3, WIN_X4, WIN_X10)
     
     main_menu()
