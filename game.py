@@ -2,6 +2,7 @@
 import json
 import base64
 import os
+import codecs
 
 #linux + macos
 import sys
@@ -37,12 +38,33 @@ class Colours:
 #----Colours----#
 
 #----Save File Money----#
+
+def encode_save(json_str):
+    # Base64 encode
+    b64 = base64.b64encode(json_str.encode('utf-8')).decode('utf-8')
+    # Reverse
+    rev = b64[::-1]
+    # ROT13 encodes
+    final = codecs.encode(rev, 'rot_13')
+    return final.encode('utf-8')  # Write as bytes
+
+def decode_save(encoded_bytes):
+    # Bytes to string
+    encoded_str = encoded_bytes.decode('utf-8')
+    # ROT13 decode
+    rev = codecs.decode(encoded_str, 'rot_13')
+    # Reverse
+    b64 = rev[::-1]
+    # Base64 decode
+    json_str = base64.b64decode(b64).decode('utf-8')
+    return json_str
+
 def load_game(filename="savefile.json"): # access save file -JSON
     '''loading save file - returns both money and name'''
     try:
         with open(filename, "rb") as f: # reads file and places value "f"
             encoded_bytes = f.read() # convert value string to bytes "f"
-            json_str = base64.b64decode(encoded_bytes).decode('utf-8') # decodes
+            json_str = decode_save(encoded_bytes) # grabs decoded data
             data = json.loads(json_str) # changes value to "data"
             print("Save file loaded") # confirm message
             return data.get("money", 500), data.get("name", None) # normal value
@@ -57,7 +79,7 @@ def save_game(money, name, filename="savefile.json"): # access save file + value
     '''saving game money and name'''
     data = {"money": money, "name": name} # creates dictionary
     json_str = json.dumps(data) # turns into "data" value
-    encoded_bytes = base64.b64encode(json_str.encode('utf-8')) # encodes
+    encoded_bytes = encode_save(json_str) # grabs the encoded data
     with open(filename, "wb") as f: # opens file to prep writing
         f.write(encoded_bytes) # writes
     print(f"Game saved: {name} with ${money}") # confirmation message
@@ -73,7 +95,7 @@ USER_NAME_KNOWLEDGE = False
 #----Function Variables----#
 def LINE():
     ''''creates line spacing'''
-    print(f"{Colours.BOLD}{Colours.MAGENTA}======----------================----------======")
+    print(f"{Colours.BOLD}{Colours.MAGENTA}======----------================----------======{Colours.RESET}")
 
 def clear_screen():
     ''''clear screen function'''
@@ -183,7 +205,7 @@ def start_game():
     if USER_NAME is None:
         print(f"{Colours.YELLOW}🏷️  Your  Name:{Colours.RESET}{Colours.RED} -UNKNOWN-{Colours.RESET}")
     else:
-        print(f"{Colours.YELLOW}🏷️  Your  Name:{Colours.RESET}{USER_NAME}")
+        print(f"{Colours.YELLOW}🏷️  Your  Name:{Colours.RESET} {USER_NAME}")
     LINE()
     key_press()
     clear_screen()
@@ -270,7 +292,7 @@ def name_pick():
     if choice == 0:
         USER_NAME_KNOWLEDGE = True
         clear_screen()
-        main_menu()
+        pass
     elif choice == 1:
         name_pick()
 #----Name Function----#
@@ -281,7 +303,6 @@ if __name__ == "__main__":
     start_game()
     if USER_NAME is None:
         name_pick()
-        save_game(USER_WALLET, USER_NAME)
+    save_game(USER_WALLET, USER_NAME)
     
-    # Start the main menu system
     main_menu()
