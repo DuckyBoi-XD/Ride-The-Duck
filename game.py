@@ -155,11 +155,14 @@ for suit in CARD_SUITS:
 
 #----Single Key Track----#
 # Unix key pressing
-def key_press():
+def key_press(option):
     '''single key tracking'''
     fd = sys.stdin.fileno() # sets variable for key input
     old_settings = termios.tcgetattr(fd) # saves the old state of the terminal
-    print(f"{Colours.RED}Press any key to continue{Colours.RESET}")
+    if option is 0:
+        print(f"{Colours.RED}Press any key to continue{Colours.RESET}")
+    elif option is 1:
+        print(f"{Colours.RED}Press any key to return to menu{Colours.RESET}")
     try:
         tty.setraw(sys.stdin.fileno()) # sets terminal in "raw mode" for tracking
         key = sys.stdin.read(1) # reads only 1 keyboard input
@@ -234,6 +237,7 @@ def arrow_menu(title, text, options):
 
 #----Start Game----#
 def start_game():
+    '''start of game info'''
     LINE()
     print(f"{Colours.BOLD}{Colours.BLUE}🎰 RIDE THE DUCK 🎰{Colours.RESET}\n"
         f"{Colours.GREEN}💰 Your Money: ${USER_WALLET}{Colours.RESET}\n"
@@ -243,7 +247,7 @@ def start_game():
     else:
         print(f"{Colours.YELLOW}🏷️  Your  Name:{Colours.RESET} {USER_NAME}")
     LINE()
-    key_press()
+    key_press(1)
     clear_screen()
     
 #----Start Game----#
@@ -310,8 +314,7 @@ def show_stats():
 
     )
     LINE()
-    print(f"{Colours.BOLD}Press any key to return to menu...{Colours.RESET}")
-    key_press()
+    key_press(1)
 #----Stats----#
 
 #----Name Function----#
