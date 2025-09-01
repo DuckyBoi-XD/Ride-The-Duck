@@ -145,7 +145,11 @@ def arrow_menu(title, text, options):
         LINE()
         print(title)
         LINE()
-        print(text)
+
+        if text is not None:
+            print(text)
+        else: 
+            pass
         # Display menu options
         for i, option in enumerate(options):
             if i == selected:
@@ -174,7 +178,7 @@ def start_game():
     LINE()
     print(f"{Colours.BOLD}{Colours.BLUE}🎰 RIDE THE DUCK 🎰{Colours.RESET}\n"
         f"{Colours.GREEN}💰 Your Money: ${USER_WALLET}{Colours.RESET}\n"
-        f"{Colours.CYAN}🎉 Welcome to Ride the Duck, a gambling game 🎉")
+        f"{Colours.CYAN}🎉 Welcome to Ride the Duck, a gambling game 🎉{Colours.RESET}")
     if USER_NAME is None:
         print(f"{Colours.YELLOW}🏷️  Your  Name:{Colours.RESET}{Colours.RED} -UNKNOWN-{Colours.RESET}")
     else:
@@ -207,7 +211,7 @@ def main_menu():
     while True:
         clear_screen()  # Clear screen for smooth menu display
         
-        choice = arrow_menu(print(f"{Colours.BOLD}{Colours.BLUE}🎰 RIDE THE DUCK - MAIN MENU 🎰{Colours.RESET}"),None, options)
+        choice = arrow_menu(f"{Colours.BOLD}{Colours.BLUE}🎰 RIDE THE DUCK - MAIN MENU 🎰{Colours.RESET}", None, options)
         
         if choice == 0:  # Play Game
             clear_screen()
@@ -251,14 +255,13 @@ def name_pick():
     clear_screen()
     global USER_NAME
     LINE()
-    print(f"{Colours.BOLD}{Colours.BLUE}🏷️  RIDE THE DUCK - NAME 🏷️")
+    print(f"{Colours.BOLD}{Colours.BLUE}🏷️  RIDE THE DUCK - NAME 🏷️{Colours.RESET}")
     LINE()
     print(f"{Colours.YELLOW}✏️  What would you like your name to be? ✏️{Colours.RESET}")
-    if USER_NAME is None:
-        print("(You can change this later)")
+    print(f"{Colours.RED}(You can change this later){Colours.RESET}")
     USER_NAME = input(f"{Colours.BOLD}❯ {Colours.RESET}")
     clear_screen()
-    choice = arrow_menu((f"{Colours.BOLD}{Colours.CYAN}🏷️  RIDE THE DUCK - NAME 🏷️"), (f"{Colours.BOLD}{Colours.YELLOW}YOU HAVE SELECTED: {Colours.RESET}{USER_NAME}"), ["✅ Confirm", "❌ Redo"])
+    choice = arrow_menu((f"{Colours.BOLD}{Colours.BLUE}🏷️  RIDE THE DUCK - NAME 🏷️{Colours.RESET}"), (f"{Colours.BOLD}{Colours.YELLOW}YOU HAVE SELECTED: {Colours.RESET}{USER_NAME}\n"), ["✅ Confirm", "❌ Redo"])
     if choice == 0:
         clear_screen()
         main_menu()
