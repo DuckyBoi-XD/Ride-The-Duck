@@ -94,33 +94,13 @@ for suit in CARD_SUITS:
     CardDeck[f"{suit}A"] = 14
 #----Card Deck----#
 
-#----Start Game----#
-def start_game():
-    LINE()
-    print(f"{Colours.BOLD}{Colours.CYAN}🎰 RIDE THE DUCK 🎰{Colours.RESET}\n"
-        f"{Colours.GREEN}💰 Your Money: ${USER_WALLET}{Colours.RESET}\n"
-        f"{Colours.BLUE}🎉 Welcome to Ride the Duck, a gambling game 🎉")
-    if USER_NAME is None:
-        print(f"{Colours.YELLOW}🏷️  Your  Name:{Colours.RESET}{Colours.RED} -UNKNOWN-{Colours.RESET}")
-    else:
-        print(f"{Colours.YELLOW}🏷️  Your  Name:{Colours.RESET}{USER_NAME}")
-        
-    
-#----Start Game----#
-
-#----Main Game Function----#
-def main_game():
-    '''Ride the Bus game'''
-    pass
-
-#----Main Game Function----#
-
 #----Single Key Track----#
 # Unix key pressing
 def key_press():
     '''single key tracking'''
     fd = sys.stdin.fileno() # sets variable for key input
     old_settings = termios.tcgetattr(fd) # saves the old state of the terminal
+    print(f"{Colours.RED}Press any key to continue{Colours.RESET}")
     try:
         tty.setraw(sys.stdin.fileno()) # sets terminal in "raw mode" for tracking
         key = sys.stdin.read(1) # reads only 1 keyboard input
@@ -156,14 +136,16 @@ def arrow_key():
 #----Arrow Key Track----#
 
 #----Arrow Key Menu System----#
-def arrow_menu(options):
+def arrow_menu(title, text, options):
     """generic arrow key menu system"""
     selected = 0
     
     while True:
         clear_screen()  # Clear screen for smooth animation
         LINE()
-        
+        print(title)
+        LINE()
+        print(text)
         # Display menu options
         for i, option in enumerate(options):
             if i == selected:
@@ -178,10 +160,12 @@ def arrow_menu(options):
         
         if key == '\x1b[A':  # Up arrow
             clear_screen()
+            prevent_scroll()
             selected = (selected - 1) % len(options)
             # Screen will clear on next loop iteration
         elif key == '\x1b[B':  # Down arrow
             clear_screen()
+            prevent_scroll()
             selected = (selected + 1) % len(options)
             # Screen will clear on next loop iteration
         elif ord(key[0]) == 13:  # Enter
@@ -189,6 +173,29 @@ def arrow_menu(options):
         elif len(key) == 1 and ord(key) == 27:  # ESC alone
             return -1
 #----Arrow Key Menu System----#
+
+#----Start Game----#
+def start_game():
+    LINE()
+    print(f"{Colours.BOLD}{Colours.CYAN}🎰 RIDE THE DUCK 🎰{Colours.RESET}\n"
+        f"{Colours.GREEN}💰 Your Money: ${USER_WALLET}{Colours.RESET}\n"
+        f"{Colours.BLUE}🎉 Welcome to Ride the Duck, a gambling game 🎉")
+    if USER_NAME is None:
+        print(f"{Colours.YELLOW}🏷️  Your  Name:{Colours.RESET}{Colours.RED} -UNKNOWN-{Colours.RESET}")
+    else:
+        print(f"{Colours.YELLOW}🏷️  Your  Name:{Colours.RESET}{USER_NAME}")
+    LINE()
+    key_press()
+    clear_screen()
+    
+#----Start Game----#
+
+#----Main Game Function----#
+def main_game():
+    '''Ride the Bus game'''
+    pass
+
+#----Main Game Function----#
 
 #----Main Menu----#
 def main_menu():
@@ -204,11 +211,8 @@ def main_menu():
     
     while True:
         clear_screen()  # Clear screen for smooth menu display
-        LINE()
-        print(f"{Colours.BOLD}{Colours.CYAN}🎰 RIDE THE DUCK - MAIN MENU 🎰{Colours.RESET}")
-        LINE()
         
-        choice = arrow_menu(options)
+        choice = arrow_menu(print(f"{Colours.BOLD}{Colours.CYAN}🎰 RIDE THE DUCK - MAIN MENU 🎰{Colours.RESET}"),None, options)
         
         if choice == 0:  # Play Game
             clear_screen()
@@ -248,33 +252,22 @@ def show_stats():
 
 #----Name Function----#
 def name_pick():
+    clear_screen()
     '''Lets user pick a name'''
     global USER_NAME
     LINE()
     print(f"{Colours.YELLOW}✏️ What would you like your name to be? ✏️{Colours.RESET}")
     if USER_NAME is None:
-        print(f"{Colours.BOLD}(You can change this later)")
-    USER_NAME = input(f"{Colours.BOLD}> {Colours.RESET}")
+        print("(You can change this later)")
+    USER_NAME = input(f"{Colours.BOLD}❯ {Colours.RESET}")
     clear_screen()
-    LINE()
-    print(f"{Colours.BOLD}{Colours.RED}YOU HAVE SELECTED: {Colours.RESET}{USER_NAME}")
-    LINE()
-    CONFIRMATION()
-#----Name Function----#
-
-#----Confirmation----#
-def CONFIRMATION():
-    '''confirming previous statement'''
-    clear_screen()
-    LINE()
-    print(f"{Colours.BOLD}Selected name: {Colours.YELLOW}{USER_NAME}{Colours.RESET}")
-    choice = arrow_menu(["✅ Confirm", "❌ Redo"])
+    choice = arrow_menu((f"{Colours.BOLD}{Colours.YELLOW}✏️ RIDE THE DUCK - NAME ✏️"), (f"{Colours.BOLD}{Colours.YELLOW}YOU HAVE SELECTED: {Colours.RESET}{USER_NAME}"), ["✅ Confirm", "❌ Redo"])
     if choice == 0:
         clear_screen()
         main_menu()
     elif choice == 1:
         name_pick()
-#----Confirmation----#
+#----Name Function----#
 
 # Test the functions
 if __name__ == "__main__":
