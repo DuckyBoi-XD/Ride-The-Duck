@@ -67,6 +67,7 @@ def save_game(money, name, filename="savefile.json"): # access save file + value
 USER_WALLET, USER_NAME = load_game()  # Load both money and name from save file
 CARD_SUITS = ("S", "D", "H", "C") # creates suits for card deck creation
 SUIT_SYMBOLS = {'S': '♠','D': '♦', 'H': '♥', 'C': '♣'}
+USER_NAME_KNOWLEDGE = False
 #----Variables----#
 
 #----Function Variables----#
@@ -252,17 +253,22 @@ def show_stats():
 #----Name Function----#
 def name_pick():
     '''Lets user pick a name'''
-    clear_screen()
     global USER_NAME
+    global USER_NAME_KNOWLEDGE
+    clear_screen()
     LINE()
     print(f"{Colours.BOLD}{Colours.BLUE}🏷️  RIDE THE DUCK - NAME 🏷️{Colours.RESET}")
     LINE()
     print(f"{Colours.YELLOW}✏️  What would you like your name to be? ✏️{Colours.RESET}")
-    print(f"{Colours.RED}(You can change this later){Colours.RESET}")
+    if USER_NAME_KNOWLEDGE is False:
+        print(f"{Colours.RED}(You can change this later){Colours.RESET}")
+    elif USER_NAME_KNOWLEDGE is True:
+        pass
     USER_NAME = input(f"{Colours.BOLD}❯ {Colours.RESET}")
     clear_screen()
     choice = arrow_menu((f"{Colours.BOLD}{Colours.BLUE}🏷️  RIDE THE DUCK - NAME 🏷️{Colours.RESET}"), (f"{Colours.BOLD}{Colours.YELLOW}YOU HAVE SELECTED: {Colours.RESET}{USER_NAME}\n"), ["✅ Confirm", "❌ Redo"])
     if choice == 0:
+        USER_NAME_KNOWLEDGE = True
         clear_screen()
         main_menu()
     elif choice == 1:
