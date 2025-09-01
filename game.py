@@ -233,7 +233,7 @@ def arrow_menu(title, text, options):
                     print(f"{Colours.BOLD}{Colours.YELLOW}► {option}{Colours.RESET}")
                 else:
                     print(f"{Colours.WHITE}  {option}{Colours.RESET}")
-            
+            LINE()
             key = arrow_key()
             
             if key == '\x1b[A':  # Up arrow
@@ -351,7 +351,7 @@ def show_stats():
             f"{Colours.GOLD}🏆 x2 Wins: {WIN_X2}{Colours.RESET}\n"
             f"{Colours.GOLD}🏆 x3 Wins: {WIN_X3}{Colours.RESET}\n"
             f"{Colours.GOLD}🏆 x4 Wins: {WIN_X4}{Colours.RESET}\n"
-            f"{Colours.GOLD}🏆 x10 Wins: {WIN_X10}{Colours.RESET}\n"
+            f"{Colours.GOLD}🏆 x10 Wins: {WIN_X10}{Colours.RESET}"
 
         )
         LINE()
