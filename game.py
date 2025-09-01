@@ -39,20 +39,39 @@ class Colours:
 
 #----Save File Money----#
 
+def to_binary_str(s): # binary encoder
+    return ''.join(format(ord(c), '08b') for c in s)
+
+def from_binary_str(b): # binary decoder
+    # Validate binary string
+    if len(b) % 8 != 0:
+        raise ValueError("Binary string length must be divisible by 8")
+    if not all(c in '01' for c in b):
+        raise ValueError("Binary string must only contain 0s and 1s")
+    
+    chars = [chr(int(b[i:i+8], 2)) for i in range(0, len(b), 8)]
+    return ''.join(chars)
+
 def encode_save(json_str):
+    '''encodes using method under'''
     # Base64 encode
     b64 = base64.b64encode(json_str.encode('utf-8')).decode('utf-8')
     # Reverse
     rev = b64[::-1]
-    # ROT13 encodes
-    final = codecs.encode(rev, 'rot_13')
-    return final.encode('utf-8')  # Write as bytes
+    # ROT13 encode
+    rot = codecs.encode(rev, 'rot_13')
+    # Binary encode
+    binary = to_binary_str(rot)
+    return binary.encode('utf-8')  # Write as bytes
 
 def decode_save(encoded_bytes):
-    # Bytes to string
-    encoded_str = encoded_bytes.decode('utf-8')
+    '''decodes using method under'''
+    # grabs code
+    binary_str = encoded_bytes.decode('utf-8')
+    # Binary decode
+    rot = from_binary_str(binary_str)
     # ROT13 decode
-    rev = codecs.decode(encoded_str, 'rot_13')
+    rev = codecs.decode(rot, 'rot_13')
     # Reverse
     b64 = rev[::-1]
     # Base64 decode
@@ -71,8 +90,8 @@ def load_game(filename="savefile.json"): # access save file -JSON
     except FileNotFoundError: # New player detection
         print("New player - no save file found") # confirmation message
         return 500, None # starting items (money, name)
-    except (ValueError, json.JSONDecodeError, base64.binascii.Error): # corupt detection
-        print("Corrupted save file - using defaults") # confirmation message
+    except (ValueError, json.JSONDecodeError) as e: # corruption detection
+        print(f"Corrupted save file - using defaults. Error: {e}") # confirmation message
         return 500, None # reset values (money, name)
 
 def save_game(money, name, filename="savefile.json"): # access save file + values (money, name)
