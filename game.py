@@ -160,12 +160,10 @@ def arrow_menu(title, text, options):
         
         if key == '\x1b[A':  # Up arrow
             clear_screen()
-            prevent_scroll()
             selected = (selected - 1) % len(options)
             # Screen will clear on next loop iteration
         elif key == '\x1b[B':  # Down arrow
             clear_screen()
-            prevent_scroll()
             selected = (selected + 1) % len(options)
             # Screen will clear on next loop iteration
         elif ord(key[0]) == 13:  # Enter
