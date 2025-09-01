@@ -157,18 +157,25 @@ for suit in CARD_SUITS:
 # Unix key pressing
 def key_press(option):
     '''single key tracking'''
-    fd = sys.stdin.fileno() # sets variable for key input
-    old_settings = termios.tcgetattr(fd) # saves the old state of the terminal
-    if option is 0:
-        print(f"{Colours.RED}Press any key to continue{Colours.RESET}")
-    elif option is 1:
-        print(f"{Colours.RED}Press any key to return to menu{Colours.RESET}")
     try:
-        tty.setraw(sys.stdin.fileno()) # sets terminal in "raw mode" for tracking
-        key = sys.stdin.read(1) # reads only 1 keyboard input
-    finally:
-        termios.tcsetattr(fd, termios.TCSADRAIN, old_settings) # restores to old state
-    return key
+        fd = sys.stdin.fileno() # sets variable for key input
+        old_settings = termios.tcgetattr(fd) # saves the old state of the terminal
+        if option is 0:
+            print(f"{Colours.RED}Press any key to continue{Colours.RESET}")
+        elif option is 1:
+            print(f"{Colours.RED}Press any key to return to menu{Colours.RESET}")
+        try:
+            tty.setraw(sys.stdin.fileno()) # sets terminal in "raw mode" for tracking
+            key = sys.stdin.read(1) # reads only 1 keyboard input
+        finally:
+            termios.tcsetattr(fd, termios.TCSADRAIN, old_settings) # restores to old state
+        return key
+    except KeyboardInterrupt:
+        print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
+        exit()
+    except EOFError:
+        print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
+        exit()
 
 '''windows key pressing
 def get_keypress():
@@ -182,164 +189,211 @@ def get_keypress():
 #----Arrow Key Track----#
 def arrow_key():
     '''reads and looks for arrow press'''
-    fd = sys.stdin.fileno() # find  keyboard format
-    old_settings = termios.tcgetattr(fd) # saves old terminal
     try:
-        tty.setraw(sys.stdin.fileno()) # tunrs on "raw mode"
-        key = sys.stdin.read(1) # reads first input
-        
-        # Check for escape sequence (arrow keys)
-        if ord(key) == 27:  # ESC
-            key += sys.stdin.read(2)  # Read the next 2 characters (for arrows)
+        fd = sys.stdin.fileno() # find  keyboard format
+        old_settings = termios.tcgetattr(fd) # saves old terminal
+        try:
+            tty.setraw(sys.stdin.fileno()) # tunrs on "raw mode"
+            key = sys.stdin.read(1) # reads first input
             
-        return key
-    finally:
-        termios.tcsetattr(fd, termios.TCSADRAIN, old_settings) # restores old settings
+            # Check for escape sequence (arrow keys)
+            if ord(key) == 27:  # ESC
+                key += sys.stdin.read(2)  # Read the next 2 characters (for arrows)
+                
+            return key
+        finally:
+            termios.tcsetattr(fd, termios.TCSADRAIN, old_settings) # restores old settings
+    except KeyboardInterrupt:
+        print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
+        exit()
+    except EOFError:
+        print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
+        exit()
 #----Arrow Key Track----#
 
 #----Arrow Key Menu System----#
 def arrow_menu(title, text, options):
     """generic arrow key menu system"""
-    selected = 0
-    
-    while True:
-        clear_screen()  # Clear screen for smooth animation
-        LINE()
-        print(title)
-        LINE()
+    try:
+        selected = 0
+        
+        while True:
+            clear_screen()  # Clear screen for smooth animation
+            LINE()
+            print(title)
+            LINE()
 
-        if text is not None:
-            print(text)
-        else: 
-            pass
-        # Display menu options
-        for i, option in enumerate(options):
-            if i == selected:
-                print(f"{Colours.BOLD}{Colours.YELLOW}► {option}{Colours.RESET}")
-            else:
-                print(f"{Colours.WHITE}  {option}{Colours.RESET}")
-        
-        key = arrow_key()
-        
-        if key == '\x1b[A':  # Up arrow
-            clear_screen()
-            selected = (selected - 1) % len(options)
-            # Screen will clear on next loop iteration
-        elif key == '\x1b[B':  # Down arrow
-            clear_screen()
-            selected = (selected + 1) % len(options)
-            # Screen will clear on next loop iteration
-        elif ord(key[0]) == 13:  # Enter
-            return selected
-        elif len(key) == 1 and ord(key) == 27:  # ESC alone
-            return -1
+            if text is not None:
+                print(text)
+            else: 
+                pass
+            # Display menu options
+            for i, option in enumerate(options):
+                if i == selected:
+                    print(f"{Colours.BOLD}{Colours.YELLOW}► {option}{Colours.RESET}")
+                else:
+                    print(f"{Colours.WHITE}  {option}{Colours.RESET}")
+            
+            key = arrow_key()
+            
+            if key == '\x1b[A':  # Up arrow
+                clear_screen()
+                selected = (selected - 1) % len(options)
+                # Screen will clear on next loop iteration
+            elif key == '\x1b[B':  # Down arrow
+                clear_screen()
+                selected = (selected + 1) % len(options)
+                # Screen will clear on next loop iteration
+            elif ord(key[0]) == 13:  # Enter
+                return selected
+            elif len(key) == 1 and ord(key) == 27:  # ESC alone
+                return -1
+    except KeyboardInterrupt:
+        print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
+        exit()
+    except EOFError:
+        print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
+        exit()
 #----Arrow Key Menu System----#
 
 #----Start Game----#
 def start_game():
     '''start of game info'''
-    LINE()
-    print(f"{Colours.BOLD}{Colours.BLUE}🎰 RIDE THE DUCK 🎰{Colours.RESET}\n"
-        f"{Colours.GREEN}💰 Your Money: ${USER_WALLET}{Colours.RESET}\n"
-        f"{Colours.CYAN}🎉 Welcome to Ride the Duck, a gambling game 🎉{Colours.RESET}")
-    if USER_NAME is None:
-        print(f"{Colours.YELLOW}🏷️  Your  Name:{Colours.RESET}{Colours.RED} -UNKNOWN-{Colours.RESET}")
-    else:
-        print(f"{Colours.YELLOW}🏷️  Your  Name:{Colours.RESET} {USER_NAME}")
-    LINE()
-    key_press(1)
-    clear_screen()
+    try:
+        LINE()
+        print(f"{Colours.BOLD}{Colours.BLUE}🎰 RIDE THE DUCK 🎰{Colours.RESET}\n"
+            f"{Colours.GREEN}💰 Your Money: ${USER_WALLET}{Colours.RESET}\n"
+            f"{Colours.CYAN}🎉 Welcome to Ride the Duck, a gambling game 🎉{Colours.RESET}")
+        if USER_NAME is None:
+            print(f"{Colours.YELLOW}🏷️  Your  Name:{Colours.RESET}{Colours.RED} -UNKNOWN-{Colours.RESET}")
+        else:
+            print(f"{Colours.YELLOW}🏷️  Your  Name:{Colours.RESET} {USER_NAME}")
+        LINE()
+        key_press(1)
+        clear_screen()
+    except KeyboardInterrupt:
+        print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
+        exit()
+    except EOFError:
+        print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
+        exit()
     
 #----Start Game----#
 
 #----Main Game Function----#
 def main_game():
     '''Ride the Bus game'''
-    pass
+    try:
+        pass
+    except KeyboardInterrupt:
+        print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
+        exit()
+    except EOFError:
+        print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
+        exit()
 
 #----Main Game Function----#
 
 #----Main Menu----#
 def main_menu():
     """Main game menu with arrow navigation"""
-    
-    options = [
-        "🎮 Play Ride the Duck",
-        "📊 View Statistics", 
-        "✏️  Change Name",
-        "💾 Save Game",
-        "🚪 Quit Game"
-    ]
-    
-    while True:
-        clear_screen()  # Clear screen for smooth menu display
-        
-        choice = arrow_menu(f"{Colours.BOLD}{Colours.BLUE}🎰 RIDE THE DUCK - MAIN MENU 🎰{Colours.RESET}", None, options)
-        
-        if choice == 0:  # Play Game
-            clear_screen()
-            main_game()
-        elif choice == 1:  # View Stats
-            show_stats()
-        elif choice == 2:  # Change Name
-            clear_screen()
-            name_pick()
-            save_game(USER_WALLET, USER_NAME, GAMES_PLAYED, WIN_X2, WIN_X3, WIN_X4, WIN_X10)
-        elif choice == 3:  # Save Game
-            clear_screen()
-            save_game(USER_WALLET, USER_NAME, GAMES_PLAYED, WIN_X2, WIN_X3, WIN_X4, WIN_X10)
-            print(f"{Colours.GREEN}Game saved successfully!{Colours.RESET}")
-            input("Press Enter to continue...")
-        elif choice == 4 or choice == -1:  # Quit
-            clear_screen()
-            print(f"{Colours.RED}Thanks for playing! Goodbye!{Colours.RESET}")
-            exit()
+    try:
+        options = [
+            "🎮 Play Ride the Duck",
+            "📊 View Statistics", 
+            "✏️  Change Name",
+            "💾 Save Game",
+            "🚪 Quit Game"
+        ]   
+        while True:
+            clear_screen()  # Clear screen for smooth menu display
+            
+            choice = arrow_menu(f"{Colours.BOLD}{Colours.BLUE}🎰 RIDE THE DUCK - MAIN MENU 🎰{Colours.RESET}", None, options)
+            
+            if choice == 0:  # Play Game
+                clear_screen()
+                main_game()
+            elif choice == 1:  # View Stats
+                show_stats()
+            elif choice == 2:  # Change Name
+                clear_screen()
+                name_pick()
+                save_game(USER_WALLET, USER_NAME, GAMES_PLAYED, WIN_X2, WIN_X3, WIN_X4, WIN_X10)
+            elif choice == 3:  # Save Game
+                clear_screen()
+                save_game(USER_WALLET, USER_NAME, GAMES_PLAYED, WIN_X2, WIN_X3, WIN_X4, WIN_X10)
+                print(f"{Colours.GREEN}Game saved successfully!{Colours.RESET}")
+                input("Press Enter to continue...")
+            elif choice == 4 or choice == -1:  # Quit
+                clear_screen()
+                print(f"{Colours.RED}Thanks for playing! Goodbye!{Colours.RESET}")
+                exit()
+    except KeyboardInterrupt:
+        print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
+        exit()
+    except EOFError:
+        print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
+        exit()
 #----Main Menu----#
 
 #----Stats----#
 def show_stats():
     """Display player statistics"""
-    clear_screen()
-    LINE()
-    print(f"{Colours.BOLD}{Colours.CYAN}📊 PLAYER STATISTICS 📊{Colours.RESET}")
-    LINE()
-    print(f"{Colours.GREEN}💰 Money: ${USER_WALLET}{Colours.RESET}\n"
-        f"{Colours.YELLOW}🏷️  Name: {USER_NAME}{Colours.RESET}\n"
-        f"{Colours.BLUE}🎮 Games Played: {GAMES_PLAYED}{Colours.RESET}\n"
-        f"{Colours.GOLD}🏆 Wins Toal: {WINS_TOTAL}{Colours.RESET}\n"
-        f"{Colours.GOLD}🏆 x2 Wins: {WIN_X2}{Colours.RESET}\n"
-        f"{Colours.GOLD}🏆 x3 Wins: {WIN_X3}{Colours.RESET}\n"
-        f"{Colours.GOLD}🏆 x4 Wins: {WIN_X4}{Colours.RESET}\n"
-        f"{Colours.GOLD}🏆 x10 Wins: {WIN_X10}{Colours.RESET}\n"
+    try:
+        clear_screen()
+        LINE()
+        print(f"{Colours.BOLD}{Colours.CYAN}📊 PLAYER STATISTICS 📊{Colours.RESET}")
+        LINE()
+        print(f"{Colours.GREEN}💰 Money: ${USER_WALLET}{Colours.RESET}\n"
+            f"{Colours.YELLOW}🏷️  Name: {USER_NAME}{Colours.RESET}\n"
+            f"{Colours.BLUE}🎮 Games Played: {GAMES_PLAYED}{Colours.RESET}\n"
+            f"{Colours.GOLD}🏆 Wins Toal: {WINS_TOTAL}{Colours.RESET}\n"
+            f"{Colours.GOLD}🏆 x2 Wins: {WIN_X2}{Colours.RESET}\n"
+            f"{Colours.GOLD}🏆 x3 Wins: {WIN_X3}{Colours.RESET}\n"
+            f"{Colours.GOLD}🏆 x4 Wins: {WIN_X4}{Colours.RESET}\n"
+            f"{Colours.GOLD}🏆 x10 Wins: {WIN_X10}{Colours.RESET}\n"
 
-    )
-    LINE()
-    key_press(1)
+        )
+        LINE()
+        key_press(1)
+    except KeyboardInterrupt:
+        print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
+        exit()
+    except EOFError:
+        print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
+        exit()
 #----Stats----#
 
 #----Name Function----#
 def name_pick():
     '''Lets user pick a name'''
-    global USER_NAME
-    global USER_NAME_KNOWLEDGE
-    clear_screen()
-    LINE()
-    print(f"{Colours.BOLD}{Colours.BLUE}🏷️  RIDE THE DUCK - NAME 🏷️{Colours.RESET}")
-    LINE()
-    print(f"{Colours.YELLOW}✏️  What would you like your name to be? ✏️{Colours.RESET}")
-    if USER_NAME_KNOWLEDGE is False:
-        print(f"{Colours.RED}(You can change this later){Colours.RESET}")
-    elif USER_NAME_KNOWLEDGE is True:
-        pass
-    USER_NAME = input(f"{Colours.BOLD}❯ {Colours.RESET}")
-    clear_screen()
-    choice = arrow_menu((f"{Colours.BOLD}{Colours.BLUE}🏷️  RIDE THE DUCK - NAME 🏷️{Colours.RESET}"), (f"{Colours.BOLD}{Colours.YELLOW}YOU HAVE SELECTED: {Colours.RESET}{USER_NAME}\n"), ["✅ Confirm", "❌ Redo"])
-    if choice == 0:
-        USER_NAME_KNOWLEDGE = True
+    try:
+        global USER_NAME
+        global USER_NAME_KNOWLEDGE
         clear_screen()
-        pass
-    elif choice == 1:
-        name_pick()
+        LINE()
+        print(f"{Colours.BOLD}{Colours.BLUE}🏷️  RIDE THE DUCK - NAME 🏷️{Colours.RESET}")
+        LINE()
+        print(f"{Colours.YELLOW}✏️  What would you like your name to be? ✏️{Colours.RESET}")
+        if USER_NAME_KNOWLEDGE is False:
+            print(f"{Colours.RED}(You can change this later){Colours.RESET}")
+        elif USER_NAME_KNOWLEDGE is True:
+            pass
+        USER_NAME = input(f"{Colours.BOLD}❯ {Colours.RESET}")
+        clear_screen()
+        choice = arrow_menu((f"{Colours.BOLD}{Colours.BLUE}🏷️  RIDE THE DUCK - NAME 🏷️{Colours.RESET}"), (f"{Colours.BOLD}{Colours.YELLOW}YOU HAVE SELECTED: {Colours.RESET}{USER_NAME}\n"), ["✅ Confirm", "❌ Redo"])
+        if choice == 0:
+            USER_NAME_KNOWLEDGE = True
+            clear_screen()
+            pass
+        elif choice == 1:
+            name_pick()
+    except KeyboardInterrupt:
+        print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
+        exit()
+    except EOFError:
+        print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
+        exit()
 #----Name Function----#
 
 # Test the functions
