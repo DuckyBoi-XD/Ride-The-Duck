@@ -30,6 +30,7 @@ class Colours:
     BG_GREEN = '\033[102m'
     BG_YELLOW = '\033[103m'
     BG_BLUE = '\033[104m'
+    BG_WHITE = '\033[107'
     
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
@@ -122,8 +123,8 @@ def save_game(money, name, game_played=0,
 
 #----Variables----#
 USER_WALLET, USER_NAME, GAMES_PLAYED, WIN_X2, WIN_X3, WIN_X4, WIN_X10 = load_game()  # Load both money and name from save file
-CARD_SUITS = ("S", "D", "H", "C") # creates suits for card deck creation
-SUIT_SYMBOLS = {'S': '♠','D': '♦', 'H': '♥', 'C': '♣'}
+S, D, H, C = "♠", "♦", "♥", "♣"
+CARD_SUITS = (S, D, H, C) # creates suits for card deck creation
 USER_NAME_KNOWLEDGE = False
 WINS_TOTAL = WIN_X2 + WIN_X3 + WIN_X4 + WIN_X10
 Confirm_Redo = ["✅ Confirm", "🔄 Redo"]
@@ -254,8 +255,6 @@ def arrow_menu(title, text, options):
 
             if text is not None:
                 print(text)
-            else: 
-                pass
             # Display menu options
             for i, option in enumerate(options):
                 if i == selected:
@@ -309,18 +308,18 @@ def start_game():
     
 #----Start Game----#
 
-#----Main Game Function----#
-def main_game():
-    '''Ride the Bus game'''
+#----Betting Check Function----#
+def bet_check():
+    '''betting check'''
     try:
+        global user_bet
+        global bet_confirm
         bet_error = 0
         user_bet = None
+        bet_confirm = False
         while True:
-            Black_Red_Options = [
-                ""
-            ]
             LINE()
-            print(f"{Colours.BOLD}{Colours.BLUE}🎰 RIDE THE DUCK - MAIN GAME 🎰{Colours.RESET}")
+            print(f"{Colours.BOLD}{Colours.BLUE}🎰 RIDE THE DUCK - MAIN GAME - BET 🎰{Colours.RESET}")
             LINE()
 
             if bet_error == 1:
@@ -342,10 +341,10 @@ def main_game():
                             f"{Colours.GREEN}💵 You are betting: {Colours.WHITE}${user_bet}{Colours.RESET}\n{Colours.CYAN}✅ Please confirm bet amount ✅{Colours.RESET}\n",
                             Confirm_Redo_Cancel)
                         if choices == 0:
-                            pass
-                        elif choices == 1:
                             clear_screen()
-                            pass
+                            bet_confirm = True
+                            break
+                        elif choices == 1:
                             clear_screen()
                         elif choices == 2:
                             clear_screen()
@@ -359,14 +358,34 @@ def main_game():
             else:
                 bet_error = 1
                 clear_screen()
-        
-                
     except KeyboardInterrupt:
         print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
         exit()
     except EOFError:
         print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
         exit()
+
+#----Betting check Function----#
+
+#----Main Game----#
+
+def main_game():
+    Red_Black_Pick = [
+        f"{Colours.RED}🟥 Red{Colours.RESET}"
+        f"{Colours.BG_WHITE}{Colours.RED}⬛ Black{Colours.RESET}"
+    ]
+    try:
+        bet_check()
+        if bet_confirm is True:
+            arrow_menu(print(f"{Colours.BOLD}{Colours.BLUE}🎰 RIDE THE DUCK - MAIN GAME 🎰{Colours.RESET}"),f"{Colours.CYAN}Pick  )
+    except KeyboardInterrupt:
+        print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
+        exit()
+    except EOFError:
+        print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
+        exit()
+
+#----Main Game----#              
 
 #----Main Game Function----#
 
