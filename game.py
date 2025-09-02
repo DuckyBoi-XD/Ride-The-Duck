@@ -338,7 +338,9 @@ def main_game():
                 if money_valid(user_bet):
                     if float(user_bet) <= USER_WALLET:
                         clear_screen()
-                        choices = arrow_menu("menu", f"{Colours.GREEN}💵 You are betting: {Colours.WHITE}${user_bet}{Colours.RESET}\n{Colours.CYAN}✅ Please confirm bet amount ✅{Colours.RESET}\n", Confirm_Redo_Cancel)
+                        choices = arrow_menu("menu",
+                            f"{Colours.GREEN}💵 You are betting: {Colours.WHITE}${user_bet}{Colours.RESET}\n{Colours.CYAN}✅ Please confirm bet amount ✅{Colours.RESET}\n",
+                            Confirm_Redo_Cancel)
                         if choices == 0:
                             pass
                         elif choices == 1:
