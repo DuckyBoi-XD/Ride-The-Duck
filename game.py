@@ -126,6 +126,7 @@ CARD_SUITS = ("S", "D", "H", "C") # creates suits for card deck creation
 SUIT_SYMBOLS = {'S': '♠','D': '♦', 'H': '♥', 'C': '♣'}
 USER_NAME_KNOWLEDGE = False
 WINS_TOTAL = WIN_X2 + WIN_X3 + WIN_X4 + WIN_X10
+Confirm_Redo = ["✅ Confirm", "❌ Redo"]
 #----Variables----#
 
 #----Function Variables----#
@@ -137,6 +138,21 @@ def clear_screen():
     ''''clear screen function'''
     os.system('cls' if os.name == 'nt' else 'clear') # function to clear screen
 
+def is_float(variable):
+    '''check if value is a float'''
+    try:
+        float(variable)
+        return True
+    except ValueError:
+        return False
+
+def money_valid(value):
+    """check if value has 2 decimal or less"""
+    if '.' in value:
+        decimal_part = value.split('.')[1]
+        return len(decimal_part) <= 2
+    else:
+        return True
 #----Function Variables----#
 
 #----Card Deck----#
@@ -219,6 +235,11 @@ def arrow_menu(title, text, options):
         
         while True:
             clear_screen()  # Clear screen for smooth animation
+
+            if title == "menu":
+                print(f"{Colours.BOLD}{Colours.BLUE}🎰 RIDE THE DUCK - MAIN GAME 🎰{Colours.RESET}")
+            elif title == "name":
+                print(f"{Colours.BOLD}{Colours.BLUE}🏷️  RIDE THE DUCK - NAME 🏷️{Colours.RESET}")
             LINE()
             print(title)
             LINE()
@@ -284,7 +305,37 @@ def start_game():
 def main_game():
     '''Ride the Bus game'''
     try:
-        pass
+        bet_error = 0
+        user_bet = None
+        while True:
+            Black_Red_Options = [
+                ""
+            ]
+            LINE()
+            print(f"{Colours.BOLD}{Colours.BLUE}🎰 RIDE THE DUCK - MAIN GAME 🎰{Colours.RESET}")
+            LINE()
+
+            if bet_error == 1:
+                print(f"{Colours.RED}⚠️ Invalid bet: {user_bet} - Please use a number ⚠️{Colours.RESET}")
+            if bet_error == 2:
+                print(f"{Colours.RED}⚠️ Invalid bet: {user_bet} - Please a number equal or bigger than 0.01 ⚠️{Colours.RESET}")
+
+            print(f"{Colours.CYAN}💵  How much do you want to bet? (Min $0.01) 💵{Colours.RESET}")
+            bet_error = 0
+            user_bet = input(f"{Colours.BOLD}❯ {Colours.RESET}").strip().lower()
+            if is_float(user_bet):
+                    if money_valid(user_bet):
+                        if int(user_bet) <= USER_WALLET:
+                            arrow_menu("menu", "confirm", Confirm_Redo )
+                        else:
+                            bet_error = 3
+                    else:
+                        bet_error = 2
+            else:
+                bet_error = 1
+                clear_screen()
+        
+                
     except KeyboardInterrupt:
         print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
         exit()
@@ -346,7 +397,7 @@ def show_stats():
         LINE()
         print(f"{Colours.GREEN}💰 Money: ${USER_WALLET}{Colours.RESET}\n"
             f"{Colours.YELLOW}🏷️  Name: {USER_NAME}{Colours.RESET}\n"
-            f"{Colours.BLUE}🎮 Games Played: {GAMES_PLAYED}{Colours.RESET}\n"
+            f"{Colours.CYAN}🎮 Games Played: {GAMES_PLAYED}{Colours.RESET}\n"
             f"{Colours.GOLD}🏆 Wins Toal: {WINS_TOTAL}{Colours.RESET}\n"
             f"{Colours.GOLD}🏆 x2 Wins: {WIN_X2}{Colours.RESET}\n"
             f"{Colours.GOLD}🏆 x3 Wins: {WIN_X3}{Colours.RESET}\n"
@@ -381,7 +432,7 @@ def name_pick():
             pass
         USER_NAME = input(f"{Colours.BOLD}❯ {Colours.RESET}")
         clear_screen()
-        choice = arrow_menu((f"{Colours.BOLD}{Colours.BLUE}🏷️  RIDE THE DUCK - NAME 🏷️{Colours.RESET}"), (f"{Colours.BOLD}{Colours.YELLOW}YOU HAVE SELECTED: {Colours.RESET}{USER_NAME}\n"), ["✅ Confirm", "❌ Redo"])
+        choice = arrow_menu((f"{Colours.BOLD}{Colours.BLUE}🏷️  RIDE THE DUCK - NAME 🏷️{Colours.RESET}"), (f"{Colours.BOLD}{Colours.YELLOW}YOU HAVE SELECTED: {Colours.RESET}{USER_NAME}\n"), Confirm_Redo)
         if choice == 0:
             USER_NAME_KNOWLEDGE = True
             clear_screen()
