@@ -126,7 +126,8 @@ CARD_SUITS = ("S", "D", "H", "C") # creates suits for card deck creation
 SUIT_SYMBOLS = {'S': '♠','D': '♦', 'H': '♥', 'C': '♣'}
 USER_NAME_KNOWLEDGE = False
 WINS_TOTAL = WIN_X2 + WIN_X3 + WIN_X4 + WIN_X10
-Confirm_Redo = ["✅ Confirm", "❌ Redo"]
+Confirm_Redo = ["✅ Confirm", "🔄 Redo"]
+Confirm_Redo_Cancel = ["✅ Confirm", "🔄 Redo", "❌ Cancel"]
 #----Variables----#
 
 #----Function Variables----#
@@ -212,6 +213,14 @@ def arrow_key():
             tty.setraw(sys.stdin.fileno()) # tunrs on "raw mode"
             key = sys.stdin.read(1) # reads first input
             
+            # Check for CTRL-C and CTRL-D in raw mode
+            if ord(key) == 3:  # CTRL-C
+                print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
+                exit()
+            elif ord(key) == 4:  # CTRL-D
+                print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
+                exit()
+            
             # Check for escape sequence (arrow keys)
             if ord(key) == 27:  # ESC
                 key += sys.stdin.read(2)  # Read the next 2 characters (for arrows)
@@ -236,12 +245,11 @@ def arrow_menu(title, text, options):
         while True:
             clear_screen()  # Clear screen for smooth animation
 
+            LINE()
             if title == "menu":
                 print(f"{Colours.BOLD}{Colours.BLUE}🎰 RIDE THE DUCK - MAIN GAME 🎰{Colours.RESET}")
             elif title == "name":
                 print(f"{Colours.BOLD}{Colours.BLUE}🏷️  RIDE THE DUCK - NAME 🏷️{Colours.RESET}")
-            LINE()
-            print(title)
             LINE()
 
             if text is not None:
@@ -324,13 +332,24 @@ def main_game():
             bet_error = 0
             user_bet = input(f"{Colours.BOLD}❯ {Colours.RESET}").strip().lower()
             if is_float(user_bet):
-                    if money_valid(user_bet):
-                        if int(user_bet) <= USER_WALLET:
-                            arrow_menu("menu", "confirm", Confirm_Redo )
-                        else:
-                            bet_error = 3
+                if money_valid(user_bet):
+                    if int(user_bet) <= USER_WALLET:
+                        clear_screen()
+                        choices = arrow_menu("menu", f"{Colours.GREEN}💵 You are betting: {Colours.WHITE}${user_bet}{Colours.RESET}\n{Colours.CYAN}✅ Please confirm bet amount ✅{Colours.RESET}\n", Confirm_Redo_Cancel)
+                        if choices == 0:
+                            pass
+                        elif choices == 1:
+                            pass
+                            clear_screen()
+                        elif choices == 2:
+                            break
+
                     else:
-                        bet_error = 2
+                        bet_error = 3
+                        clear_screen()
+                else:
+                    bet_error = 2
+                    clear_screen()
             else:
                 bet_error = 1
                 clear_screen()
@@ -359,7 +378,7 @@ def main_menu():
         while True:
             clear_screen()  # Clear screen for smooth menu display
             
-            choice = arrow_menu(f"{Colours.BOLD}{Colours.BLUE}🎰 RIDE THE DUCK - MAIN MENU 🎰{Colours.RESET}", None, options)
+            choice = arrow_menu("menu", None, options)
             
             if choice == 0:  # Play Game
                 clear_screen()
@@ -432,7 +451,7 @@ def name_pick():
             pass
         USER_NAME = input(f"{Colours.BOLD}❯ {Colours.RESET}")
         clear_screen()
-        choice = arrow_menu((f"{Colours.BOLD}{Colours.BLUE}🏷️  RIDE THE DUCK - NAME 🏷️{Colours.RESET}"), (f"{Colours.BOLD}{Colours.YELLOW}YOU HAVE SELECTED: {Colours.RESET}{USER_NAME}\n"), Confirm_Redo)
+        choice = arrow_menu("name", (f"{Colours.BOLD}{Colours.YELLOW}YOU HAVE SELECTED: {Colours.RESET}{USER_NAME}\n"), Confirm_Redo)
         if choice == 0:
             USER_NAME_KNOWLEDGE = True
             clear_screen()
