@@ -325,25 +325,29 @@ def main_game():
 
             if bet_error == 1:
                 print(f"{Colours.RED}⚠️ Invalid bet: {user_bet} - Please use a number ⚠️{Colours.RESET}")
-            if bet_error == 2:
+            elif bet_error == 2:
                 print(f"{Colours.RED}⚠️ Invalid bet: {user_bet} - Please a number equal or bigger than 0.01 ⚠️{Colours.RESET}")
+            elif bet_error == 3:
+                print(f"{Colours.RED}⚠️ Invalid bet: {user_bet} - You are betting more money than you have in your wallet ⚠️{Colours.RESET}")
 
-            print(f"{Colours.CYAN}💵  How much do you want to bet? (Min $0.01) 💵{Colours.RESET}")
+            print(f"{Colours.GREEN}💰 Your Money: ${USER_WALLET}{Colours.RESET}\n"
+                  f"{Colours.CYAN}💵  How much do you want to bet? (Min $0.01) 💵{Colours.RESET}")
             bet_error = 0
             user_bet = input(f"{Colours.BOLD}❯ {Colours.RESET}").strip().lower()
             if is_float(user_bet):
                 if money_valid(user_bet):
-                    if int(user_bet) <= USER_WALLET:
+                    if float(user_bet) <= USER_WALLET:
                         clear_screen()
                         choices = arrow_menu("menu", f"{Colours.GREEN}💵 You are betting: {Colours.WHITE}${user_bet}{Colours.RESET}\n{Colours.CYAN}✅ Please confirm bet amount ✅{Colours.RESET}\n", Confirm_Redo_Cancel)
                         if choices == 0:
                             pass
                         elif choices == 1:
+                            clear_screen()
                             pass
                             clear_screen()
                         elif choices == 2:
+                            clear_screen()
                             break
-
                     else:
                         bet_error = 3
                         clear_screen()
