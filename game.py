@@ -125,13 +125,14 @@ def save_game(money, name, game_played=0,
 
 #----Variables----#
 USER_WALLET, USER_NAME, GAMES_PLAYED, WIN_X2, WIN_X3, WIN_X4, WIN_X10 = load_game()  # Load both money and name from save file
-S, D, H, C = "♠", "♦", "♥", "♣"
-CARD_SUITS = (S, D, H, C) # creates suits for card deck creation
+CARD_SUITS = (f"{Colours.BLACK}♠{Colours.RESET}",
+            f"{Colours.RED}♦{Colours.RESET}",
+            f"{Colours.RED}♥{Colours.RESET}",
+            f"{Colours.BLACK}♣{Colours.RESET}") # creates suits for card deck creation
 USER_NAME_KNOWLEDGE = False
 WINS_TOTAL = WIN_X2 + WIN_X3 + WIN_X4 + WIN_X10
 Confirm_Redo = ["✅ Confirm", "🔄 Redo"]
 Confirm_Redo_Cancel = ["✅ Confirm", "🔄 Redo", "❌ Cancel"]
-game_round = 0
 MULTIPLIER = {"x2" : 1, "x3" : 0, "x4" : 0, "x10" : 0}
 #----Variables----#
 
@@ -152,10 +153,10 @@ def is_float(variable):
     except ValueError:
         return False
 
-def money_valid(value):
+def money_valid(money_value):
     """check if value has 2 decimal or less"""
-    if '.' in value:
-        decimal_part = value.split('.')[1]
+    if '.' in money_value:
+        decimal_part = money_value.split('.')[1]
         return len(decimal_part) <= 2
     else:
         return True
@@ -165,14 +166,14 @@ def money_valid(value):
 CardDeck = {}
 
 for suit in CARD_SUITS:
-    for value in range(2, 11):
-        CardDeck[f"{suit}{value}"] = value
+    for value_card in range(2, 11):
+        CardDeck[f"{suit}{value_card}"] = value_card
 
 for suit in CARD_SUITS:
-    CardDeck[f"{suit}D"] = 11
-    CardDeck[f"{suit}Q"] = 12
-    CardDeck[f"{suit}K"] = 13
-    CardDeck[f"{suit}A"] = 14
+    CardDeck[f"D{suit}"] = 11
+    CardDeck[f"Q{suit}"] = 12
+    CardDeck[f"K{suit}"] = 13
+    CardDeck[f"A{suit}"] = 14
 #----Card Deck----#
 
 #----Single Key Track----#
@@ -395,7 +396,7 @@ def bet_check():
                         if choices == 0:
                             clear_screen()
                             bet_confirm = True
-                            USER_WALLET -= user_bet
+                            USER_WALLET -= float(user_bet)
                             break
                         elif choices == 1:
                             clear_screen()
@@ -438,9 +439,25 @@ def main_game():
             elif choices == 2:
                 user_colour = 2
             
-            RedBlackCard = []
-            card_key, card_value = random.choice(list(CardDeck.items()))
-            RedBlackCard[card_key] = card_value
+            game_card = {}
+            game_card_deck = CardDeck
+
+            rb_key, rb_value = random.choice(list(game_card_deck.items()))
+            game_card[rb_key] = rb_value
+            game_card_deck.pop(rb_key)
+
+            RedBlack_card = (
+            "┌─────────┐\n"
+            f"│ {rb_key[0]}{rb_key[1]}      │\n"
+            "│         │\n"
+            "│         │\n"
+            "│    ♠    │\n"
+            "│         │\n"
+            "│         │\n"
+            "│      ♠A │\n"
+            "└─────────┘")
+            print(RedBlack_card)
+            arrow_key()
             # choices = arrow_menu()
             
     except KeyboardInterrupt:
