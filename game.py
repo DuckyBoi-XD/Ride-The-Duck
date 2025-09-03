@@ -17,6 +17,7 @@ import msvcrt
 #----Colours----#
 class Colours:
     '''colours for texts'''
+    BLACK = '\033[90m'
     RED = '\033[91m'
     GREEN = '\033[92m'
     YELLOW = '\033[93m'
@@ -30,7 +31,7 @@ class Colours:
     BG_GREEN = '\033[102m'
     BG_YELLOW = '\033[103m'
     BG_BLUE = '\033[104m'
-    BG_WHITE = '\033[107'
+    BG_WHITE = '\033[107m'
     
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
@@ -80,7 +81,7 @@ def decode_save(encoded_bytes):
     json_str = base64.b64decode(b64).decode('utf-8')
     return json_str
 
-def load_game(filename="savefile.json"): # access save file -JSON
+def load_game(filename="savefile_RideTheDuck.json"): # access save file -JSON
     '''loading save file - returns both money and name'''
     try:
         with open(filename, "rb") as f: # reads file and places value "f"
@@ -103,7 +104,7 @@ def load_game(filename="savefile.json"): # access save file -JSON
         return 500, None, 0, 0, 0, 0, 0 # reset values
 
 def save_game(money, name, game_played=0,
-            win2=0, win3=0, win4=0, win10=0, filename="savefile.json"):
+            win2=0, win3=0, win4=0, win10=0, filename="SaveFile_RideTheDuck.json"):
     '''saving game data'''
     data = {
         "money": money, 
@@ -129,6 +130,8 @@ USER_NAME_KNOWLEDGE = False
 WINS_TOTAL = WIN_X2 + WIN_X3 + WIN_X4 + WIN_X10
 Confirm_Redo = ["✅ Confirm", "🔄 Redo"]
 Confirm_Redo_Cancel = ["✅ Confirm", "🔄 Redo", "❌ Cancel"]
+game_round = 0
+MULTIPLIER = {"x2" : 1, "x3" : 0, "x4" : 0, "x10" : 0}
 #----Variables----#
 
 #----Function Variables----#
@@ -248,9 +251,56 @@ def arrow_menu(title, text, options):
 
             LINE()
             if title == "menu":
-                print(f"{Colours.BOLD}{Colours.BLUE}🎰 RIDE THE DUCK - MAIN GAME 🎰{Colours.RESET}")
+                print(f"{Colours.BOLD}{Colours.BLUE}🎰 RIDE THE DUCK - MENU 🎰{Colours.RESET}")
             elif title == "name":
                 print(f"{Colours.BOLD}{Colours.BLUE}🏷️  RIDE THE DUCK - NAME 🏷️{Colours.RESET}")
+            elif title == "game":
+                print(f"{Colours.BOLD}{Colours.BLUE}🏷️  RIDE THE DUCK - GAME 🏷️{Colours.RESET}")
+            elif title == "game-main":
+                print(f"{Colours.BOLD}{Colours.BLUE}🏷️  RIDE THE DUCK - GAME 🏷️{Colours.RESET}\n")
+
+                x2_print = f"[{Colours.BOLD}{Colours.BG_WHITE} x2 {Colours.RESET}]"
+                x3_print = f"[{Colours.BOLD}{Colours.BG_WHITE} x3 {Colours.RESET}]"
+                x4_print = f"[{Colours.BOLD}{Colours.BG_WHITE} x4 {Colours.RESET}]"
+                x10_print = f"[{Colours.BOLD}{Colours.BG_WHITE} x10 {Colours.RESET}]"
+                
+                if MULTIPLIER["x2"] == 0:
+                    x2_print = "Error"
+                elif MULTIPLIER["x2"] == 1:
+                    x2_print = f"[{Colours.BOLD}{Colours.BG_YELLOW} x2 {Colours.RESET}]"
+                elif MULTIPLIER["x2"] == 2:
+                    x2_print = f"[{Colours.BOLD}{Colours.BG_GREEN} x2 {Colours.RESET}]"
+                elif MULTIPLIER["x2"] == 3:
+                    x2_print = f"[{Colours.BOLD}{Colours.BG_RED} x2 {Colours.RESET}]"
+
+                if MULTIPLIER["x3"] == 0:
+                    x3_print = f"[{Colours.BOLD}{Colours.BG_WHITE} x3 {Colours.RESET}]"
+                elif MULTIPLIER["x3"] == 1:
+                    x3_print = f"[{Colours.BOLD}{Colours.BG_YELLOW} x3 {Colours.RESET}]"
+                elif MULTIPLIER["x3"] == 2:
+                    x3_print = f"[{Colours.BOLD}{Colours.BG_GREEN} x3 {Colours.RESET}]"
+                elif MULTIPLIER["x3"] == 3:
+                    x3_print = f"[{Colours.BOLD}{Colours.BG_RED} x3 {Colours.RESET}]"
+
+                if MULTIPLIER["x4"] == 0:
+                    x4_print = f"[{Colours.BOLD}{Colours.BG_WHITE} x4 {Colours.RESET}]"
+                elif MULTIPLIER["x4"] == 1:
+                    x4_print = f"[{Colours.BOLD}{Colours.BG_YELLOW} x4 {Colours.RESET}]"
+                elif MULTIPLIER["x4"] == 2:
+                    x4_print = f"[{Colours.BOLD}{Colours.BG_GREEN} x4 {Colours.RESET}]"
+                elif MULTIPLIER["x4"] == 3:
+                    x4_print = f"[{Colours.BOLD}{Colours.BG_RED} x4 {Colours.RESET}]"
+
+                if MULTIPLIER["x10"] == 0:
+                    x10_print = f"[{Colours.BOLD}{Colours.BG_WHITE} x10 {Colours.RESET}]"
+                elif MULTIPLIER["x10"] == 1:
+                    x10_print = f"[{Colours.BOLD}{Colours.BG_YELLOW} x10 {Colours.RESET}]"
+                elif MULTIPLIER["x10"] == 2:
+                    x10_print = f"[{Colours.BOLD}{Colours.BG_GREEN} x10 {Colours.RESET}]"
+                elif MULTIPLIER["x10"] == 3:
+                    x10_print = f"[{Colours.BOLD}{Colours.BG_RED} x10 {Colours.RESET}]"
+                
+                print(x2_print, x3_print, x4_print, x10_print)
             LINE()
 
             if text is not None:
@@ -313,6 +363,7 @@ def bet_check():
     '''betting check'''
     try:
         global user_bet
+        global USER_WALLET
         global bet_confirm
         bet_error = 0
         user_bet = None
@@ -343,6 +394,7 @@ def bet_check():
                         if choices == 0:
                             clear_screen()
                             bet_confirm = True
+                            USER_WALLET -= user_bet
                             break
                         elif choices == 1:
                             clear_screen()
@@ -370,14 +422,22 @@ def bet_check():
 #----Main Game----#
 
 def main_game():
-    Red_Black_Pick = [
-        f"{Colours.RED}🟥 Red{Colours.RESET}"
-        f"{Colours.BG_WHITE}{Colours.RED}⬛ Black{Colours.RESET}"
+    '''ride the duck main game'''
+    RedBlackPick = [
+        "🟥 Red",
+        "⬛ Black"
     ]
     try:
         bet_check()
         if bet_confirm is True:
-            arrow_menu(print(f"{Colours.BOLD}{Colours.BLUE}🎰 RIDE THE DUCK - MAIN GAME 🎰{Colours.RESET}"),f"{Colours.CYAN}Pick  )
+            choices = arrow_menu("game-main", (f"{Colours.CYAN}Pick a card colour{Colours.RESET}\n"), RedBlackPick)
+
+            if choices == 0:
+                user_colour = 1
+                
+            elif choices == 2:
+                user_colour = 2
+            
     except KeyboardInterrupt:
         print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
         exit()
@@ -395,7 +455,8 @@ def main_menu():
     try:
         options = [
             "🎮 Play Ride the Duck",
-            "📊 View Statistics", 
+            "📊 View Statistics",
+            "❓ Help", 
             "✏️  Change Name",
             "💾 Save Game",
             "🚪 Quit Game"
@@ -410,16 +471,16 @@ def main_menu():
                 main_game()
             elif choice == 1:  # View Stats
                 show_stats()
-            elif choice == 2:  # Change Name
+            elif choice == 2:  # tips
+                clear_screen()
+                pass ### NOT DONEEEEEEEEE
+                save_game(USER_WALLET, USER_NAME, GAMES_PLAYED, WIN_X2, WIN_X3, WIN_X4, WIN_X10)
+            elif choice == 3:  # CHange name
                 clear_screen()
                 name_pick()
+            elif choice == 4:
                 save_game(USER_WALLET, USER_NAME, GAMES_PLAYED, WIN_X2, WIN_X3, WIN_X4, WIN_X10)
-            elif choice == 3:  # Save Game
-                clear_screen()
-                save_game(USER_WALLET, USER_NAME, GAMES_PLAYED, WIN_X2, WIN_X3, WIN_X4, WIN_X10)
-                print(f"{Colours.GREEN}Game saved successfully!{Colours.RESET}")
-                input("Press Enter to continue...")
-            elif choice == 4 or choice == -1:  # Quit
+            elif choice == 5 or choice == -1:  # Quit
                 clear_screen()
                 print(f"{Colours.RED}Thanks for playing! Goodbye!{Colours.RESET}")
                 exit()
