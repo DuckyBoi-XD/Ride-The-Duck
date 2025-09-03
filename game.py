@@ -3,6 +3,7 @@ import json
 import base64
 import os
 import codecs
+import random
 
 #linux + macos
 import sys
@@ -263,7 +264,7 @@ def arrow_menu(title, text, options):
                 x3_print = "ERROR"
                 x4_print = "ERROR"
                 x10_print = "ERROR"
-                
+
                 if MULTIPLIER["x2"] == 0:
                     x2_print = "Error"
                 elif MULTIPLIER["x2"] == 1:
@@ -434,9 +435,13 @@ def main_game():
 
             if choices == 0:
                 user_colour = 1
-                
             elif choices == 2:
                 user_colour = 2
+            
+            RedBlackCard = []
+            card_key, card_value = random.choice(list(CardDeck.items()))
+            RedBlackCard[card_key] = card_value
+            # choices = arrow_menu()
             
     except KeyboardInterrupt:
         print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
