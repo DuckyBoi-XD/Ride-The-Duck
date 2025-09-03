@@ -259,10 +259,10 @@ def arrow_menu(title, text, options):
             elif title == "game-main":
                 print(f"{Colours.BOLD}{Colours.BLUE}🏷️  RIDE THE DUCK - GAME 🏷️{Colours.RESET}\n")
 
-                x2_print = f"[{Colours.BOLD}{Colours.BG_WHITE} x2 {Colours.RESET}]"
-                x3_print = f"[{Colours.BOLD}{Colours.BG_WHITE} x3 {Colours.RESET}]"
-                x4_print = f"[{Colours.BOLD}{Colours.BG_WHITE} x4 {Colours.RESET}]"
-                x10_print = f"[{Colours.BOLD}{Colours.BG_WHITE} x10 {Colours.RESET}]"
+                x2_print = "ERROR"
+                x3_print = "ERROR"
+                x4_print = "ERROR"
+                x10_print = "ERROR"
                 
                 if MULTIPLIER["x2"] == 0:
                     x2_print = "Error"
