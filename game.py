@@ -27,13 +27,13 @@ class Colours:
     CYAN = '\033[96m'
     WHITE = '\033[97m'
     GOLD = '\033[38;5;220m'
-    BRIGHT_BLACK = "\033[90m"
     
     BG_RED = '\033[101m'
     BG_GREEN = '\033[102m'
     BG_YELLOW = '\033[103m'
     BG_BLUE = '\033[104m'
     BG_WHITE = '\033[107m'
+    BG_BLACK = '\033[40m'
     
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
@@ -443,15 +443,17 @@ def main_game():
             game_card[rb_key] = rb_value
             game_card_deck.pop(rb_key)
 
+            card_colour = "RED" if rb_key[1] in ("♦", "♥") else "BLACK" if rb_key[1] in ("♠", "♣") else "BLUE"
+
             if rb_key[0] in ("♠", "♣"):
                 rb_card = (
-                f"{Colours.BG_WHITE}{Colours.BOLD}{Colours.BRIGHT_BLACK}╭───────╮{Colours.RESET}\n"
-                f"{Colours.BG_WHITE}{Colours.BOLD}{Colours.BRIGHT_BLACK}│ {rb_key[0]}{rb_key[1]}    │{Colours.RESET}\n"
-                f"{Colours.BG_WHITE}{Colours.BOLD}{Colours.BRIGHT_BLACK}│       │{Colours.RESET}\n"
-                f"{Colours.BG_WHITE}{Colours.BOLD}{Colours.BRIGHT_BLACK}│       │{Colours.RESET}\n"
-                f"{Colours.BG_WHITE}{Colours.BOLD}{Colours.BRIGHT_BLACK}│       │{Colours.RESET}\n"
-                f"{Colours.BG_WHITE}{Colours.BOLD}{Colours.BRIGHT_BLACK}│    {rb_key[1]}{rb_key[0]} │{Colours.RESET}\n"
-                f"{Colours.BG_WHITE}{Colours.BOLD}{Colours.BRIGHT_BLACK}╰───────╯{Colours.RESET}")
+                f"{Colours.BOLD}{Colours.BLACK}╭───────╮{Colours.RESET}\n"
+                f"{Colours.BOLD}{Colours.BLACK}│{Colours.BG_WHITE} {rb_key[0]}{rb_key[1]}    {Colours.BG_BLACK}│{Colours.RESET}\n"
+                f"{Colours.BOLD}{Colours.BLACK}│{Colours.BG_WHITE}       {Colours.BG_BLACK}│{Colours.RESET}\n"
+                f"{Colours.BOLD}{Colours.BLACK}│{Colours.BG_WHITE}       │{Colours.RESET}\n"
+                f"{Colours.BOLD}{Colours.BLACK}│{Colours.BG_WHITE}       │{Colours.RESET}\n"
+                f"{Colours.BOLD}{Colours.BLACK}│{Colours.BG_WHITE}    {rb_key[1]}{rb_key[0]} │{Colours.RESET}\n"
+                f"{Colours.BOLD}{Colours.BLACK}╰───────╯{Colours.RESET}")
 
             elif rb_key[0] in ("♦", "♥"):
                 rb_card = (
@@ -465,13 +467,13 @@ def main_game():
             
             else:
                 rb_card = (
-                f"{Colours.BG_WHITE}{Colours.BOLD}{Colours.BRIGHT_BLACK}╭───────╮{Colours.RESET}\n"
-                f"{Colours.BG_WHITE}{Colours.BOLD}{Colours.BRIGHT_BLACK}│ {rb_key[0]}{rb_key[1]}    │{Colours.RESET}\n"
-                f"{Colours.BG_WHITE}{Colours.BOLD}{Colours.BRIGHT_BLACK}│       │{Colours.RESET}\n"
-                f"{Colours.BG_WHITE}{Colours.BOLD}{Colours.BRIGHT_BLACK}│       │{Colours.RESET}\n"
-                f"{Colours.BG_WHITE}{Colours.BOLD}{Colours.BRIGHT_BLACK}│       │{Colours.RESET}\n"
-                f"{Colours.BG_WHITE}{Colours.BOLD}{Colours.BRIGHT_BLACK}│    {rb_key[1]}{rb_key[0]} │{Colours.RESET}\n"
-                f"{Colours.BG_WHITE}{Colours.BOLD}{Colours.BRIGHT_BLACK}╰───────╯{Colours.RESET}")
+                f"{Colours.BG_WHITE}{Colours.BOLD}{Colours.BLACK}╭───────╮{Colours.RESET}\n"
+                f"{Colours.BG_WHITE}{Colours.BOLD}{Colours.BLACK}│ {rb_key[0]}{rb_key[1]}    │{Colours.RESET}\n"
+                f"{Colours.BG_WHITE}{Colours.BOLD}{Colours.BLACK}│       │{Colours.RESET}\n"
+                f"{Colours.BG_WHITE}{Colours.BOLD}{Colours.BLACK}│       │{Colours.RESET}\n"
+                f"{Colours.BG_WHITE}{Colours.BOLD}{Colours.BLACK}│       │{Colours.RESET}\n"
+                f"{Colours.BG_WHITE}{Colours.BOLD}{Colours.BLACK}│    {rb_key[1]}{rb_key[0]} │{Colours.RESET}\n"
+                f"{Colours.BG_WHITE}{Colours.BOLD}{Colours.BLACK}╰───────╯{Colours.RESET}")
 
             print(rb_card)
             print(" ")
