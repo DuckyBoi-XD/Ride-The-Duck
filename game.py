@@ -27,6 +27,7 @@ class Colours:
     CYAN = '\033[96m'
     WHITE = '\033[97m'
     GOLD = '\033[38;5;220m'
+    BRIGHT_BLACK = "\033[90m"
     
     BG_RED = '\033[101m'
     BG_GREEN = '\033[102m'
@@ -82,7 +83,7 @@ def decode_save(encoded_bytes):
     json_str = base64.b64decode(b64).decode('utf-8')
     return json_str
 
-def load_game(filename="savefile_RideTheDuck.json"): # access save file -JSON
+def load_game(filename="savefile_ridetheduck.json"): # access save file -JSON
     '''loading save file - returns both money and name'''
     try:
         with open(filename, "rb") as f: # reads file and places value "f"
@@ -105,7 +106,7 @@ def load_game(filename="savefile_RideTheDuck.json"): # access save file -JSON
         return 500, None, 0, 0, 0, 0, 0 # reset values
 
 def save_game(money, name, game_played=0,
-            win2=0, win3=0, win4=0, win10=0, filename="SaveFile_RideTheDuck.json"):
+            win2=0, win3=0, win4=0, win10=0, filename="savefile_ridetheduck.json"):
     '''saving game data'''
     data = {
         "money": money, 
@@ -125,10 +126,7 @@ def save_game(money, name, game_played=0,
 
 #----Variables----#
 USER_WALLET, USER_NAME, GAMES_PLAYED, WIN_X2, WIN_X3, WIN_X4, WIN_X10 = load_game()  # Load both money and name from save file
-CARD_SUITS = (f"{Colours.BLACK}♠{Colours.RESET}",
-            f"{Colours.RED}♦{Colours.RESET}",
-            f"{Colours.RED}♥{Colours.RESET}",
-            f"{Colours.BLACK}♣{Colours.RESET}") # creates suits for card deck creation
+CARD_SUITS = ("♠", "♦", "♥", "♣") # creates suits for card deck creation
 USER_NAME_KNOWLEDGE = False
 WINS_TOTAL = WIN_X2 + WIN_X3 + WIN_X4 + WIN_X10
 Confirm_Redo = ["✅ Confirm", "🔄 Redo"]
@@ -167,7 +165,7 @@ CardDeck = {}
 
 for suit in CARD_SUITS:
     for value_card in range(2, 11):
-        CardDeck[f"{suit}{value_card}"] = value_card
+        CardDeck[f"{value_card}{suit}"] = value_card
 
 for suit in CARD_SUITS:
     CardDeck[f"D{suit}"] = 11
@@ -433,7 +431,6 @@ def main_game():
         bet_check()
         if bet_confirm is True:
             choices = arrow_menu("game-main", (f"{Colours.CYAN}Pick a card colour{Colours.RESET}\n"), RedBlackPick)
-
             if choices == 0:
                 user_colour = 1
             elif choices == 2:
@@ -446,18 +443,40 @@ def main_game():
             game_card[rb_key] = rb_value
             game_card_deck.pop(rb_key)
 
-            RedBlack_card = (
-            "┌─────────┐\n"
-            f"│ {rb_key[0]}{rb_key[1]}      │\n"
-            "│         │\n"
-            "│         │\n"
-            "│    ♠    │\n"
-            "│         │\n"
-            "│         │\n"
-            "│      ♠A │\n"
-            "└─────────┘")
-            print(RedBlack_card)
+            if rb_key[0] in ("♠", "♣"):
+                rb_card = (
+                f"{Colours.BG_WHITE}{Colours.BOLD}{Colours.BRIGHT_BLACK}╭───────╮{Colours.RESET}\n"
+                f"{Colours.BG_WHITE}{Colours.BOLD}{Colours.BRIGHT_BLACK}│ {rb_key[0]}{rb_key[1]}    │{Colours.RESET}\n"
+                f"{Colours.BG_WHITE}{Colours.BOLD}{Colours.BRIGHT_BLACK}│       │{Colours.RESET}\n"
+                f"{Colours.BG_WHITE}{Colours.BOLD}{Colours.BRIGHT_BLACK}│       │{Colours.RESET}\n"
+                f"{Colours.BG_WHITE}{Colours.BOLD}{Colours.BRIGHT_BLACK}│       │{Colours.RESET}\n"
+                f"{Colours.BG_WHITE}{Colours.BOLD}{Colours.BRIGHT_BLACK}│    {rb_key[1]}{rb_key[0]} │{Colours.RESET}\n"
+                f"{Colours.BG_WHITE}{Colours.BOLD}{Colours.BRIGHT_BLACK}╰───────╯{Colours.RESET}")
+
+            elif rb_key[0] in ("♦", "♥"):
+                rb_card = (
+                f"{Colours.BG_WHITE}{Colours.BOLD}{Colours.RED}╭───────╮{Colours.RESET}\n"
+                f"{Colours.BG_WHITE}{Colours.BOLD}{Colours.RED}│ {rb_key[0]}{rb_key[1]}    │{Colours.RESET}\n"
+                f"{Colours.BG_WHITE}{Colours.BOLD}{Colours.RED}│       │{Colours.RESET}\n"
+                f"{Colours.BG_WHITE}{Colours.BOLD}{Colours.RED}│       │{Colours.RESET}\n"
+                f"{Colours.BG_WHITE}{Colours.BOLD}{Colours.RED}│       │{Colours.RESET}\n"
+                f"{Colours.BG_WHITE}{Colours.BOLD}{Colours.RED}│    {rb_key[1]}{rb_key[0]} │{Colours.RESET}\n"
+                f"{Colours.BG_WHITE}{Colours.BOLD}{Colours.RED}╰───────╯{Colours.RESET}")
+            
+            else:
+                rb_card = (
+                f"{Colours.BG_WHITE}{Colours.BOLD}{Colours.BRIGHT_BLACK}╭───────╮{Colours.RESET}\n"
+                f"{Colours.BG_WHITE}{Colours.BOLD}{Colours.BRIGHT_BLACK}│ {rb_key[0]}{rb_key[1]}    │{Colours.RESET}\n"
+                f"{Colours.BG_WHITE}{Colours.BOLD}{Colours.BRIGHT_BLACK}│       │{Colours.RESET}\n"
+                f"{Colours.BG_WHITE}{Colours.BOLD}{Colours.BRIGHT_BLACK}│       │{Colours.RESET}\n"
+                f"{Colours.BG_WHITE}{Colours.BOLD}{Colours.BRIGHT_BLACK}│       │{Colours.RESET}\n"
+                f"{Colours.BG_WHITE}{Colours.BOLD}{Colours.BRIGHT_BLACK}│    {rb_key[1]}{rb_key[0]} │{Colours.RESET}\n"
+                f"{Colours.BG_WHITE}{Colours.BOLD}{Colours.BRIGHT_BLACK}╰───────╯{Colours.RESET}")
+
+            print(rb_card)
+            print(" ")
             arrow_key()
+
             # choices = arrow_menu()
             
     except KeyboardInterrupt:
