@@ -436,46 +436,39 @@ def main_game():
             elif choices == 2:
                 user_colour = 2
             
-            game_card = {}
+            round = 1
+            game_card_1 = {}
             game_card_deck = CardDeck
 
-            rb_key, rb_value = random.choice(list(game_card_deck.items()))
-            game_card[rb_key] = rb_value
-            game_card_deck.pop(rb_key)
+            card_key, card_value = random.choice(list(game_card_deck.items()))
+            game_card_1[card_key] = card_value
+            game_card_deck.pop(card_key)
 
-            card_colour = "RED" if rb_key[1] in ("♦", "♥") else "BLACK" if rb_key[1] in ("♠", "♣") else "BLUE"
+            gc_rank_1 = card_key[:-1]
+            gc_suit_1 = card_key[-1]
+            gc_value_1 = card_value
 
-            if rb_key[0] in ("♠", "♣"):
-                rb_card = (
-                f"{Colours.BOLD}{Colours.BLACK}╭───────╮{Colours.RESET}\n"
-                f"{Colours.BOLD}{Colours.BLACK}│{Colours.BG_WHITE} {rb_key[0]}{rb_key[1]}    {Colours.BG_BLACK}│{Colours.RESET}\n"
-                f"{Colours.BOLD}{Colours.BLACK}│{Colours.BG_WHITE}       {Colours.BG_BLACK}│{Colours.RESET}\n"
-                f"{Colours.BOLD}{Colours.BLACK}│{Colours.BG_WHITE}       │{Colours.RESET}\n"
-                f"{Colours.BOLD}{Colours.BLACK}│{Colours.BG_WHITE}       │{Colours.RESET}\n"
-                f"{Colours.BOLD}{Colours.BLACK}│{Colours.BG_WHITE}    {rb_key[1]}{rb_key[0]} │{Colours.RESET}\n"
-                f"{Colours.BOLD}{Colours.BLACK}╰───────╯{Colours.RESET}")
+            card_colour = Colours.RED if gc_suit_1 in ("♦", "♥") else Colours.BLACK if gc_suit_1 in ("♠", "♣") else {Colours.BLACK}
 
-            elif rb_key[0] in ("♦", "♥"):
-                rb_card = (
-                f"{Colours.BG_WHITE}{Colours.BOLD}{Colours.RED}╭───────╮{Colours.RESET}\n"
-                f"{Colours.BG_WHITE}{Colours.BOLD}{Colours.RED}│ {rb_key[0]}{rb_key[1]}    │{Colours.RESET}\n"
-                f"{Colours.BG_WHITE}{Colours.BOLD}{Colours.RED}│       │{Colours.RESET}\n"
-                f"{Colours.BG_WHITE}{Colours.BOLD}{Colours.RED}│       │{Colours.RESET}\n"
-                f"{Colours.BG_WHITE}{Colours.BOLD}{Colours.RED}│       │{Colours.RESET}\n"
-                f"{Colours.BG_WHITE}{Colours.BOLD}{Colours.RED}│    {rb_key[1]}{rb_key[0]} │{Colours.RESET}\n"
-                f"{Colours.BG_WHITE}{Colours.BOLD}{Colours.RED}╰───────╯{Colours.RESET}")
+            rb_top = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}╭───────╮{Colours.RESET}"
+            rb_mid_top = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│ {gc_rank_1}     │{Colours.RESET}"
+            rb_top_mid = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│ {gc_value_1}     │{Colours.RESET}"
+            rb_mid = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│       │{Colours.RESET}"
+            rb_bottom_mid = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│     {gc_value_1} │{Colours.RESET}"
+            rb_mid_bottom = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│     {gc_rank_1} │{Colours.RESET}"
+            rb_bottom = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}╰───────╯{Colours.RESET}"
             
-            else:
-                rb_card = (
-                f"{Colours.BG_WHITE}{Colours.BOLD}{Colours.BLACK}╭───────╮{Colours.RESET}\n"
-                f"{Colours.BG_WHITE}{Colours.BOLD}{Colours.BLACK}│ {rb_key[0]}{rb_key[1]}    │{Colours.RESET}\n"
-                f"{Colours.BG_WHITE}{Colours.BOLD}{Colours.BLACK}│       │{Colours.RESET}\n"
-                f"{Colours.BG_WHITE}{Colours.BOLD}{Colours.BLACK}│       │{Colours.RESET}\n"
-                f"{Colours.BG_WHITE}{Colours.BOLD}{Colours.BLACK}│       │{Colours.RESET}\n"
-                f"{Colours.BG_WHITE}{Colours.BOLD}{Colours.BLACK}│    {rb_key[1]}{rb_key[0]} │{Colours.RESET}\n"
-                f"{Colours.BG_WHITE}{Colours.BOLD}{Colours.BLACK}╰───────╯{Colours.RESET}")
-
-            print(rb_card)
+            if gc_suit_1 is "10":
+                rb_top = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}╭───────╮{Colours.RESET}"
+                rb_mid_top = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│ {gc_rank_1}     │{Colours.RESET}"
+                rb_top_mid = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│  {gc_value_1}    │{Colours.RESET}"
+                rb_mid = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│       │{Colours.RESET}"
+                rb_bottom_mid = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│    {gc_value_1}  │{Colours.RESET}"
+                rb_mid_bottom = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│    {gc_rank_1} │{Colours.RESET}"
+                rb_bottom = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}╰───────╯{Colours.RESET}"
+            
+            print(rb_top)
+            
             print(" ")
             arrow_key()
 
