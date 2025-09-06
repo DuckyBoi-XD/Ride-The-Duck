@@ -18,23 +18,23 @@ import msvcrt
 #----Colours----#
 class Colours:
     '''colours for texts'''
-    BLACK = '\033[90m'
-    RED = '\033[91m'
-    GREEN = '\033[92m'
-    YELLOW = '\033[93m'
-    BLUE = '\033[94m'
-    MAGENTA = '\033[95m'
-    CYAN = '\033[96m'
-    WHITE = '\033[97m'
+    BLACK = '\033[38;5;0m'
+    RED = '\033[38;5;1m'
+    GREEN = '\033[38;5;2m'
+    YELLOW = '\033[38;5;3m'
+    BLUE = '\033[38;5;4m'
+    MAGENTA = '\033[38;5;5m'
+    CYAN = '\033[38;5;6m'
+    WHITE = '\033[38;5;7m'
     GOLD = '\033[38;5;220m'
     
-    BG_RED = '\033[101m'
-    BG_GREEN = '\033[102m'
-    BG_YELLOW = '\033[103m'
-    BG_BLUE = '\033[104m'
-    BG_WHITE = '\033[107m'
-    BG_BLACK = '\033[40m'
-    
+    BG_RED = '\033[48;5;196m'
+    BG_GREEN = '\033[48;5;46m'
+    BG_YELLOW = '\033[48;5;226m'
+    BG_BLUE = '\033[48;5;21m'
+    BG_WHITE = '\033[48;5;15m'
+    BG_BLACK = '\033[48;5;0m'
+
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
     ITALIC = '\033[3m'
@@ -44,10 +44,12 @@ class Colours:
 
 #----Save File Money----#
 
-def to_binary_str(s): # binary encoder
+def to_binary_str(s):
+    '''binary encoder'''
     return ''.join(format(ord(c), '08b') for c in s)
 
-def from_binary_str(b): # binary decoder
+def from_binary_str(b):
+    '''binary decoder'''
     # Validate binary string
     if len(b) % 8 != 0:
         raise ValueError("Binary string length must be divisible by 8")
@@ -267,38 +269,38 @@ def arrow_menu(title, text, options):
                 if MULTIPLIER["x2"] == 0:
                     x2_print = "Error"
                 elif MULTIPLIER["x2"] == 1:
-                    x2_print = f"[{Colours.BOLD}{Colours.BG_YELLOW} x2 {Colours.RESET}]"
+                    x2_print = f"[{Colours.BLACK}{Colours.BOLD}{Colours.BG_YELLOW} x2 {Colours.RESET}]"
                 elif MULTIPLIER["x2"] == 2:
-                    x2_print = f"[{Colours.BOLD}{Colours.BG_GREEN} x2 {Colours.RESET}]"
+                    x2_print = f"[{Colours.BLACK}{Colours.BOLD}{Colours.BG_GREEN} x2 {Colours.RESET}]"
                 elif MULTIPLIER["x2"] == 3:
-                    x2_print = f"[{Colours.BOLD}{Colours.BG_RED} x2 {Colours.RESET}]"
+                    x2_print = f"[{Colours.BLACK}{Colours.BOLD}{Colours.BG_RED} x2 {Colours.RESET}]"
 
                 if MULTIPLIER["x3"] == 0:
-                    x3_print = f"[{Colours.BOLD}{Colours.BG_WHITE} x3 {Colours.RESET}]"
+                    x3_print = f"[{Colours.BLACK}{Colours.BOLD}{Colours.BG_WHITE} x3 {Colours.RESET}]"
                 elif MULTIPLIER["x3"] == 1:
-                    x3_print = f"[{Colours.BOLD}{Colours.BG_YELLOW} x3 {Colours.RESET}]"
+                    x3_print = f"[{Colours.BLACK}{Colours.BOLD}{Colours.BG_YELLOW} x3 {Colours.RESET}]"
                 elif MULTIPLIER["x3"] == 2:
-                    x3_print = f"[{Colours.BOLD}{Colours.BG_GREEN} x3 {Colours.RESET}]"
+                    x3_print = f"[{Colours.BLACK}{Colours.BOLD}{Colours.BG_GREEN} x3 {Colours.RESET}]"
                 elif MULTIPLIER["x3"] == 3:
-                    x3_print = f"[{Colours.BOLD}{Colours.BG_RED} x3 {Colours.RESET}]"
+                    x3_print = f"[{Colours.BLACK}{Colours.BOLD}{Colours.BG_RED} x3 {Colours.RESET}]"
 
                 if MULTIPLIER["x4"] == 0:
-                    x4_print = f"[{Colours.BOLD}{Colours.BG_WHITE} x4 {Colours.RESET}]"
+                    x4_print = f"[{Colours.BLACK}{Colours.BOLD}{Colours.BG_WHITE} x4 {Colours.RESET}]"
                 elif MULTIPLIER["x4"] == 1:
-                    x4_print = f"[{Colours.BOLD}{Colours.BG_YELLOW} x4 {Colours.RESET}]"
+                    x4_print = f"[{Colours.BLACK}{Colours.BOLD}{Colours.BG_YELLOW} x4 {Colours.RESET}]"
                 elif MULTIPLIER["x4"] == 2:
-                    x4_print = f"[{Colours.BOLD}{Colours.BG_GREEN} x4 {Colours.RESET}]"
+                    x4_print = f"[{Colours.BLACK}{Colours.BOLD}{Colours.BG_GREEN} x4 {Colours.RESET}]"
                 elif MULTIPLIER["x4"] == 3:
-                    x4_print = f"[{Colours.BOLD}{Colours.BG_RED} x4 {Colours.RESET}]"
+                    x4_print = f"[{Colours.BLACK}{Colours.BOLD}{Colours.BG_RED} x4 {Colours.RESET}]"
 
                 if MULTIPLIER["x10"] == 0:
-                    x10_print = f"[{Colours.BOLD}{Colours.BG_WHITE} x10 {Colours.RESET}]"
+                    x10_print = f"[{Colours.BLACK}{Colours.BOLD}{Colours.BG_WHITE} x10 {Colours.RESET}]"
                 elif MULTIPLIER["x10"] == 1:
-                    x10_print = f"[{Colours.BOLD}{Colours.BG_YELLOW} x10 {Colours.RESET}]"
+                    x10_print = f"[{Colours.BLACK}{Colours.BOLD}{Colours.BG_YELLOW} x10 {Colours.RESET}]"
                 elif MULTIPLIER["x10"] == 2:
-                    x10_print = f"[{Colours.BOLD}{Colours.BG_GREEN} x10 {Colours.RESET}]"
+                    x10_print = f"[{Colours.BLACK}{Colours.BOLD}{Colours.BG_GREEN} x10 {Colours.RESET}]"
                 elif MULTIPLIER["x10"] == 3:
-                    x10_print = f"[{Colours.BOLD}{Colours.BG_RED} x10 {Colours.RESET}]"
+                    x10_print = f"[{Colours.BLACK}{Colours.BOLD}{Colours.BG_RED} x10 {Colours.RESET}]"
                 
                 print(x2_print, x3_print, x4_print, x10_print)
             LINE()
@@ -428,49 +430,77 @@ def main_game():
         "⬛ Black"
     ]
     try:
+        round = 1
         bet_check()
         if bet_confirm is True:
+
+            top = "    ", "    ", "    "
+            mid_top = "    ", "    ", "    "
+            top_mid =  "    ", "    ", "    "
+            mid ="    ", "    ", "    "
+            bottom_mid = "    ", "    ", "    "
+            mid_bottom = "    ", "    ", "    "
+            bottom = "    ", "    ", "    "
+
             choices = arrow_menu("game-main", (f"{Colours.CYAN}Pick a card colour{Colours.RESET}\n"), RedBlackPick)
             if choices == 0:
                 user_colour = 1
             elif choices == 2:
                 user_colour = 2
+
+            clear_screen()
             
-            round = 1
-            game_card_1 = {}
+            game_card_ = {}
+            game_card_[round] = {}
             game_card_deck = CardDeck
 
             card_key, card_value = random.choice(list(game_card_deck.items()))
-            game_card_1[card_key] = card_value
+            game_card_[round][card_key] = card_value
             game_card_deck.pop(card_key)
 
-            gc_rank_1 = card_key[:-1]
-            gc_suit_1 = card_key[-1]
-            gc_value_1 = card_value
+            gc_rank_ = {}
+            gc_suit_ = {}
+            gc_value_ = {}
 
-            card_colour = Colours.RED if gc_suit_1 in ("♦", "♥") else Colours.BLACK if gc_suit_1 in ("♠", "♣") else {Colours.BLACK}
+            gc_rank_[round] = card_key[:-1]
+            gc_suit_[round] = card_key[-1]
+            gc_value_[round] = card_value
+
+            card_colour = Colours.RED if gc_suit_[round] in ("♦", "♥") else Colours.BLACK if gc_suit_[round] in ("♠", "♣") else {Colours.BLACK}
+
 
             rb_top = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}╭───────╮{Colours.RESET}"
-            rb_mid_top = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│ {gc_rank_1}     │{Colours.RESET}"
-            rb_top_mid = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│ {gc_value_1}     │{Colours.RESET}"
+            rb_mid_top = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│ {gc_rank_[round]}     │{Colours.RESET}"
+            rb_top_mid = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│ {gc_suit_[round]}     │{Colours.RESET}"
             rb_mid = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│       │{Colours.RESET}"
-            rb_bottom_mid = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│     {gc_value_1} │{Colours.RESET}"
-            rb_mid_bottom = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│     {gc_rank_1} │{Colours.RESET}"
+            rb_bottom_mid = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│     {gc_suit_[round]} │{Colours.RESET}"
+            rb_mid_bottom = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│     {gc_rank_[round]} │{Colours.RESET}"
             rb_bottom = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}╰───────╯{Colours.RESET}"
-            
-            if gc_suit_1 is "10":
+                
+            if gc_value_[round] == 10:
                 rb_top = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}╭───────╮{Colours.RESET}"
-                rb_mid_top = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│ {gc_rank_1}     │{Colours.RESET}"
-                rb_top_mid = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│  {gc_value_1}    │{Colours.RESET}"
+                rb_mid_top = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│ {gc_rank_[round]}    │{Colours.RESET}"
+                rb_top_mid = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│ {gc_suit_[round]}     │{Colours.RESET}"
                 rb_mid = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│       │{Colours.RESET}"
-                rb_bottom_mid = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│    {gc_value_1}  │{Colours.RESET}"
-                rb_mid_bottom = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│    {gc_rank_1} │{Colours.RESET}"
+                rb_bottom_mid = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│     {gc_suit_[round]} │{Colours.RESET}"
+                rb_mid_bottom = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│    {gc_rank_[round]} │{Colours.RESET}"
                 rb_bottom = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}╰───────╯{Colours.RESET}"
             
-            print(rb_top)
-            
-            print(" ")
+            top = rb_top
+            mid_top = rb_mid_top
+            top_mid = rb_top_mid
+            mid = rb_mid
+            bottom_mid = rb_bottom_mid
+            mid_bottom = rb_mid_bottom
+            bottom = rb_bottom
+
+            card_output = (top, mid_top, top_mid, mid, bottom_mid, mid_bottom, bottom, "")
+
+            for line in card_output:
+                print(line)
             arrow_key()
+
+            ## choices = arrow_menu("game-main",)
 
             # choices = arrow_menu()
             
@@ -496,7 +526,7 @@ def main_menu():
             "✏️  Change Name",
             "💾 Save Game",
             "🚪 Quit Game"
-        ]   
+        ] 
         while True:
             clear_screen()  # Clear screen for smooth menu display
             
