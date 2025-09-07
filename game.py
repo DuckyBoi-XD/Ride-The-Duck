@@ -4,6 +4,7 @@ import base64
 import os
 import codecs
 import random
+import time
 
 #linux + macos
 import sys
@@ -160,6 +161,15 @@ def money_valid(money_value):
         return len(decimal_part) <= 2
     else:
         return True
+
+def print_tw(sentence, type_delay=0.01):
+    '''creates a type writer effect'''
+    for char in sentence:
+        sys.stdout.write(char)
+        sys.stdout.flush()
+        time.sleep(type_delay)
+    sys.stdout.write('\n')
+    sys.stdout.flush()
 #----Function Variables----#
 
 #----Card Deck----#
@@ -245,13 +255,49 @@ def arrow_key():
 #----Arrow Key Menu System----#
 def arrow_menu(title, text, options):
     """generic arrow key menu system"""
+    Win_Continue = [
+        "✅ Continue",
+        "💵 Cash Out"
+    ]
+    Lose_Continue = [
+        "🔄 Play Again",
+        "🎰 Menu"
+    ]
     try:
         selected = 0
-        
         while True:
             clear_screen()  # Clear screen for smooth animation
-
             LINE()
+            is_win_or_lose = "WinOrLose" in options
+            if is_win_or_lose:
+                if Win is True:
+                    options = Win_Continue
+                    if round == 1:
+                        MULTIPLIER["x2"] = 2
+                    elif round == 2:
+                        MULTIPLIER["x3"] = 2
+                    elif round == 3:
+                        MULTIPLIER["x4"] = 2
+                    elif round == 4:
+                        MULTIPLIER["x10"] = 2
+                elif Win is False:
+                    options = Lose_Continue
+                    if round == 1:
+                        MULTIPLIER["x2"] = 3
+                    elif round == 2:
+                        MULTIPLIER["x3"] = 3
+                    elif round == 3:
+                        MULTIPLIER["x4"] = 3
+                    elif round == 4:
+                        MULTIPLIER["x10"] = 3
+            
+            if is_win_or_lose:
+                print_tw("And the card is.......", 0.05)
+                time.sleep(1)
+                clear_screen()
+                clear_screen()
+                LINE()
+
             if title == "menu":
                 print(f"{Colours.BOLD}{Colours.BLUE}🎰 RIDE THE DUCK - MENU 🎰{Colours.RESET}")
             elif title == "name":
@@ -305,8 +351,17 @@ def arrow_menu(title, text, options):
                 print(x2_print, x3_print, x4_print, x10_print)
             LINE()
 
+            text_outcome = None
+            if is_win_or_lose:
+                if Win is True:
+                    text_outcome = f"\n{Colours.GREEN}🎉 Congratulations, you picked correct 🎉\n"
+                elif Win is False:
+                    text_outcome = f"\n{Colours.RED}❌ Hard luck, you picked wrong ❌\n"
+                text = text + text_outcome
+
             if text is not None:
                 print(text)
+                
             # Display menu options
             for i, option in enumerate(options):
                 if i == selected:
@@ -363,6 +418,7 @@ def start_game():
 #----Betting Check Function----#
 def bet_check():
     '''betting check'''
+    clear_screen()
     try:
         global user_bet
         global USER_WALLET
@@ -425,28 +481,46 @@ def bet_check():
 
 def main_game():
     '''ride the duck main game'''
+
+    CashOutPick = [
+        "✅ Continue",
+        "💵 Cash Out"
+    ]
     RedBlackPick = [
         "🟥 Red",
         "⬛ Black"
     ]
+    OverUnderPick = [
+        "⬆️ Over",
+        "⬇️ Under"
+    ]
+    InOutPick = [
+        "➡️⬅️ Inside",
+        "⬅️➡️ Outside"
+    ]
+    SuitPick = [
+        "♠️ Spades",
+        "♦️ Diamonds",
+        "♥️ Hearts",
+        "♣️ Clubs"
+    ]
     try:
-        round = 1
         bet_check()
+        global round
+        global bet_confirm
+        global Win
+        round = 1
+        Win = None
         if bet_confirm is True:
-
-            top = "    ", "    ", "    "
-            mid_top = "    ", "    ", "    "
-            top_mid =  "    ", "    ", "    "
-            mid ="    ", "    ", "    "
-            bottom_mid = "    ", "    ", "    "
-            mid_bottom = "    ", "    ", "    "
-            bottom = "    ", "    ", "    "
+            bet_confirm = False
 
             choices = arrow_menu("game-main", (f"{Colours.CYAN}Pick a card colour{Colours.RESET}\n"), RedBlackPick)
             if choices == 0:
                 user_colour = 1
             elif choices == 2:
                 user_colour = 2
+            else:
+                user_colour = 3
 
             clear_screen()
             
@@ -469,40 +543,54 @@ def main_game():
             card_colour = Colours.RED if gc_suit_[round] in ("♦", "♥") else Colours.BLACK if gc_suit_[round] in ("♠", "♣") else {Colours.BLACK}
 
 
-            rb_top = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}╭───────╮{Colours.RESET}"
-            rb_mid_top = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│ {gc_rank_[round]}     │{Colours.RESET}"
-            rb_top_mid = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│ {gc_suit_[round]}     │{Colours.RESET}"
+            rb_top = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}╭───────╮{Colours.RESET}    "
+            rb_mid_top = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│ {gc_rank_[round]}     │{Colours.RESET}    "
+            rb_top_mid = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│ {gc_suit_[round]}     │{Colours.RESET}    "
             rb_mid = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│       │{Colours.RESET}"
-            rb_bottom_mid = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│     {gc_suit_[round]} │{Colours.RESET}"
-            rb_mid_bottom = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│     {gc_rank_[round]} │{Colours.RESET}"
-            rb_bottom = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}╰───────╯{Colours.RESET}"
+            rb_bottom_mid = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│     {gc_suit_[round]} │{Colours.RESET}    "
+            rb_mid_bottom = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│     {gc_rank_[round]} │{Colours.RESET}    "
+            rb_bottom = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}╰───────╯{Colours.RESET}    "
                 
             if gc_value_[round] == 10:
-                rb_top = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}╭───────╮{Colours.RESET}"
-                rb_mid_top = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│ {gc_rank_[round]}    │{Colours.RESET}"
-                rb_top_mid = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│ {gc_suit_[round]}     │{Colours.RESET}"
-                rb_mid = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│       │{Colours.RESET}"
-                rb_bottom_mid = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│     {gc_suit_[round]} │{Colours.RESET}"
-                rb_mid_bottom = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│    {gc_rank_[round]} │{Colours.RESET}"
-                rb_bottom = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}╰───────╯{Colours.RESET}"
-            
-            top = rb_top
-            mid_top = rb_mid_top
-            top_mid = rb_top_mid
-            mid = rb_mid
-            bottom_mid = rb_bottom_mid
-            mid_bottom = rb_mid_bottom
-            bottom = rb_bottom
+                rb_top = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}╭───────╮{Colours.RESET}    "
+                rb_mid_top = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│ {gc_rank_[round]}    │{Colours.RESET}    "
+                rb_top_mid = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│ {gc_suit_[round]}     │{Colours.RESET}    "
+                rb_mid = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│       │{Colours.RESET}    "
+                rb_bottom_mid = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│     {gc_suit_[round]} │{Colours.RESET}    "
+                rb_mid_bottom = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│    {gc_rank_[round]} │{Colours.RESET}    "
+                rb_bottom = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}╰───────╯{Colours.RESET}    "
+
+            top = rb_top #+ ou_top + io_top + s_top
+            mid_top = rb_mid_top #+ ou_mid_top + io_mid_top + s_mid_top
+            top_mid = rb_top_mid #+ ou_top_mid + io_top_mid + s_top_mid
+            mid = rb_mid #+ ou_mid + io_mid + s_mid
+            bottom_mid = rb_bottom_mid #+ ou_bottom_mid + io_bottom_mid + s_bottom_mid
+            mid_bottom = rb_mid_bottom #+ ou_mid_bottom + io_mid_bottom + s_mid_bottom
+            bottom = rb_bottom #+ ou_bottom + io_bottom + s_bottom
 
             card_output = (top, mid_top, top_mid, mid, bottom_mid, mid_bottom, bottom, "")
 
-            for line in card_output:
-                print(line)
-            arrow_key()
+            if user_colour == 1 and gc_suit_[round] in ("♦", "♥") or user_colour == 2 and gc_suit_[round] in ("♠", "♣"):
+                Win = True
+            else:
+                Win = False
+                pass
 
-            ## choices = arrow_menu("game-main",)
+            choices = arrow_menu("game-main", "\n".join(card_output), ["WinOrLose"])
 
-            # choices = arrow_menu()
+            if Win is True:
+                if choices == 0:
+                    pass #### CONTINUE
+                elif choices == 1:
+                    pass #### CASH OUT
+            elif Win is False:
+                if choices == 0:
+                    pass #### Play again
+                elif choices == 1:
+                    pass #### menu
+
+
+
             
     except KeyboardInterrupt:
         print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
