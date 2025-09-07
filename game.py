@@ -517,7 +517,7 @@ def main_game():
             choices = arrow_menu("game-main", (f"{Colours.CYAN}Pick a card colour{Colours.RESET}\n"), RedBlackPick)
             if choices == 0:
                 user_colour = 1
-            elif choices == 2:
+            elif choices == 1:
                 user_colour = 2
             else:
                 user_colour = 3
