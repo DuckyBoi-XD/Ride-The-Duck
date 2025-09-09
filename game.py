@@ -108,9 +108,22 @@ def load_game(filename="savefile_ridetheduck.json"): # access save file -JSON
         print(f"Corrupted save file - using defaults. Error: {e}") # confirmation message
         return 500, None, 0, 0, 0, 0, 0 # reset values
 
-def save_game(money, name, game_played=0,
-            win2=0, win3=0, win4=0, win10=0, filename="savefile_ridetheduck.json"):
+def save_game(money=None, name=None, game_played=None, win2=None, win3=None, win4=None, win10=None, filename="savefile_ridetheduck.json"):
     '''saving game data'''
+    if money is None:
+        money = USER_WALLET
+    if name is None:
+        name = USER_NAME
+    if game_played is None:
+        game_played = GAMES_PLAYED
+    if win2 is None:
+        win2 = WIN_X2
+    if win3 is None:
+        win3 = WIN_X3
+    if win4 is None:
+        win4 = WIN_X4
+    if win10 is None:
+        win10 = WIN_X10
     data = {
         "money": money, 
         "name": name, 
@@ -481,7 +494,6 @@ def bet_check():
 
 def main_game():
     '''ride the duck main game'''
-
     CashOutPick = [
         "✅ Continue",
         "💵 Cash Out"
@@ -509,6 +521,10 @@ def main_game():
         global round
         global bet_confirm
         global Win
+        global USER_WALLET
+        global user_bet
+        global WIN_X2
+
         round = 1
         Win = None
         if bet_confirm is True:
@@ -543,38 +559,34 @@ def main_game():
             card_colour = Colours.RED if gc_suit_[round] in ("♦", "♥") else Colours.BLACK if gc_suit_[round] in ("♠", "♣") else {Colours.BLACK}
 
 
-            rb_top = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}╭───────╮{Colours.RESET}    "
-            rb_mid_top = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│ {gc_rank_[round]}     │{Colours.RESET}    "
-            rb_top_mid = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│ {gc_suit_[round]}     │{Colours.RESET}    "
-            rb_mid = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│       │{Colours.RESET}"
-            rb_bottom_mid = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│     {gc_suit_[round]} │{Colours.RESET}    "
-            rb_mid_bottom = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│     {gc_rank_[round]} │{Colours.RESET}    "
-            rb_bottom = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}╰───────╯{Colours.RESET}    "
+            rb_top = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}╭──────╮{Colours.RESET}    "
+            rb_mid_top = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│ {gc_rank_[round]}{gc_suit_[round]}   │{Colours.RESET}    "
+            rb_top_mid = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│      │{Colours.RESET}    "
+            rb_bottom_mid = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│      │{Colours.RESET}    "
+            rb_mid_bottom = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│   {gc_suit_[round]}{gc_rank_[round]} │{Colours.RESET}    "
+            rb_bottom = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}╰──────╯{Colours.RESET}    "
                 
             if gc_value_[round] == 10:
-                rb_top = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}╭───────╮{Colours.RESET}    "
-                rb_mid_top = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│ {gc_rank_[round]}    │{Colours.RESET}    "
-                rb_top_mid = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│ {gc_suit_[round]}     │{Colours.RESET}    "
-                rb_mid = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│       │{Colours.RESET}    "
-                rb_bottom_mid = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│     {gc_suit_[round]} │{Colours.RESET}    "
-                rb_mid_bottom = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│    {gc_rank_[round]} │{Colours.RESET}    "
-                rb_bottom = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}╰───────╯{Colours.RESET}    "
+                rb_top = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}╭──────╮{Colours.RESET}    "
+                rb_mid_top = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│ {gc_rank_[round]}{gc_suit_[round]}  │{Colours.RESET}    "
+                rb_top_mid = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│      │{Colours.RESET}    "
+                rb_bottom_mid = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│      │{Colours.RESET}    "
+                rb_mid_bottom = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│  {gc_suit_[round]}{gc_rank_[round]} │{Colours.RESET}    "
+                rb_bottom = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}╰──────╯{Colours.RESET}    "
 
             top = rb_top #+ ou_top + io_top + s_top
             mid_top = rb_mid_top #+ ou_mid_top + io_mid_top + s_mid_top
             top_mid = rb_top_mid #+ ou_top_mid + io_top_mid + s_top_mid
-            mid = rb_mid #+ ou_mid + io_mid + s_mid
             bottom_mid = rb_bottom_mid #+ ou_bottom_mid + io_bottom_mid + s_bottom_mid
             mid_bottom = rb_mid_bottom #+ ou_mid_bottom + io_mid_bottom + s_mid_bottom
             bottom = rb_bottom #+ ou_bottom + io_bottom + s_bottom
 
-            card_output = (top, mid_top, top_mid, mid, bottom_mid, mid_bottom, bottom, "")
+            card_output = (top, mid_top, top_mid, bottom_mid, mid_bottom, bottom, "")
 
             if user_colour == 1 and gc_suit_[round] in ("♦", "♥") or user_colour == 2 and gc_suit_[round] in ("♠", "♣"):
                 Win = True
             else:
                 Win = False
-                pass
 
             choices = arrow_menu("game-main", "\n".join(card_output), ["WinOrLose"])
 
@@ -582,12 +594,15 @@ def main_game():
                 if choices == 0:
                     pass #### CONTINUE
                 elif choices == 1:
-                    pass #### CASH OUT
+                    user_bet = float(user_bet) * 2
+                    USER_WALLET += float(user_bet)
+                    WIN_X2 += 1
+                    save_game()
             elif Win is False:
                 if choices == 0:
-                    pass #### Play again
+                    main_game()
                 elif choices == 1:
-                    pass #### menu
+                    pass
 
 
 
