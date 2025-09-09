@@ -148,6 +148,10 @@ WINS_TOTAL = WIN_X2 + WIN_X3 + WIN_X4 + WIN_X10
 Confirm_Redo = ["✅ Confirm", "🔄 Redo"]
 Confirm_Redo_Cancel = ["✅ Confirm", "🔄 Redo", "❌ Cancel"]
 MULTIPLIER = {"x2" : 1, "x3" : 0, "x4" : 0, "x10" : 0}
+user_bet = None
+bet_confirm = False
+Win = None
+game_round = 1
 #----Variables----#
 
 #----Function Variables----#
@@ -285,23 +289,23 @@ def arrow_menu(title, text, options):
             if is_win_or_lose:
                 if Win is True:
                     options = Win_Continue
-                    if round == 1:
+                    if game_round == 1:
                         MULTIPLIER["x2"] = 2
-                    elif round == 2:
+                    elif game_round == 2:
                         MULTIPLIER["x3"] = 2
-                    elif round == 3:
+                    elif game_round == 3:
                         MULTIPLIER["x4"] = 2
-                    elif round == 4:
+                    elif game_round == 4:
                         MULTIPLIER["x10"] = 2
                 elif Win is False:
                     options = Lose_Continue
-                    if round == 1:
+                    if game_round == 1:
                         MULTIPLIER["x2"] = 3
-                    elif round == 2:
+                    elif game_round == 2:
                         MULTIPLIER["x3"] = 3
-                    elif round == 3:
+                    elif game_round == 3:
                         MULTIPLIER["x4"] = 3
-                    elif round == 4:
+                    elif game_round == 4:
                         MULTIPLIER["x10"] = 3
             
             if is_win_or_lose:
@@ -490,56 +494,34 @@ def bet_check():
 
 #----Betting check Function----#
 
-#----Main Game----#
-
-def main_game():
-    '''ride the duck main game'''
-    CashOutPick = [
-        "✅ Continue",
-        "💵 Cash Out"
-    ]
-    RedBlackPick = [
-        "🟥 Red",
-        "⬛ Black"
-    ]
-    OverUnderPick = [
-        "⬆️ Over",
-        "⬇️ Under"
-    ]
-    InOutPick = [
-        "➡️⬅️ Inside",
-        "⬅️➡️ Outside"
-    ]
-    SuitPick = [
-        "♠️ Spades",
-        "♦️ Diamonds",
-        "♥️ Hearts",
-        "♣️ Clubs"
-    ]
+#----Red Black/Round 1----#
+def RedBlack_game():
+    '''Red black / round one'''
     try:
-        bet_check()
-        global round
+        global game_round
         global bet_confirm
         global Win
         global USER_WALLET
         global user_bet
         global WIN_X2
 
-        round = 1
+        game_round = 1
         Win = None
         if bet_confirm is True:
             bet_confirm = False
-
-            choices = arrow_menu("game-main", (f"{Colours.CYAN}Pick a card colour{Colours.RESET}\n"), RedBlackPick)
+            RedBlackOptions = [
+                "🟥 Red",
+                "⬛ Black"
+            ]
+            choices = arrow_menu("game-main", (f"{Colours.CYAN}Pick a card colour{Colours.RESET}\n"), RedBlackOptions)
             if choices == 0:
                 user_colour = 1
             elif choices == 1:
                 user_colour = 2
             else:
                 user_colour = 3
-
             clear_screen()
-            
+
             game_card_ = {}
             game_card_[round] = {}
             game_card_deck = CardDeck
@@ -603,10 +585,7 @@ def main_game():
                     main_game()
                 elif choices == 1:
                     pass
-
-
-
-            
+        
     except KeyboardInterrupt:
         print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
         exit()
@@ -614,7 +593,43 @@ def main_game():
         print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
         exit()
 
-#----Main Game----#              
+#----Red Black/Round 1----#
+
+#----Main Game----#
+
+def main_game():
+    '''ride the duck main game'''
+    CashOutPick = [
+        "✅ Continue",
+        "💵 Cash Out"
+    ]
+    RedBlackPick = [
+        "🟥 Red",
+        "⬛ Black"
+    ]
+    OverUnderPick = [
+        "⬆️ Over",
+        "⬇️ Under"
+    ]
+    InOutPick = [
+        "➡️⬅️ Inside",
+        "⬅️➡️ Outside"
+    ]
+    SuitPick = [
+        "♠️ Spades",
+        "♦️ Diamonds",
+        "♥️ Hearts",
+        "♣️ Clubs"
+    ]
+    
+    bet_check()
+    if bet_confirm is True:
+        RedBlack_game()
+    else:
+        pass
+        
+
+#----Main Game----#
 
 #----Main Game Function----#
 
@@ -664,6 +679,8 @@ def main_menu():
 #----Stats----#
 def show_stats():
     """Display player statistics"""
+    global WINS_TOTAL
+    WINS_TOTAL = WIN_X2 + WIN_X3 + WIN_X4 + WIN_X10
     try:
         clear_screen()
         LINE()
