@@ -504,6 +504,8 @@ def RedBlack_game():
         global USER_WALLET
         global user_bet
         global WIN_X2
+        global continue_game
+        global PlayOption
 
         game_round = 1
         Win = None
@@ -512,6 +514,10 @@ def RedBlack_game():
             RedBlackOptions = [
                 "🟥 Red",
                 "⬛ Black"
+            ]
+            PlayOptions = [
+            "🔄 Play Again",
+            "🎰 Menu"
             ]
             choices = arrow_menu("game-main", (f"{Colours.CYAN}Pick a card colour{Colours.RESET}\n"), RedBlackOptions)
             if choices == 0:
@@ -574,17 +580,25 @@ def RedBlack_game():
 
             if Win is True:
                 if choices == 0:
-                    pass #### CONTINUE
+                    continue_game = True
                 elif choices == 1:
                     user_bet = float(user_bet) * 2
                     USER_WALLET += float(user_bet)
                     WIN_X2 += 1
                     save_game()
+                    clear_screen()
+
+                    choices = arrow_menu(main_game, print(f"{Colours.GREEN}💰 YOU WON ${user_bet} 💰"), PlayOptions)
+                    if choices == 0:
+                        PlayOption = 1
+                    elif choices == 1:
+                        PlayOption = 2
+
             elif Win is False:
                 if choices == 0:
                     main_game()
                 elif choices == 1:
-                    pass
+                    return False
         
     except KeyboardInterrupt:
         print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
@@ -592,46 +606,9 @@ def RedBlack_game():
     except EOFError:
         print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
         exit()
-
 #----Red Black/Round 1----#
 
-#----Main Game----#
-
-def main_game():
-    '''ride the duck main game'''
-    CashOutPick = [
-        "✅ Continue",
-        "💵 Cash Out"
-    ]
-    RedBlackPick = [
-        "🟥 Red",
-        "⬛ Black"
-    ]
-    OverUnderPick = [
-        "⬆️ Over",
-        "⬇️ Under"
-    ]
-    InOutPick = [
-        "➡️⬅️ Inside",
-        "⬅️➡️ Outside"
-    ]
-    SuitPick = [
-        "♠️ Spades",
-        "♦️ Diamonds",
-        "♥️ Hearts",
-        "♣️ Clubs"
-    ]
-    
-    bet_check()
-    if bet_confirm is True:
-        RedBlack_game()
-    else:
-        pass
-        
-
-#----Main Game----#
-
-#----Main Game Function----#
+#----Over Under/Round 2
 
 #----Main Menu----#
 def main_menu():
@@ -738,7 +715,49 @@ def name_pick():
         exit()
 #----Name Function----#
 
-# Test the functions
+#----Main Game----#
+
+def main_game():
+    '''ride the duck main game'''
+    CashOutPick = [
+        "✅ Continue",
+        "💵 Cash Out"
+    ]
+    RedBlackPick = [
+        "🟥 Red",
+        "⬛ Black"
+    ]
+    OverUnderPick = [
+        "⬆️ Over",
+        "⬇️ Under"
+    ]
+    InOutPick = [
+        "➡️⬅️ Inside",
+        "⬅️➡️ Outside"
+    ]
+    SuitPick = [
+        "♠️ Spades",
+        "♦️ Diamonds",
+        "♥️ Hearts",
+        "♣️ Clubs"
+    ]
+    while True:
+        bet_check()
+        if bet_confirm is True:
+            RedBlack_game()
+            if continue_game is True:
+                pass
+            elif PlayOption is not None:
+                if PlayOption == 1:
+                    continue
+                elif PlayOption == 2:
+                    break
+        else:
+            pass
+        
+
+#----Main Game----#
+
 if __name__ == "__main__":
     clear_screen()
     start_game()
