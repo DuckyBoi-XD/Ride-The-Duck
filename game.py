@@ -154,6 +154,41 @@ Win = None
 game_round = 1
 continue_game = False
 PlayOption = 0
+gc_rank_ = {}
+gc_suit_ = {}
+gc_value_ = {}
+game_card_ = {}
+
+RedBlackOptions = [
+    "🟥 Red",
+    "⬛ Black"
+    ]
+PlayOptions = [
+    "🔄 Play Again",
+    "🎰 Menu"
+    ]
+Win_Continue = [
+    "✅ Continue",
+    "💵 Cash Out"
+    ]
+Lose_Continue = [
+    "🔄 Play Again",
+    "🎰 Menu"
+    ]
+OverUnderPick = [
+    "⬆️ Over",
+    "⬇️ Under"
+    ] 
+InOutPick = [
+    "➡️⬅️ Inside",
+    "⬅️➡️ Outside"
+    ]
+SuitPick = [
+    "♠️ Spades",
+    "♦️ Diamonds",
+    "♥️ Hearts",
+    "♣️ Clubs"
+    ]     
 #----Variables----#
 
 #----Function Variables----#
@@ -274,14 +309,6 @@ def arrow_key():
 #----Arrow Key Menu System----#
 def arrow_menu(title, text, options):
     """generic arrow key menu system"""
-    Win_Continue = [
-        "✅ Continue",
-        "💵 Cash Out"
-    ]
-    Lose_Continue = [
-        "🔄 Play Again",
-        "🎰 Menu"
-    ]
     try:
         selected = 0
         while True:
@@ -508,19 +535,12 @@ def RedBlack_game():
         global WIN_X2
         global continue_game
         global PlayOption
+        global game_card_deck
 
         game_round = 1
         Win = None
         if bet_confirm is True:
             bet_confirm = False
-            RedBlackOptions = [
-                "🟥 Red",
-                "⬛ Black"
-            ]
-            PlayOptions = [
-            "🔄 Play Again",
-            "🎰 Menu"
-            ]
             choices = arrow_menu("game-main", (f"{Colours.CYAN}Pick a card colour{Colours.RESET}\n"), RedBlackOptions)
             if choices == 0:
                 user_colour = 1
@@ -562,13 +582,6 @@ def RedBlack_game():
                 rb_top_mid = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│      │{Colours.RESET}    "
                 rb_bottom_mid = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│      │{Colours.RESET}    "
                 rb_mid_bottom = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│  {gc_suit_[round]}{gc_rank_[round]} │{Colours.RESET}    "
-                rb_bottom = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}╰──────╯{Colours.RESET}    "
-            elif gc_value_[round] == 11:
-                rb_top = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}╭──────╮{Colours.RESET}    "
-                rb_mid_top = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│ {Colours.GOLD}{gc_rank_[round]}{card_colour}{gc_suit_[round]}   │{Colours.RESET}    "
-                rb_top_mid = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│      │{Colours.RESET}    "
-                rb_bottom_mid = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│      │{Colours.RESET}    "
-                rb_mid_bottom = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│   {gc_suit_[round]}{gc_rank_[round]} │{Colours.RESET}    "
                 rb_bottom = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}╰──────╯{Colours.RESET}    "
 
             top = rb_top #+ ou_top + io_top + s_top
@@ -630,19 +643,11 @@ def OverUnder_game():
         global continue_game
         global PlayOption
 
-        game_round = 1
+        game_round = 2
         Win = None
         if bet_confirm is True:
             bet_confirm = False
-            OverUnderPick = [
-            "⬆️ Over",
-            "⬇️ Under"
-            ]
-            PlayOptions = [
-            "🔄 Play Again",
-            "🎰 Menu"
-            ]
-            choices = arrow_menu("game-main", (f"{Colours.CYAN}Pick over or under the previous card{Colours.RESET}\n"), OverUnder_game)
+            choices = arrow_menu("game-main", (f"{Colours.CYAN}Pick over or under the previous card{Colours.RESET}\n"), OverUnderPick)
             if choices == 0:
                 user_pick = 1
             elif choices == 1:
@@ -651,17 +656,11 @@ def OverUnder_game():
                 user_pick = 3
             clear_screen()
 
-            game_card_ = {}
             game_card_[round] = {}
-            game_card_deck = CardDeck
 
             card_key, card_value = random.choice(list(game_card_deck.items()))
             game_card_[round][card_key] = card_value
             game_card_deck.pop(card_key)
-
-            gc_rank_ = {}
-            gc_suit_ = {}
-            gc_value_ = {}
 
             gc_rank_[round] = card_key[:-1]
             gc_suit_[round] = card_key[-1]
@@ -683,13 +682,6 @@ def OverUnder_game():
                 rb_top_mid = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│      │{Colours.RESET}    "
                 rb_bottom_mid = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│      │{Colours.RESET}    "
                 rb_mid_bottom = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│  {gc_suit_[round]}{gc_rank_[round]} │{Colours.RESET}    "
-                rb_bottom = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}╰──────╯{Colours.RESET}    "
-            elif gc_value_[round] == 11:
-                rb_top = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}╭──────╮{Colours.RESET}    "
-                rb_mid_top = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│ {Colours.GOLD}{gc_rank_[round]}{card_colour}{gc_suit_[round]}   │{Colours.RESET}    "
-                rb_top_mid = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│      │{Colours.RESET}    "
-                rb_bottom_mid = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│      │{Colours.RESET}    "
-                rb_mid_bottom = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│   {gc_suit_[round]}{gc_rank_[round]} │{Colours.RESET}    "
                 rb_bottom = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}╰──────╯{Colours.RESET}    "
 
             top = rb_top #+ ou_top + io_top + s_top
@@ -850,20 +842,6 @@ def main_game():
 
     global continue_game
     global MULTIPLIER
-    CashOutPick = [
-        "✅ Continue",
-        "💵 Cash Out"
-    ]
-    InOutPick = [
-        "➡️⬅️ Inside",
-        "⬅️➡️ Outside"
-    ]
-    SuitPick = [
-        "♠️ Spades",
-        "♦️ Diamonds",
-        "♥️ Hearts",
-        "♣️ Clubs"
-    ]
     while True:
         bet_check()
         if bet_confirm is True:
