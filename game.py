@@ -154,12 +154,16 @@ Win = None
 game_round = 1
 continue_game = False
 PlayOption = 0
-gc_rank_ = {}
-gc_suit_ = {}
-gc_value_ = {}
-game_card_ = {}
+gc_rank = {}
+gc_suit = {}
+card_value_1 = {}
+card_value_2 = {}
+card_value_3 = {}
+card_value_4 = {}
+game_card = {}
+card_output = ""
 
-RedBlackOptions = [
+RedBlackPick = [
     "🟥 Red",
     "⬛ Black"
     ]
@@ -188,7 +192,14 @@ SuitPick = [
     "♦️ Diamonds",
     "♥️ Hearts",
     "♣️ Clubs"
-    ]     
+    ]
+
+top = ""
+mid_top = ""
+top_mid = ""
+bottom_mid = ""
+mid_bottom = ""
+bottom = ""
 #----Variables----#
 
 #----Function Variables----#
@@ -536,91 +547,86 @@ def RedBlack_game():
         global continue_game
         global PlayOption
         global game_card_deck
+        global top, mid_top, top_mid, bottom_mid, mid_bottom, bottom
+        global gc_rank, gc_suit, card_value_1
+        global card_output
 
         game_round = 1
         Win = None
-        if bet_confirm is True:
-            bet_confirm = False
-            choices = arrow_menu("game-main", (f"{Colours.CYAN}Pick a card colour{Colours.RESET}\n"), RedBlackOptions)
-            if choices == 0:
-                user_colour = 1
-            elif choices == 1:
-                user_colour = 2
-            else:
-                user_colour = 3
-            clear_screen()
 
-            game_card_ = {}
-            game_card_[round] = {}
-            game_card_deck = CardDeck
+        choices = arrow_menu("game-main", (f"{Colours.CYAN}Pick a card colour{Colours.RESET}\n"), RedBlackPick)
+        if choices == 0:
+            user_colour = 1
+        elif choices == 1:
+            user_colour = 2
+        else:
+            user_colour = 3
+        clear_screen()
 
-            card_key, card_value = random.choice(list(game_card_deck.items()))
-            game_card_[round][card_key] = card_value
-            game_card_deck.pop(card_key)
+        game_card_deck = CardDeck
 
-            gc_rank_ = {}
-            gc_suit_ = {}
-            gc_value_ = {}
+        card_key, card_value_1 = random.choice(list(game_card_deck.items()))
+        game_card[card_key] = card_value_1
+        game_card_deck.pop(card_key)
 
-            gc_rank_[round] = card_key[:-1]
-            gc_suit_[round] = card_key[-1]
-            gc_value_[round] = card_value
+        gc_rank = card_key[:-1]
+        gc_suit = card_key[-1]
 
-            card_colour = Colours.RED if gc_suit_[round] in ("♦", "♥") else Colours.BLACK if gc_suit_[round] in ("♠", "♣") else {Colours.BLACK}
+        card_colour = Colours.RED if gc_suit in ("♦", "♥") else Colours.BLACK if gc_suit in ("♠", "♣") else {Colours.BLACK}
 
 
+        rb_top = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}╭──────╮{Colours.RESET}    "
+        rb_mid_top = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│ {gc_rank}{gc_suit}   │{Colours.RESET}    "
+        rb_top_mid = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│      │{Colours.RESET}    "
+        rb_bottom_mid = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│      │{Colours.RESET}    "
+        rb_mid_bottom = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│   {gc_suit}{gc_rank} │{Colours.RESET}    "
+        rb_bottom = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}╰──────╯{Colours.RESET}    "
+            
+        if card_value_1 == 10:
             rb_top = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}╭──────╮{Colours.RESET}    "
-            rb_mid_top = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│ {gc_rank_[round]}{gc_suit_[round]}   │{Colours.RESET}    "
+            rb_mid_top = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│ {gc_rank}{gc_suit}  │{Colours.RESET}    "
             rb_top_mid = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│      │{Colours.RESET}    "
             rb_bottom_mid = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│      │{Colours.RESET}    "
-            rb_mid_bottom = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│   {gc_suit_[round]}{gc_rank_[round]} │{Colours.RESET}    "
+            rb_mid_bottom = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│  {gc_suit}{gc_rank} │{Colours.RESET}    "
             rb_bottom = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}╰──────╯{Colours.RESET}    "
-                
-            if gc_value_[round] == 10:
-                rb_top = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}╭──────╮{Colours.RESET}    "
-                rb_mid_top = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│ {gc_rank_[round]}{gc_suit_[round]}  │{Colours.RESET}    "
-                rb_top_mid = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│      │{Colours.RESET}    "
-                rb_bottom_mid = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│      │{Colours.RESET}    "
-                rb_mid_bottom = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│  {gc_suit_[round]}{gc_rank_[round]} │{Colours.RESET}    "
-                rb_bottom = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}╰──────╯{Colours.RESET}    "
 
-            top = rb_top #+ ou_top + io_top + s_top
-            mid_top = rb_mid_top #+ ou_mid_top + io_mid_top + s_mid_top
-            top_mid = rb_top_mid #+ ou_top_mid + io_top_mid + s_top_mid
-            bottom_mid = rb_bottom_mid #+ ou_bottom_mid + io_bottom_mid + s_bottom_mid
-            mid_bottom = rb_mid_bottom #+ ou_mid_bottom + io_mid_bottom + s_mid_bottom
-            bottom = rb_bottom #+ ou_bottom + io_bottom + s_bottom
+        top = rb_top
+        mid_top = rb_mid_top
+        top_mid = rb_top_mid
+        bottom_mid = rb_bottom_mid
+        mid_bottom = rb_mid_bottom
+        bottom = rb_bottom
 
-            card_output = (top, mid_top, top_mid, bottom_mid, mid_bottom, bottom, "")
+        card_output = (top, mid_top, top_mid, bottom_mid, mid_bottom, bottom, "")
 
-            if user_colour == 1 and gc_suit_[round] in ("♦", "♥") or user_colour == 2 and gc_suit_[round] in ("♠", "♣"):
-                Win = True
-            else:
-                Win = False
+        if user_colour == 1 and gc_suit in ("♦", "♥") or user_colour == 2 and gc_suit in ("♠", "♣"):
+            Win = True
+        else:
+            Win = False
 
-            choices = arrow_menu("game-main", "\n".join(card_output), ["WinOrLose"])
+        choices = arrow_menu("game-main", "\n".join(card_output), ["WinOrLose"])
 
-            if Win is True:
-                if choices == 0:
-                    continue_game = True
-                elif choices == 1:
-                    user_bet = float(user_bet) * 2
-                    USER_WALLET += float(user_bet)
-                    WIN_X2 += 1
-                    save_game()
-                    clear_screen()
+        if Win is True:
+            if choices == 0:
+                continue_game = True
+            elif choices == 1:
+                user_bet = float(user_bet) * 2
+                USER_WALLET += float(user_bet)
+                WIN_X2 += 1
+                save_game()
+                clear_screen()
 
-                    choices = arrow_menu("game-main", f"{Colours.GREEN}💰 YOU WON ${user_bet} 💰{Colours.RESET}\n", PlayOptions)
-                    if choices == 0:
-                        PlayOption = 1
-                    elif choices == 1:
-                        PlayOption = 2
-
-            elif Win is False:
+                choices = arrow_menu("game-main", f"{Colours.GREEN}💰 YOU WON ${user_bet} 💰{Colours.RESET}\n", PlayOptions)
                 if choices == 0:
                     PlayOption = 1
                 elif choices == 1:
                     PlayOption = 2
+
+        elif Win is False:
+            if choices == 0:
+                PlayOption = 1
+            elif choices == 1:
+                PlayOption = 2
         
     except KeyboardInterrupt:
         print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
@@ -632,96 +638,107 @@ def RedBlack_game():
 
 #----Over Under/Round 2----#
 def OverUnder_game():
-    '''Red black / round one'''
+    '''Over Under / round one'''
     try:
         global game_round
         global bet_confirm
         global Win
         global USER_WALLET
         global user_bet
-        global WIN_X2
+        global WIN_X3
         global continue_game
         global PlayOption
+        global game_card_deck
+        global top, mid_top, top_mid, bottom_mid, mid_bottom, bottom
+        global gc_rank, gc_suit, card_value_2
+        global card_output
 
+        WIN_X3 = 1
         game_round = 2
         Win = None
-        if bet_confirm is True:
-            bet_confirm = False
-            choices = arrow_menu("game-main", (f"{Colours.CYAN}Pick over or under the previous card{Colours.RESET}\n"), OverUnderPick)
+        choices = arrow_menu("game-main", (f"{Colours.CYAN}Pick over or under{Colours.RESET}\n\n"+"\n".join(card_output)), OverUnderPick)
+        if choices == 0:
+            ou_pick = "over"
+        elif choices == 1:
+            ou_pick = "under"
+        else:
+            ou_pick = "error"
+        clear_screen()
+
+        game_card_deck = CardDeck
+
+        card_key, card_value_2 = random.choice(list(game_card_deck.items()))
+        game_card[card_key] = card_value_2
+        game_card_deck.pop(card_key)
+
+        gc_rank = card_key[:-1]
+        gc_suit = card_key[-1]
+
+        card_colour = Colours.RED if gc_suit in ("♦", "♥") else Colours.BLACK if gc_suit in ("♠", "♣") else {Colours.BLACK}
+
+
+        ou_top = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}╭──────╮{Colours.RESET}    "
+        ou_mid_top = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│ {gc_rank}{gc_suit}   │{Colours.RESET}    "
+        ou_top_mid = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│      │{Colours.RESET}    "
+        ou_bottom_mid = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│      │{Colours.RESET}    "
+        ou_mid_bottom = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│   {gc_suit}{gc_rank} │{Colours.RESET}    "
+        ou_bottom = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}╰──────╯{Colours.RESET}    "
+            
+        if card_value_2 == 10:
+            ou_top = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}╭──────╮{Colours.RESET}    "
+            ou_mid_top = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│ {gc_rank}{gc_suit}  │{Colours.RESET}    "
+            ou_top_mid = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│      │{Colours.RESET}    "
+            ou_bottom_mid = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│      │{Colours.RESET}    "
+            ou_mid_bottom = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│  {gc_suit}{gc_rank} │{Colours.RESET}    "
+            ou_bottom = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}╰──────╯{Colours.RESET}    "
+
+        top += ou_top #+ io_top + s_top
+        mid_top += ou_mid_top #+ io_mid_top + s_mid_top
+        top_mid += ou_top_mid #+ io_top_mid + s_top_mid
+        bottom_mid += ou_bottom_mid #+ io_bottom_mid + s_bottom_mid
+        mid_bottom += ou_mid_bottom #+ io_mid_bottom + s_mid_bottom
+        bottom += ou_bottom #+ io_bottom + s_bottom
+
+        card_output = (top, mid_top, top_mid, bottom_mid, mid_bottom, bottom, "")
+
+        if int(card_value_1) > int(card_value_2):
+            ou_output = "Over"
+        elif int(card_value_1) < int(card_value_2):
+            ou_output = "Under"
+        elif int(card_value_1) == int(card_value_2):
+            ou_output = "Equal"
+        else:
+            ou_output = "error"
+
+        if ou_output == ou_pick:
+            Win = True
+        if ou_output != ou_pick:
+            Win = False
+
+        choices = arrow_menu("game-main", "\n".join(card_output), ["WinOrLose"])
+
+        if Win is True:
             if choices == 0:
-                user_pick = 1
+                continue_game = True
             elif choices == 1:
-                user_pick = 2
-            else:
-                user_pick = 3
-            clear_screen()
+                user_bet = float(user_bet) * 3
+                USER_WALLET += float(user_bet)
+                WIN_X3 += 1
+                save_game()
+                clear_screen()
 
-            game_card_[round] = {}
-
-            card_key, card_value = random.choice(list(game_card_deck.items()))
-            game_card_[round][card_key] = card_value
-            game_card_deck.pop(card_key)
-
-            gc_rank_[round] = card_key[:-1]
-            gc_suit_[round] = card_key[-1]
-            gc_value_[round] = card_value
-
-            card_colour = Colours.RED if gc_suit_[round] in ("♦", "♥") else Colours.BLACK if gc_suit_[round] in ("♠", "♣") else {Colours.BLACK}
-
-
-            rb_top = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}╭──────╮{Colours.RESET}    "
-            rb_mid_top = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│ {gc_rank_[round]}{gc_suit_[round]}   │{Colours.RESET}    "
-            rb_top_mid = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│      │{Colours.RESET}    "
-            rb_bottom_mid = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│      │{Colours.RESET}    "
-            rb_mid_bottom = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│   {gc_suit_[round]}{gc_rank_[round]} │{Colours.RESET}    "
-            rb_bottom = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}╰──────╯{Colours.RESET}    "
-                
-            if gc_value_[round] == 10:
-                rb_top = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}╭──────╮{Colours.RESET}    "
-                rb_mid_top = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│ {gc_rank_[round]}{gc_suit_[round]}  │{Colours.RESET}    "
-                rb_top_mid = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│      │{Colours.RESET}    "
-                rb_bottom_mid = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│      │{Colours.RESET}    "
-                rb_mid_bottom = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│  {gc_suit_[round]}{gc_rank_[round]} │{Colours.RESET}    "
-                rb_bottom = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}╰──────╯{Colours.RESET}    "
-
-            top = rb_top #+ ou_top + io_top + s_top
-            mid_top = rb_mid_top #+ ou_mid_top + io_mid_top + s_mid_top
-            top_mid = rb_top_mid #+ ou_top_mid + io_top_mid + s_top_mid
-            bottom_mid = rb_bottom_mid #+ ou_bottom_mid + io_bottom_mid + s_bottom_mid
-            mid_bottom = rb_mid_bottom #+ ou_mid_bottom + io_mid_bottom + s_mid_bottom
-            bottom = rb_bottom #+ ou_bottom + io_bottom + s_bottom
-
-            card_output = (top, mid_top, top_mid, bottom_mid, mid_bottom, bottom, "")
-
-            if user_pick == 1 and gc_suit_[round] in ("♦", "♥") or user_pick == 2 and gc_suit_[round] in ("♠", "♣"):
-                Win = True
-            else:
-                Win = False
-
-            choices = arrow_menu("game-main", "\n".join(card_output), ["WinOrLose"])
-
-            if Win is True:
-                if choices == 0:
-                    continue_game = True
-                elif choices == 1:
-                    user_bet = float(user_bet) * 2
-                    USER_WALLET += float(user_bet)
-                    WIN_X2 += 1
-                    save_game()
-                    clear_screen()
-
-                    choices = arrow_menu("game-main", f"{Colours.GREEN}💰 YOU WON ${user_bet} 💰{Colours.RESET}\n", PlayOptions)
-                    if choices == 0:
-                        PlayOption = 1
-                    elif choices == 1:
-                        PlayOption = 2
-
-            elif Win is False:
+                choices = arrow_menu("game-main", f"{Colours.GREEN}💰 YOU WON ${user_bet} 💰{Colours.RESET}\n", PlayOptions)
                 if choices == 0:
                     PlayOption = 1
                 elif choices == 1:
                     PlayOption = 2
-        
+
+        elif Win is False:
+            if choices == 0:
+                PlayOption = 1
+            elif choices == 1:
+                PlayOption = 2
+
     except KeyboardInterrupt:
         print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
         exit()
@@ -842,15 +859,26 @@ def main_game():
 
     global continue_game
     global MULTIPLIER
+    global bet_confirm
     while True:
+        MULTIPLIER = {"x2" : 1, "x3" : 0, "x4" : 0, "x10" : 0}
         bet_check()
         if bet_confirm is True:
+            bet_confirm = False
             RedBlack_game()
             if continue_game is True:
                 continue_game = False
-                #CONTINUING GAME
+                OverUnder_game()
+                if continue_game is True:
+                    continue_game = False
+                    # continue game
+                elif PlayOption is not None:
+                    save_game()
+                    if PlayOption == 1:
+                        continue
+                    elif PlayOption == 2:
+                        break
             elif PlayOption is not None:
-                MULTIPLIER = {"x2" : 1, "x3" : 0, "x4" : 0, "x10" : 0}
                 save_game()
                 if PlayOption == 1:
                     continue
