@@ -184,8 +184,8 @@ OverUnderPick = [
     "⬇️ Under"
     ] 
 InOutPick = [
-    "➡️⬅️ Inside",
-    "⬅️➡️ Outside"
+    "➡️ ⬅️ Inside",
+    "⬅️ ➡️ Outside"
     ]
 SuitPick = [
     "♠️ Spades",
@@ -543,7 +543,6 @@ def RedBlack_game():
         global Win
         global USER_WALLET
         global user_bet
-        global WIN_X2
         global continue_game
         global PlayOption
         global game_card_deck
@@ -612,7 +611,6 @@ def RedBlack_game():
             elif choices == 1:
                 user_bet = float(user_bet) * 2
                 USER_WALLET += float(user_bet)
-                WIN_X2 += 1
                 save_game()
                 clear_screen()
 
@@ -645,7 +643,6 @@ def OverUnder_game():
         global Win
         global USER_WALLET
         global user_bet
-        global WIN_X3
         global continue_game
         global PlayOption
         global game_card_deck
@@ -722,7 +719,6 @@ def OverUnder_game():
             elif choices == 1:
                 user_bet = float(user_bet) * 3
                 USER_WALLET += float(user_bet)
-                WIN_X3 += 1
                 save_game()
                 clear_screen()
 
@@ -745,6 +741,126 @@ def OverUnder_game():
         print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
         exit()
 #----Over Under/Round 2----#
+
+#----In Out/Round 3----#
+def InOut_game():
+    '''Over Under / round one'''
+    try:
+        global game_round
+        global bet_confirm
+        global Win
+        global USER_WALLET
+        global user_bet
+        global continue_game
+        global PlayOption
+        global game_card_deck
+        global top, mid_top, top_mid, bottom_mid, mid_bottom, bottom
+        global gc_rank, gc_suit, card_value_3
+        global card_output
+
+        io_output = ""
+        game_round = 3
+        MULTIPLIER["x4"] = 1
+        Win = None
+        choices = arrow_menu("game-main", "\n".join(card_output) + (f"\n{Colours.CYAN}Pick inside or outsite{Colours.RESET}\n"), InOutPick)
+        if choices == 0:
+            io_pick = "inside"
+        elif choices == 1:
+            io_pick = "outside"
+        else:
+            io_pick = "error"
+        clear_screen()
+
+        game_card_deck = CardDeck
+
+        card_key, card_value_3 = random.choice(list(game_card_deck.items()))
+        game_card[card_key] = card_value_3
+        game_card_deck.pop(card_key)
+
+        gc_rank = card_key[:-1]
+        gc_suit = card_key[-1]
+
+        card_colour = Colours.RED if gc_suit in ("♦", "♥") else Colours.BLACK if gc_suit in ("♠", "♣") else {Colours.BLACK}
+
+
+        io_top = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}╭──────╮{Colours.RESET}  "
+        io_mid_top = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│ {gc_rank}{gc_suit}   │{Colours.RESET}  "
+        io_top_mid = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│      │{Colours.RESET}  "
+        io_bottom_mid = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│      │{Colours.RESET}  "
+        io_mid_bottom = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│   {gc_suit}{gc_rank} │{Colours.RESET}  "
+        io_bottom = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}╰──────╯{Colours.RESET}  "
+            
+        if card_value_2 == 10:
+            io_top = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}╭──────╮{Colours.RESET}  "
+            io_mid_top = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│ {gc_rank}{gc_suit}  │{Colours.RESET}  "
+            io_top_mid = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│      │{Colours.RESET}  "
+            io_bottom_mid = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│      │{Colours.RESET}  "
+            io_mid_bottom = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│  {gc_suit}{gc_rank} │{Colours.RESET}  "
+            io_bottom = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}╰──────╯{Colours.RESET}  "
+
+        top += io_top #+ s_top
+        mid_top += io_mid_top #+ s_mid_top
+        top_mid += io_top_mid #+ s_top_mid
+        bottom_mid += io_bottom_mid #+ s_bottom_mid
+        mid_bottom += io_mid_bottom #+ s_mid_bottom
+        bottom += io_bottom #+ s_bottom
+
+        card_output = (top, mid_top, top_mid, bottom_mid, mid_bottom, bottom, "")
+
+        if int(card_value_1) > int(card_value_2):
+            if int(card_value_3) < int(card_value_1) and int(card_value_3) > int(card_value_2):
+                io_output = "inside"
+            elif int(card_value_3) > int(card_value_1) or int(card_value_3) < int(card_value_2):
+                io_output = "outside"
+            elif int(card_value_3) == int(card_value_1) or int(card_value_3) == int(card_value_2):
+                io_output = "equal"
+            else:
+                io_output = "error"
+
+        if int(card_value_1) < int(card_value_2):
+            if int(card_value_3) < int(card_value_2) and int(card_value_3) > int(card_value_1):
+                io_output = "inside"
+            elif int(card_value_3) < int(card_value_1) or int(card_value_3) > int(card_value_2):
+                io_output = "outside"
+            elif int(card_value_3) == int(card_value_1) or int(card_value_3) == int(card_value_2):
+                io_output = "equal"
+            else:
+                io_output = "error"
+
+        if io_output == io_pick:
+            Win = True
+        else:
+            Win = False
+        choices = arrow_menu("game-main", "\n".join(card_output), ["WinOrLose"])
+
+        if Win is True:
+            if choices == 0:
+                continue_game = True
+            elif choices == 1:
+                user_bet = float(user_bet) * 4
+                USER_WALLET += float(user_bet)
+                save_game()
+                clear_screen()
+
+                choices = arrow_menu("game-main", f"{Colours.GREEN}💰 YOU WON ${user_bet} 💰{Colours.RESET}\n", PlayOptions)
+                if choices == 0:
+                    PlayOption = 1
+                elif choices == 1:
+                    PlayOption = 2
+
+        elif Win is False:
+            if choices == 0:
+                PlayOption = 1
+            elif choices == 1:
+                PlayOption = 2
+
+    except KeyboardInterrupt:
+        print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
+        exit()
+    except EOFError:
+        print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
+        exit()
+#----In Out/Round 3----#
 
 #----Main Menu----#
 def main_menu():
@@ -870,7 +986,16 @@ def main_game():
                 OverUnder_game()
                 if continue_game is True:
                     continue_game = False
-                    # continue game
+                    InOut_game()
+                    if continue_game is True:
+                        continue_game = False
+                        # continue game
+                    elif PlayOption is not None:
+                        save_game()
+                        if PlayOption == 1:
+                            continue
+                        elif PlayOption == 2:
+                            break
                 elif PlayOption is not None:
                     save_game()
                     if PlayOption == 1:
