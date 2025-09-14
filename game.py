@@ -100,7 +100,7 @@ def load_game(filename="savefile_ridetheduck.json"): # access save file -JSON
                     data.get("x2 Wins", 0),
                     data.get("x3 Wins", 0),
                     data.get("x4 Wins", 0),
-                    data.get("x10 Wins", 0))
+                    data.get("x20 Wins", 0))
     except FileNotFoundError: # New player detection
         print("New player - no save file found") # confirmation message
         return 500, None, 0, 0, 0, 0, 0 # starting items
@@ -108,7 +108,7 @@ def load_game(filename="savefile_ridetheduck.json"): # access save file -JSON
         print(f"Corrupted save file - using defaults. Error: {e}") # confirmation message
         return 500, None, 0, 0, 0, 0, 0 # reset values
 
-def save_game(money=None, name=None, game_played=None, win2=None, win3=None, win4=None, win10=None, filename="savefile_ridetheduck.json"):
+def save_game(money=None, name=None, game_played=None, win2=None, win3=None, win4=None, win20=None, filename="savefile_ridetheduck.json"):
     '''saving game data'''
     if money is None:
         money = USER_WALLET
@@ -122,8 +122,8 @@ def save_game(money=None, name=None, game_played=None, win2=None, win3=None, win
         win3 = WIN_X3
     if win4 is None:
         win4 = WIN_X4
-    if win10 is None:
-        win10 = WIN_X10
+    if win20 is None:
+        win20 = WIN_X20
     data = {
         "money": money, 
         "name": name, 
@@ -131,7 +131,7 @@ def save_game(money=None, name=None, game_played=None, win2=None, win3=None, win
         "x2 Wins": win2, 
         "x3 Wins": win3, 
         "x4 Wins": win4, 
-        "x10 Wins": win10
+        "x20 Wins": win20
     }
     json_str = json.dumps(data) # turns into "data" value
     encoded_bytes = encode_save(json_str) # grabs the encoded data
@@ -141,13 +141,13 @@ def save_game(money=None, name=None, game_played=None, win2=None, win3=None, win
 #----Save File Money----#
 
 #----Variables----#
-USER_WALLET, USER_NAME, GAMES_PLAYED, WIN_X2, WIN_X3, WIN_X4, WIN_X10 = load_game()  # Load both money and name from save file
+USER_WALLET, USER_NAME, GAMES_PLAYED, WIN_X2, WIN_X3, WIN_X4, WIN_X20 = load_game()  # Load both money and name from save file
 CARD_SUITS = ("♠", "♦", "♥", "♣") # creates suits for card deck creation
 USER_NAME_KNOWLEDGE = False
-WINS_TOTAL = WIN_X2 + WIN_X3 + WIN_X4 + WIN_X10
+WINS_TOTAL = WIN_X2 + WIN_X3 + WIN_X4 + WIN_X20
 Confirm_Redo = ["✅ Confirm", "🔄 Redo"]
 Confirm_Redo_Cancel = ["✅ Confirm", "🔄 Redo", "❌ Cancel"]
-MULTIPLIER = {"x2" : 1, "x3" : 0, "x4" : 0, "x10" : 0}
+MULTIPLIER = {"x2" : 1, "x3" : 0, "x4" : 0, "x20" : 0}
 user_bet = None
 bet_confirm = False
 Win = None
@@ -336,7 +336,7 @@ def arrow_menu(title, text, options):
                     elif game_round == 3:
                         MULTIPLIER["x4"] = 2
                     elif game_round == 4:
-                        MULTIPLIER["x10"] = 2
+                        MULTIPLIER["x20"] = 2
                 elif Win is False:
                     options = Lose_Continue
                     if game_round == 1:
@@ -346,7 +346,7 @@ def arrow_menu(title, text, options):
                     elif game_round == 3:
                         MULTIPLIER["x4"] = 3
                     elif game_round == 4:
-                        MULTIPLIER["x10"] = 3
+                        MULTIPLIER["x20"] = 3
             
             if is_win_or_lose:
                 print_tw("And the card is.......", 0.05)
@@ -367,7 +367,7 @@ def arrow_menu(title, text, options):
                 x2_print = "ERROR"
                 x3_print = "ERROR"
                 x4_print = "ERROR"
-                x10_print = "ERROR"
+                x20_print = "ERROR"
 
                 if MULTIPLIER["x2"] == 0:
                     x2_print = "Error"
@@ -396,16 +396,16 @@ def arrow_menu(title, text, options):
                 elif MULTIPLIER["x4"] == 3:
                     x4_print = f"[{Colours.BLACK}{Colours.BOLD}{Colours.BG_RED} x4 {Colours.RESET}]"
 
-                if MULTIPLIER["x10"] == 0:
-                    x10_print = f"[{Colours.BLACK}{Colours.BOLD}{Colours.BG_WHITE} x10 {Colours.RESET}]"
-                elif MULTIPLIER["x10"] == 1:
-                    x10_print = f"[{Colours.BLACK}{Colours.BOLD}{Colours.BG_YELLOW} x10 {Colours.RESET}]"
-                elif MULTIPLIER["x10"] == 2:
-                    x10_print = f"[{Colours.BLACK}{Colours.BOLD}{Colours.BG_GREEN} x10 {Colours.RESET}]"
-                elif MULTIPLIER["x10"] == 3:
-                    x10_print = f"[{Colours.BLACK}{Colours.BOLD}{Colours.BG_RED} x10 {Colours.RESET}]"
+                if MULTIPLIER["x20"] == 0:
+                    x20_print = f"[{Colours.BLACK}{Colours.BOLD}{Colours.BG_WHITE} x20 {Colours.RESET}]"
+                elif MULTIPLIER["x20"] == 1:
+                    x20_print = f"[{Colours.BLACK}{Colours.BOLD}{Colours.BG_YELLOW} x20 {Colours.RESET}]"
+                elif MULTIPLIER["x20"] == 2:
+                    x20_print = f"[{Colours.BLACK}{Colours.BOLD}{Colours.BG_GREEN} x20 {Colours.RESET}]"
+                elif MULTIPLIER["x20"] == 3:
+                    x20_print = f"[{Colours.BLACK}{Colours.BOLD}{Colours.BG_RED} x20 {Colours.RESET}]"
                 
-                print(x2_print, x3_print, x4_print, x10_print)
+                print(x2_print, x3_print, x4_print, x20_print)
             LINE()
 
             text_outcome = None
@@ -772,12 +772,12 @@ def main_menu():
             elif choice == 2:  # tips
                 clear_screen()
                 pass ### NOT DONEEEEEEEEE
-                save_game(USER_WALLET, USER_NAME, GAMES_PLAYED, WIN_X2, WIN_X3, WIN_X4, WIN_X10)
+                save_game(USER_WALLET, USER_NAME, GAMES_PLAYED, WIN_X2, WIN_X3, WIN_X4, WIN_X20)
             elif choice == 3:  # CHange name
                 clear_screen()
                 name_pick()
             elif choice == 4:
-                save_game(USER_WALLET, USER_NAME, GAMES_PLAYED, WIN_X2, WIN_X3, WIN_X4, WIN_X10)
+                save_game(USER_WALLET, USER_NAME, GAMES_PLAYED, WIN_X2, WIN_X3, WIN_X4, WIN_X20)
             elif choice == 5 or choice == -1:  # Quit
                 clear_screen()
                 print(f"{Colours.RED}Thanks for playing! Goodbye!{Colours.RESET}")
@@ -794,7 +794,7 @@ def main_menu():
 def show_stats():
     """Display player statistics"""
     global WINS_TOTAL
-    WINS_TOTAL = WIN_X2 + WIN_X3 + WIN_X4 + WIN_X10
+    WINS_TOTAL = WIN_X2 + WIN_X3 + WIN_X4 + WIN_X20
     try:
         clear_screen()
         LINE()
@@ -807,7 +807,7 @@ def show_stats():
             f"{Colours.GOLD}🏆 x2 Wins: {WIN_X2}{Colours.RESET}\n"
             f"{Colours.GOLD}🏆 x3 Wins: {WIN_X3}{Colours.RESET}\n"
             f"{Colours.GOLD}🏆 x4 Wins: {WIN_X4}{Colours.RESET}\n"
-            f"{Colours.GOLD}🏆 x10 Wins: {WIN_X10}{Colours.RESET}"
+            f"{Colours.GOLD}🏆 x20 Wins: {WIN_X20}{Colours.RESET}"
 
         )
         LINE()
@@ -861,7 +861,7 @@ def main_game():
     global MULTIPLIER
     global bet_confirm
     while True:
-        MULTIPLIER = {"x2" : 1, "x3" : 0, "x4" : 0, "x10" : 0}
+        MULTIPLIER = {"x2" : 1, "x3" : 0, "x4" : 0, "x20" : 0}
         bet_check()
         if bet_confirm is True:
             bet_confirm = False
@@ -895,6 +895,6 @@ if __name__ == "__main__":
     start_game()
     if USER_NAME is None:
         name_pick()
-    save_game(USER_WALLET, USER_NAME, GAMES_PLAYED, WIN_X2, WIN_X3, WIN_X4, WIN_X10)
+    save_game(USER_WALLET, USER_NAME, GAMES_PLAYED, WIN_X2, WIN_X3, WIN_X4, WIN_X20)
     
     main_menu()
