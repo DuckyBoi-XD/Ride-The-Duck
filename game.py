@@ -575,20 +575,20 @@ def RedBlack_game():
         card_colour = Colours.RED if gc_suit in ("♦", "♥") else Colours.BLACK if gc_suit in ("♠", "♣") else {Colours.BLACK}
 
 
-        rb_top = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}╭──────╮{Colours.RESET}    "
-        rb_mid_top = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│ {gc_rank}{gc_suit}   │{Colours.RESET}    "
-        rb_top_mid = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│      │{Colours.RESET}    "
-        rb_bottom_mid = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│      │{Colours.RESET}    "
-        rb_mid_bottom = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│   {gc_suit}{gc_rank} │{Colours.RESET}    "
-        rb_bottom = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}╰──────╯{Colours.RESET}    "
+        rb_top = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}╭──────╮{Colours.RESET}  "
+        rb_mid_top = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│ {gc_rank}{gc_suit}   │{Colours.RESET}  "
+        rb_top_mid = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│      │{Colours.RESET}  "
+        rb_bottom_mid = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│      │{Colours.RESET}  "
+        rb_mid_bottom = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│   {gc_suit}{gc_rank} │{Colours.RESET}  "
+        rb_bottom = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}╰──────╯{Colours.RESET}  "
             
         if card_value_1 == 10:
-            rb_top = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}╭──────╮{Colours.RESET}    "
-            rb_mid_top = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│ {gc_rank}{gc_suit}  │{Colours.RESET}    "
-            rb_top_mid = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│      │{Colours.RESET}    "
-            rb_bottom_mid = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│      │{Colours.RESET}    "
-            rb_mid_bottom = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│  {gc_suit}{gc_rank} │{Colours.RESET}    "
-            rb_bottom = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}╰──────╯{Colours.RESET}    "
+            rb_top = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}╭──────╮{Colours.RESET}  "
+            rb_mid_top = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│ {gc_rank}{gc_suit}  │{Colours.RESET}  "
+            rb_top_mid = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│      │{Colours.RESET}  "
+            rb_bottom_mid = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│      │{Colours.RESET}  "
+            rb_mid_bottom = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│  {gc_suit}{gc_rank} │{Colours.RESET}  "
+            rb_bottom = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}╰──────╯{Colours.RESET}  "
 
         top = rb_top
         mid_top = rb_mid_top
@@ -653,10 +653,10 @@ def OverUnder_game():
         global gc_rank, gc_suit, card_value_2
         global card_output
 
-        WIN_X3 = 1
         game_round = 2
+        MULTIPLIER["x3"] = 1
         Win = None
-        choices = arrow_menu("game-main", (f"{Colours.CYAN}Pick over or under{Colours.RESET}\n\n"+"\n".join(card_output)), OverUnderPick)
+        choices = arrow_menu("game-main", "\n".join(card_output) + (f"\n{Colours.CYAN}Pick over or under{Colours.RESET}\n"), OverUnderPick)
         if choices == 0:
             ou_pick = "over"
         elif choices == 1:
@@ -677,20 +677,20 @@ def OverUnder_game():
         card_colour = Colours.RED if gc_suit in ("♦", "♥") else Colours.BLACK if gc_suit in ("♠", "♣") else {Colours.BLACK}
 
 
-        ou_top = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}╭──────╮{Colours.RESET}    "
-        ou_mid_top = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│ {gc_rank}{gc_suit}   │{Colours.RESET}    "
-        ou_top_mid = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│      │{Colours.RESET}    "
-        ou_bottom_mid = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│      │{Colours.RESET}    "
-        ou_mid_bottom = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│   {gc_suit}{gc_rank} │{Colours.RESET}    "
-        ou_bottom = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}╰──────╯{Colours.RESET}    "
+        ou_top = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}╭──────╮{Colours.RESET}  "
+        ou_mid_top = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│ {gc_rank}{gc_suit}   │{Colours.RESET}  "
+        ou_top_mid = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│      │{Colours.RESET}  "
+        ou_bottom_mid = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│      │{Colours.RESET}  "
+        ou_mid_bottom = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│   {gc_suit}{gc_rank} │{Colours.RESET}  "
+        ou_bottom = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}╰──────╯{Colours.RESET}  "
             
         if card_value_2 == 10:
-            ou_top = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}╭──────╮{Colours.RESET}    "
-            ou_mid_top = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│ {gc_rank}{gc_suit}  │{Colours.RESET}    "
-            ou_top_mid = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│      │{Colours.RESET}    "
-            ou_bottom_mid = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│      │{Colours.RESET}    "
-            ou_mid_bottom = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│  {gc_suit}{gc_rank} │{Colours.RESET}    "
-            ou_bottom = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}╰──────╯{Colours.RESET}    "
+            ou_top = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}╭──────╮{Colours.RESET}  "
+            ou_mid_top = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│ {gc_rank}{gc_suit}  │{Colours.RESET}  "
+            ou_top_mid = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│      │{Colours.RESET}  "
+            ou_bottom_mid = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│      │{Colours.RESET}  "
+            ou_mid_bottom = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}│  {gc_suit}{gc_rank} │{Colours.RESET}  "
+            ou_bottom = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}╰──────╯{Colours.RESET}  "
 
         top += ou_top #+ io_top + s_top
         mid_top += ou_mid_top #+ io_mid_top + s_mid_top
@@ -701,20 +701,19 @@ def OverUnder_game():
 
         card_output = (top, mid_top, top_mid, bottom_mid, mid_bottom, bottom, "")
 
-        if int(card_value_1) > int(card_value_2):
-            ou_output = "Over"
-        elif int(card_value_1) < int(card_value_2):
-            ou_output = "Under"
+        if int(card_value_2) > int(card_value_1):
+            ou_output = "over"
+        elif int(card_value_2) < int(card_value_1):
+            ou_output = "under"
         elif int(card_value_1) == int(card_value_2):
-            ou_output = "Equal"
+            ou_output = "equal"
         else:
             ou_output = "error"
 
         if ou_output == ou_pick:
             Win = True
-        if ou_output != ou_pick:
+        else:
             Win = False
-
         choices = arrow_menu("game-main", "\n".join(card_output), ["WinOrLose"])
 
         if Win is True:
