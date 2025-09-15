@@ -405,7 +405,7 @@ def arrow_menu(title, text, options):
                 elif MULTIPLIER["x20"] == 3:
                     x20_print = f"[{Colours.BLACK}{Colours.BOLD}{Colours.BG_RED} x20 {Colours.RESET}]"
                 
-                print(x2_print, x3_print, x4_print, x20_print)
+                print(x2_print, x3_print, x4_print, x20_print, f"{Colours.YELLOW}💵 BET: {user_bet}{Colours.RESET}")
             LINE()
 
             text_outcome = None
@@ -1107,11 +1107,15 @@ def main_game():
     global continue_game
     global MULTIPLIER
     global bet_confirm
+    global GAMES_PLAYED
+
+    #if USER_WALLET <= 0:  
     while True:
         MULTIPLIER = {"x2" : 1, "x3" : 0, "x4" : 0, "x20" : 0}
         bet_check()
         if bet_confirm is True:
             bet_confirm = False
+            GAMES_PLAYED += 1
             RedBlack_game()
 
             if continue_game is True:
