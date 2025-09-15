@@ -817,20 +817,18 @@ def InOut_game():
                 io_output = "inside"
             elif int(card_value_3) > int(card_value_1) or int(card_value_3) < int(card_value_2):
                 io_output = "outside"
-            elif int(card_value_3) == int(card_value_1) or int(card_value_3) == int(card_value_2):
-                io_output = "equal"
-            else:
-                io_output = "error"
 
-        if int(card_value_1) < int(card_value_2):
+        elif int(card_value_1) < int(card_value_2):
             if int(card_value_3) < int(card_value_2) and int(card_value_3) > int(card_value_1):
                 io_output = "inside"
             elif int(card_value_3) < int(card_value_1) or int(card_value_3) > int(card_value_2):
                 io_output = "outside"
-            elif int(card_value_3) == int(card_value_1) or int(card_value_3) == int(card_value_2):
+
+        elif int(card_value_3) == int(card_value_1) or int(card_value_3) == int(card_value_2):
                 io_output = "equal"
-            else:
-                io_output = "error"
+
+        else:
+            io_output = "error"
 
         if io_output == io_pick:
             Win = True
@@ -885,7 +883,6 @@ def Suits_game():
         global card_output
         global WIN_X20
 
-        s_output = ""
         game_round = 4
         MULTIPLIER["x20"] = 1
         Win = None
@@ -938,30 +935,17 @@ def Suits_game():
 
         card_output = (top, mid_top, top_mid, bottom_mid, mid_bottom, bottom, "")
 
-        if int(card_value_1) > int(card_value_2):
-            if int(card_value_3) < int(card_value_1) and int(card_value_3) > int(card_value_2):
-                s_output = "inside"
-            elif int(card_value_3) > int(card_value_1) or int(card_value_3) < int(card_value_2):
-                s_output = "outside"
-            elif int(card_value_3) == int(card_value_1) or int(card_value_3) == int(card_value_2):
-                s_output = "equal"
-            else:
-                s_output = "error"
-
-        if int(card_value_1) < int(card_value_2):
-            if int(card_value_3) < int(card_value_2) and int(card_value_3) > int(card_value_1):
-                s_output = "inside"
-            elif int(card_value_3) < int(card_value_1) or int(card_value_3) > int(card_value_2):
-                s_output = "outside"
-            elif int(card_value_3) == int(card_value_1) or int(card_value_3) == int(card_value_2):
-                s_output = "equal"
-            else:
-                s_output = "error"
-
-        if s_output == s_pick:
+        if s_pick == "clubs" and gc_suit == "♣":
+            Win = True
+        elif s_pick == "diamonds" and gc_suit == "♦":
+            Win = True
+        elif s_pick == "hearts" and gc_suit == "♥":
+            Win = True
+        elif s_pick == "spades" and gc_suit == "♠":
             Win = True
         else:
             Win = False
+
         choices = arrow_menu("game-main", "\n".join(card_output), ["WinOrLose"])
 
         if Win is True:
