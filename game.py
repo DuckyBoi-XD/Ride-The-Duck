@@ -162,6 +162,7 @@ card_value_3 = {}
 card_value_4 = {}
 game_card = {}
 card_output = ""
+bet_amount = None
 
 RedBlackPick = [
     "🟥 Red",
@@ -193,6 +194,10 @@ SuitPick = [
     "♥️ Hearts",
     "♣️ Clubs"
     ]
+CashOut = [
+    "💵 Cash Out & 🔄 Play Again",
+    "💵 Cash Out"
+]
 
 top = ""
 mid_top = ""
@@ -328,7 +333,6 @@ def arrow_menu(title, text, options):
             is_win_or_lose = "WinOrLose" in options
             if is_win_or_lose:
                 if Win is True:
-                    options = Win_Continue
                     if game_round == 1:
                         MULTIPLIER["x2"] = 2
                     elif game_round == 2:
@@ -337,6 +341,10 @@ def arrow_menu(title, text, options):
                         MULTIPLIER["x4"] = 2
                     elif game_round == 4:
                         MULTIPLIER["x20"] = 2
+                    if game_round == 4:
+                        options = CashOut
+                    else:
+                        options = Win_Continue
                 elif Win is False:
                     options = Lose_Continue
                     if game_round == 1:
@@ -405,7 +413,7 @@ def arrow_menu(title, text, options):
                 elif MULTIPLIER["x20"] == 3:
                     x20_print = f"[{Colours.BLACK}{Colours.BOLD}{Colours.BG_RED} x20 {Colours.RESET}]"
                 
-                print(x2_print, x3_print, x4_print, x20_print, f"{Colours.YELLOW}💵 BET: {user_bet}{Colours.RESET}")
+                print(x2_print, x3_print, x4_print, x20_print, f"{Colours.YELLOW}💵 BET: ${bet_amount}{Colours.RESET}")
             LINE()
 
             text_outcome = None
@@ -480,6 +488,7 @@ def bet_check():
         global user_bet
         global USER_WALLET
         global bet_confirm
+        global bet_amount
         bet_error = 0
         user_bet = None
         bet_confirm = False
@@ -510,6 +519,7 @@ def bet_check():
                             clear_screen()
                             bet_confirm = True
                             USER_WALLET -= float(user_bet)
+                            bet_amount = float(user_bet)
                             break
                         elif choices == 1:
                             clear_screen()
@@ -950,7 +960,11 @@ def Suits_game():
 
         if Win is True:
             if choices == 0:
-                continue_game = True
+                user_bet = float(user_bet) * 20
+                USER_WALLET += float(user_bet)
+                WIN_X20 += 1
+                save_game()
+                clear_screen()
             elif choices == 1:
                 user_bet = float(user_bet) * 20
                 USER_WALLET += float(user_bet)
@@ -960,9 +974,9 @@ def Suits_game():
 
                 choices = arrow_menu("game-main", f"{Colours.GREEN}💰 YOU WON ${user_bet} 💰{Colours.RESET}\n", PlayOptions)
                 if choices == 0:
-                    PlayOption = 1
+                    PlayOption = 1 # cash out 
                 elif choices == 1:
-                    PlayOption = 2
+                    PlayOption = 2 # cash out and play again
 
         elif Win is False:
             if choices == 0:
@@ -1114,11 +1128,8 @@ def main_game():
                         continue_game = False
                         Suits_game()
 
-                        if continue_game is True:
-                            continue_game = False
-                        elif PlayOption is not None:
+                        if PlayOption is not None:
                             save_game()
-
                             if PlayOption == 1:
                                 continue
                             elif PlayOption == 2:
