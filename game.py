@@ -974,7 +974,7 @@ def Suits_game():
 
                 choices = arrow_menu("game-main", f"{Colours.GREEN}💰 YOU WON ${user_bet} 💰{Colours.RESET}\n", PlayOptions)
                 if choices == 0:
-                    PlayOption = 1 # cash out 
+                    PlayOption = 1 # cash out
                 elif choices == 1:
                     PlayOption = 2 # cash out and play again
 
@@ -992,41 +992,102 @@ def Suits_game():
         exit()
 #----Suit/Round 4----#
 
+#----Help----#
+def help_game():
+    """help information function"""
+    try:
+        clear_screen()
+        LINE()
+        print(f"{Colours.BOLD}{Colours.BLUE}🏷️  RIDE THE DUCK - HELP 🏷️{Colours.RESET}")
+        LINE()
+
+        print(f"{Colours.YELLOW}\"Ride The Duck\" is based of the drinking game \"Ride THe Bus\" ane structured like the game in Schedule 1.\n\n{Colours.RESET}" \
+            f"{Colours.CYAN}In the game, there are 4 rounds, each round giving you a better output multiplier\n\n{Colours.RESET}" \
+            f"The first round is guessing the {Colours.BOLD}colour{Colours.RESET} of the next card"
+            f"which in return give a {Colours.BOLD}2x multiplier{Colours.RESET}\n" \
+            f"The second round is guessing if the next card would be {Colours.BOLD}over or under{Colours.RESET} "
+            f"the first card which in return give a {Colours.BOLD}3x multiplier{Colours.RESET}" \
+            f"The third round is guessing if the next card will appear {Colours.BOLD}between or inside{Colours.RESET} "
+            f"the first and second card which in return give a {Colours.BOLD}3x multiplier{Colours.RESET}" \
+            f"The forth round is guessing the {Colours.BOLD}suit{Colours.RESET} card of the next card which in return give a "
+            f"{Colours.BOLD}20x multiplier{Colours.RESET}\n\n" \
+            f"The Jack cards are also replaced by Ducks"
+        )
+        LINE()
+        arrow_key()
+    except KeyboardInterrupt:
+        print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
+        exit()
+    except EOFError:
+        print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
+        exit()
+
+#----Help----#
+
+#----Out Of Money----#
+
+def lose_game():
+    """Function to output the last message after loosing all your money"""
+    try:
+        LINE()
+        print(f"{Colours.BOLD}{Colours.BLUE}🏷️  RIDE THE DUCK - END 🏷️{Colours.RESET}")
+        LINE()
+        print(f"{Colours.BOLD}{Colours.CYAN}Stats{Colours.RESET}\n\n"
+            f"{Colours.GREEN}💰 Money: ${USER_WALLET}{Colours.RESET}\n"
+            f"{Colours.YELLOW}🏷️  Name: {USER_NAME}{Colours.RESET}\n"
+            f"{Colours.CYAN}🎮 Games Played: {GAMES_PLAYED}{Colours.RESET}\n"
+            f"{Colours.GOLD}🏆 Wins Toal: {WINS_TOTAL}{Colours.RESET}\n"
+            f"{Colours.GOLD}🏆 x2 Wins: {WIN_X2}{Colours.RESET}\n"
+            f"{Colours.GOLD}🏆 x3 Wins: {WIN_X3}{Colours.RESET}\n"
+            f"{Colours.GOLD}🏆 x4 Wins: {WIN_X4}{Colours.RESET}\n"
+            f"{Colours.GOLD}🏆 x20 Wins: {WIN_X20}{Colours.RESET}")
+        
+    except KeyboardInterrupt:
+        print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
+        exit()
+    except EOFError:
+        print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
+        exit()
+#----Out Of Money----#
+
 #----Main Menu----#
 def main_menu():
     """Main game menu with arrow navigation"""
     try:
-        options = [
-            "🎮 Play Ride the Duck",
-            "📊 View Statistics",
-            "❓ Help", 
-            "✏️  Change Name",
-            "💾 Save Game",
-            "🚪 Quit Game"
-        ]
-        while True:
-            clear_screen()  # Clear screen for smooth menu display
-            
-            choice = arrow_menu("menu", None, options)
-            
-            if choice == 0:  # Play Game
-                clear_screen()
-                main_game()
-            elif choice == 1:  # View Stats
-                show_stats()
-            elif choice == 2:  # tips
-                clear_screen()
-                pass ### NOT DONEEEEEEEEE
-                save_game(USER_WALLET, USER_NAME, GAMES_PLAYED, WIN_X2, WIN_X3, WIN_X4, WIN_X20)
-            elif choice == 3:  # CHange name
-                clear_screen()
-                name_pick()
-            elif choice == 4:
-                save_game(USER_WALLET, USER_NAME, GAMES_PLAYED, WIN_X2, WIN_X3, WIN_X4, WIN_X20)
-            elif choice == 5 or choice == -1:  # Quit
-                clear_screen()
-                print(f"{Colours.RED}Thanks for playing! Goodbye!{Colours.RESET}")
-                exit()
+        if USER_WALLET <= 0:
+            lose_game()
+        else:
+            options = [
+                "🎮 Play Ride the Duck",
+                "📊 View Statistics",
+                "❓ Help", 
+                "✏️  Change Name",
+                "💾 Save Game",
+                "🚪 Quit Game"
+            ]
+            while True:
+                clear_screen()  # Clear screen for smooth menu display
+                
+                choice = arrow_menu("menu", None, options)
+                
+                if choice == 0:  # Play Game
+                    clear_screen()
+                    main_game()
+                elif choice == 1:  # View Stats
+                    clear_screen()
+                    show_stats()
+                elif choice == 2:  # tips
+                    clear_screen()
+                    help_game()
+                elif choice == 3:  # CHange name
+                    clear_screen()
+                    name_pick()
+                elif choice == 4:
+                    save_game(USER_WALLET, USER_NAME, GAMES_PLAYED, WIN_X2, WIN_X3, WIN_X4, WIN_X20)
+                elif choice == 5 or choice == -1:  # Quit
+                    clear_screen()
+                    print(f"{Colours.RED}Thanks for playing! Goodbye!{Colours.RESET}")
+                    exit()
     except KeyboardInterrupt:
         print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
         exit()
@@ -1039,9 +1100,9 @@ def main_menu():
 def show_stats():
     """Display player statistics"""
     global WINS_TOTAL
+    clear_screen()
     WINS_TOTAL = WIN_X2 + WIN_X3 + WIN_X4 + WIN_X20
     try:
-        clear_screen()
         LINE()
         print(f"{Colours.BOLD}{Colours.CYAN}📊 PLAYER STATISTICS 📊{Colours.RESET}")
         LINE()
