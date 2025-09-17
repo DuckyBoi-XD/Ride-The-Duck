@@ -160,6 +160,7 @@ continue_game = False
 PlayOption = 0
 gc_rank = {}
 gc_suit = {}
+game_card_deck = {}
 card_value_1 = {}
 card_value_2 = {}
 card_value_3 = {}
@@ -418,6 +419,7 @@ def arrow_menu(title, text, options):
                 if Win is True:
                     text_outcome = f"\n{Colours.GREEN}🎉 Congratulations, you picked correct 🎉\n"
                     if game_round == 4:
+                        user_bet * 20
                         text_outcome += f"{Colours.GREEN}💰 YOU WON ${user_bet} 💰{Colours.RESET}\n"
                 elif Win is False:
                     text_outcome = f"\n{Colours.RED}❌ Hard luck, you picked wrong ❌\n"
@@ -510,7 +512,11 @@ def bet_check():
                 print(f"{Colours.GREEN}💰 Your Money: ${USER_WALLET}{Colours.RESET}\n"
                     f"{Colours.CYAN}💵  How much do you want to bet? (Min $0.01) 💵{Colours.RESET}")
                 bet_error = 0
-                user_bet = input(f"{Colours.BOLD}❯ {Colours.RESET}").strip().lower()
+                try:
+                    user_bet = input(f"{Colours.BOLD}❯ {Colours.RESET}").strip().lower()
+                except (KeyboardInterrupt, EOFError):
+                    print(f"\n{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
+                    sys.exit()
                 if is_float(user_bet):
                     if money_valid(user_bet):
                         if float(user_bet) <= USER_WALLET:
@@ -563,7 +569,6 @@ def RedBlack_game():
         global gc_rank, gc_suit, card_value_1
         global card_output
         global WIN_X2
-        global game_card_deck
 
         game_round = 1
         Win = None
@@ -834,8 +839,10 @@ def InOut_game():
             elif int(card_value_3) < int(card_value_1) or int(card_value_3) > int(card_value_2):
                 io_output = "outside"
 
+        elif int(card_value_1) == int(card_value_2):  # Handle equal case first
+            io_output = "equal"
         elif int(card_value_3) == int(card_value_1) or int(card_value_3) == int(card_value_2):
-                io_output = "equal"
+            io_output = "equal"
 
         else:
             io_output = "error"
@@ -954,17 +961,18 @@ def Suits_game():
         else:
             Win = False
 
-        user_bet = float(user_bet) * 20
         choices = arrow_menu("game-main", "\n".join(card_output), ["WinOrLose"])
 
         if Win is True:
             if choices == 0:
+                user_bet = float(user_bet) * 20
                 USER_WALLET += float(user_bet)
                 WIN_X20 += 1
                 save_game()
                 clear_screen()
                 PlayOption = 1
             elif choices == 1:
+                user_bet = float(user_bet) * 20
                 USER_WALLET += float(user_bet)
                 WIN_X20 += 1
                 save_game()
@@ -994,15 +1002,15 @@ def help_game():
         print(f"{Colours.BOLD}{Colours.BLUE}🏷️  RIDE THE DUCK - HELP 🏷️{Colours.RESET}")
         LINE()
 
-        print(f"{Colours.YELLOW}\"Ride The Duck\" is based of the drinking game \"Ride THe Bus\" ane structured like the game in Schedule 1.\n\n{Colours.RESET}" \
+        print(f"{Colours.YELLOW}\"Ride The Duck\" is based on the drinking game \"Ride The Bus\" and structured like the game in Schedule 1.\n\n{Colours.RESET}" \
             f"{Colours.CYAN}In the game, there are 4 rounds, each round giving you a better output multiplier\n\n{Colours.RESET}" \
-            f"The first round is guessing the {Colours.BOLD}colour{Colours.RESET} of the next card"
+            f"The first round is guessing the {Colours.BOLD}colour{Colours.RESET} of the next card "
             f"which in return give a {Colours.BOLD}2x multiplier{Colours.RESET}\n" \
             f"The second round is guessing if the next card would be {Colours.BOLD}over or under{Colours.RESET} "
-            f"the first card which in return give a {Colours.BOLD}3x multiplier{Colours.RESET}" \
+            f"the first card which in return give a {Colours.BOLD}3x multiplier{Colours.RESET}\n" \
             f"The third round is guessing if the next card will appear {Colours.BOLD}between or inside{Colours.RESET} "
-            f"the first and second card which in return give a {Colours.BOLD}3x multiplier{Colours.RESET}" \
-            f"The forth round is guessing the {Colours.BOLD}suit{Colours.RESET} card of the next card which in return give a "
+            f"the first and second card which in return give a {Colours.BOLD}4x multiplier{Colours.RESET}\n" \
+            f"The fourth round is guessing the {Colours.BOLD}suit{Colours.RESET} of the next card which in return give a "  # Fixed "forth" to "fourth"
             f"{Colours.BOLD}20x multiplier{Colours.RESET}\n\n" \
             f"The Jack cards are also replaced by Ducks"
         )
@@ -1128,33 +1136,43 @@ def show_stats():
 #----Name Function----#
 def name_pick():
     '''Lets user pick a name'''
-    try:
-        global USER_NAME
-        global USER_NAME_KNOWLEDGE
-        clear_screen()
-        LINE()
-        print(f"{Colours.BOLD}{Colours.BLUE}🏷️  RIDE THE DUCK - NAME 🏷️{Colours.RESET}")
-        LINE()
-        print(f"{Colours.YELLOW}✏️  What would you like your name to be? ✏️{Colours.RESET}")
-        if USER_NAME_KNOWLEDGE is False:
-            print(f"{Colours.RED}(You can change this later){Colours.RESET}")
-        elif USER_NAME_KNOWLEDGE is True:
-            pass
-        USER_NAME = input(f"{Colours.BOLD}❯ {Colours.RESET}")
-        clear_screen()
-        choice = arrow_menu("name", (f"{Colours.BOLD}{Colours.YELLOW}YOU HAVE SELECTED: {Colours.RESET}{USER_NAME}\n"), Confirm_Redo)
-        if choice == 0:
-            USER_NAME_KNOWLEDGE = True
+    global USER_NAME
+    global USER_NAME_KNOWLEDGE
+    
+    while True:  # Add a loop to handle retries
+        try:
             clear_screen()
-            pass
-        elif choice == 1:
-            name_pick()
-    except KeyboardInterrupt:
-        print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
-        sys.exit()
-    except EOFError:
-        print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
-        sys.exit()
+            LINE()
+            print(f"{Colours.BOLD}{Colours.BLUE}🏷️  RIDE THE DUCK - NAME 🏷️{Colours.RESET}")
+            LINE()
+            print(f"{Colours.YELLOW}✏️  What would you like your name to be? ✏️{Colours.RESET}")
+            if USER_NAME_KNOWLEDGE is False:
+                print(f"{Colours.RED}(You can change this later){Colours.RESET}")
+            elif USER_NAME_KNOWLEDGE is True:
+                pass
+            
+            try:
+                USER_NAME = input(f"{Colours.BOLD}❯ {Colours.RESET}")
+            except (KeyboardInterrupt, EOFError):
+                # Handle Ctrl+C or Ctrl+D during input
+                print(f"\n{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
+                sys.exit()
+            
+            clear_screen()
+            choice = arrow_menu("name", (f"{Colours.BOLD}{Colours.YELLOW}YOU HAVE SELECTED: {Colours.RESET}{USER_NAME}\n"), Confirm_Redo)
+            if choice == 0:
+                USER_NAME_KNOWLEDGE = True
+                clear_screen()
+                break  # Exit the loop successfully
+            elif choice == 1:
+                continue  # Retry name input
+                
+        except KeyboardInterrupt:
+            print(f"\n{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
+            sys.exit()
+        except EOFError:
+            print(f"\n{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
+            sys.exit()
 #----Name Function----#
 
 #----Main Game----#
@@ -1166,10 +1184,14 @@ def main_game():
     global MULTIPLIER
     global bet_confirm
     global GAMES_PLAYED
+    global game_card
+    global game_card_deck
 
     #if USER_WALLET <= 0:  
     while True:
         MULTIPLIER = {"x2" : 1, "x3" : 0, "x4" : 0, "x20" : 0}
+        game_card = {}
+        game_card_deck = {}
         bet_check()
         if bet_confirm is True:
             bet_confirm = False
