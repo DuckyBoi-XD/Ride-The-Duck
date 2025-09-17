@@ -412,6 +412,8 @@ def arrow_menu(title, text, options):
             if is_win_or_lose:
                 if Win is True:
                     text_outcome = f"\n{Colours.GREEN}🎉 Congratulations, you picked correct 🎉\n"
+                    if game_round == 4:
+                        text_outcome += f"{Colours.GREEN}💰 YOU WON ${user_bet} 💰{Colours.RESET}\n"
                 elif Win is False:
                     text_outcome = f"\n{Colours.RED}❌ Hard luck, you picked wrong ❌\n"
                 text = text + text_outcome
@@ -556,6 +558,7 @@ def RedBlack_game():
         global gc_rank, gc_suit, card_value_1
         global card_output
         global WIN_X2
+        global game_card_deck
 
         game_round = 1
         Win = None
@@ -671,8 +674,6 @@ def OverUnder_game():
             ou_pick = "error"
         clear_screen()
 
-        game_card_deck = CardDeck
-
         card_key, card_value_2 = random.choice(list(game_card_deck.items()))
         game_card[card_key] = card_value_2
         game_card_deck.pop(card_key)
@@ -781,8 +782,6 @@ def InOut_game():
         else:
             io_pick = "error"
         clear_screen()
-
-        game_card_deck = CardDeck
 
         card_key, card_value_3 = random.choice(list(game_card_deck.items()))
         game_card[card_key] = card_value_3
@@ -905,8 +904,6 @@ def Suits_game():
             s_pick = "error"
         clear_screen()
 
-        game_card_deck = CardDeck
-
         card_key, card_value_4 = random.choice(list(game_card_deck.items()))
         game_card[card_key] = card_value_4
         game_card_deck.pop(card_key)
@@ -952,27 +949,22 @@ def Suits_game():
         else:
             Win = False
 
+        user_bet = float(user_bet) * 20
         choices = arrow_menu("game-main", "\n".join(card_output), ["WinOrLose"])
 
         if Win is True:
             if choices == 0:
-                user_bet = float(user_bet) * 20
                 USER_WALLET += float(user_bet)
                 WIN_X20 += 1
                 save_game()
                 clear_screen()
+                PlayOption = 1
             elif choices == 1:
-                user_bet = float(user_bet) * 20
                 USER_WALLET += float(user_bet)
                 WIN_X20 += 1
                 save_game()
                 clear_screen()
-
-                choices = arrow_menu("game-main", f"{Colours.GREEN}💰 YOU WON ${user_bet} 💰{Colours.RESET}\n", PlayOptions)
-                if choices == 0:
-                    PlayOption = 1 # cash out
-                elif choices == 1:
-                    PlayOption = 2 # cash out and play again
+                PlayOption = 2
 
         elif Win is False:
             if choices == 0:
