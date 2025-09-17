@@ -84,13 +84,15 @@ def decode_save(encoded_bytes):
 
 def load_game(filename="savefile_ridetheduck.json"): # access save file -JSON
     '''loading save file - returns both money and name'''
+    config_dir = os.path.expanduser("~/.config/ride-the-duck")  # store in user's $HOME/.config/ride-the-duck
+    save_path = os.path.join(config_dir, "savefile.bin")        # as savefile.bin in that dir
     try:
-        with open(filename, "rb") as f: # reads file and places value "f"
-            encoded_bytes = f.read() # convert value string to bytes "f"
-            json_str = decode_save(encoded_bytes) # grabs decoded data
-            data = json.loads(json_str) # changes value to "data"
-            print("Save file loaded") # confirm message
-            return (data.get("money", 500), # defaul value
+        with open(save_path, "rb") as f:
+            encoded_bytes = f.read()
+            json_str = decode_save(encoded_bytes)
+            data = json.loads(json_str)
+            print("Save file loaded")
+            return (data.get("money", 500),
                     data.get("name", None),
                     data.get("games played", 0),
                     data.get("x2 Wins", 0),
@@ -98,12 +100,12 @@ def load_game(filename="savefile_ridetheduck.json"): # access save file -JSON
                     data.get("x4 Wins", 0),
                     data.get("x20 Wins", 0),
                     data.get("Broke count", 0))
-    except FileNotFoundError: # New player detection
-        print("New player - no save file found") # confirmation message
-        return 500, None, 0, 0, 0, 0, 0, 0 # starting items
-    except (ValueError, json.JSONDecodeError) as e: # corruption detection
-        print(f"Corrupted save file - using defaults. Error: {e}") # confirmation message
-        return 500, None, 0, 0, 0, 0, 0, 0 # reset values
+    except FileNotFoundError:
+        print("New player - no save file found")
+        return 500, None, 0, 0, 0, 0, 0, 0
+    except (ValueError, json.JSONDecodeError) as e:
+        print(f"Corrupted save file - using defaults. Error: {e}")
+        return 500, None, 0, 0, 0, 0, 0, 0
 
 def save_game(money=None, name=None, game_played=None, win2=None, win3=None, win4=None, win20=None, broke_count=None, filename="savefile_ridetheduck.json"):
     '''saving game data'''
@@ -124,19 +126,22 @@ def save_game(money=None, name=None, game_played=None, win2=None, win3=None, win
     if broke_count is None:
         broke_count = BROKE_COUNT
     data = {
-        "money": money, 
-        "name": name, 
-        "games played": game_played, 
-        "x2 Wins": win2, 
-        "x3 Wins": win3, 
-        "x4 Wins": win4, 
+        "money": money,
+        "name": name,
+        "games played": game_played,
+        "x2 Wins": win2,
+        "x3 Wins": win3,
+        "x4 Wins": win4,
         "x20 Wins": win20,
         "Broke count": broke_count
     }
-    json_str = json.dumps(data) # turns into "data" value
-    encoded_bytes = encode_save(json_str) # grabs the encoded data
-    with open(filename, "wb") as f: # opens file to prep writing
-        f.write(encoded_bytes) # writes
+    json_str = json.dumps(data)
+    encoded_bytes = encode_save(json_str)
+    config_dir = os.path.expanduser("~/.config/ride-the-duck")
+    os.makedirs(config_dir, exist_ok=True)
+    save_path = os.path.join(config_dir, "savefile.bin")
+    with open(save_path, "wb") as f:
+        f.write(encoded_bytes)
 #----Save File Money----#
 
 #----Variables----#
