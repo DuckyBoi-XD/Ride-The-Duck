@@ -10,10 +10,6 @@ import time
 import sys
 import tty
 import termios
-
-'''windows
-import msvcrt
-'''
 #----Import Python Packages----#
 
 #----Colours----#
@@ -278,18 +274,11 @@ def key_press(option):
         return key
     except KeyboardInterrupt:
         print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
-        exit()
+        sys.exit()
     except EOFError:
         print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
-        exit()
+        sys.exit()
 
-'''windows key pressing
-def key_press():
-    if msvcrt.kbhit():
-        key = msvcrt.getch()
-        return key.decode('utf-8')
-    return None
-'''
 #----Single Key Track----#
 
 #----Arrow Key Track----#
@@ -305,10 +294,10 @@ def arrow_key():
             # Check for CTRL-C and CTRL-D in raw mode
             if ord(key) == 3:  # CTRL-C
                 print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
-                exit()
+                sys.exit()
             elif ord(key) == 4:  # CTRL-D
                 print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
-                exit()
+                sys.exit()
             
             # Check for escape sequence (arrow keys)
             if ord(key) == 27:  # ESC
@@ -319,10 +308,10 @@ def arrow_key():
             termios.tcsetattr(fd, termios.TCSADRAIN, old_settings) # restores old settings
     except KeyboardInterrupt:
         print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
-        exit()
+        sys.exit()
     except EOFError:
         print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
-        exit()
+        sys.exit()
 #----Arrow Key Track----#
 
 #----Arrow Key Menu System----#
@@ -453,10 +442,10 @@ def arrow_menu(title, text, options):
                 return -1
     except KeyboardInterrupt:
         print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
-        exit()
+        sys.exit()
     except EOFError:
         print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
-        exit()
+        sys.exit()
 #----Arrow Key Menu System----#
 
 #----Start Game----#
@@ -476,10 +465,10 @@ def start_game():
         clear_screen()
     except KeyboardInterrupt:
         print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
-        exit()
+        sys.exit()
     except EOFError:
         print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
-        exit()
+        sys.exit()
     
 #----Start Game----#
 
@@ -544,10 +533,10 @@ def bet_check():
                     clear_screen()
     except KeyboardInterrupt:
         print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
-        exit()
+        sys.exit()
     except EOFError:
         print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
-        exit()
+        sys.exit()
 
 #----Betting check Function----#
 
@@ -647,10 +636,10 @@ def RedBlack_game():
         
     except KeyboardInterrupt:
         print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
-        exit()
+        sys.exit()
     except EOFError:
         print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
-        exit()
+        sys.exit()
 #----Red Black/Round 1----#
 
 #----Over Under/Round 2----#
@@ -757,10 +746,10 @@ def OverUnder_game():
 
     except KeyboardInterrupt:
         print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
-        exit()
+        sys.exit()
     except EOFError:
         print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
-        exit()
+        sys.exit()
 #----Over Under/Round 2----#
 
 #----In Out/Round 3----#
@@ -877,10 +866,10 @@ def InOut_game():
 
     except KeyboardInterrupt:
         print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
-        exit()
+        sys.exit()
     except EOFError:
         print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
-        exit()
+        sys.exit()
 #----In Out/Round 3----#
 
 #----Suit/Round 4----#
@@ -993,10 +982,10 @@ def Suits_game():
 
     except KeyboardInterrupt:
         print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
-        exit()
+        sys.exit()
     except EOFError:
         print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
-        exit()
+        sys.exit()
 #----Suit/Round 4----#
 
 #----Help----#
@@ -1024,10 +1013,10 @@ def help_game():
         key_press(1)
     except KeyboardInterrupt:
         print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
-        exit()
+        sys.exit()
     except EOFError:
         print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
-        exit()
+        sys.exit()
 
 #----Help----#
 
@@ -1051,10 +1040,10 @@ def financial_aid():
         key_press(1)
     except KeyboardInterrupt:
         print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
-        exit()
+        sys.exit()
     except EOFError:
         print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
-        exit()
+        sys.exit()
 #----Out Of Money----#
 
 #----Main Menu----#
@@ -1100,13 +1089,13 @@ def main_menu():
                 elif choice == 5 or choice == -1:  # Quit
                     clear_screen()
                     print(f"{Colours.RED}Thanks for playing! Goodbye!{Colours.RESET}")
-                    exit()
+                    sys.exit()
     except KeyboardInterrupt:
         print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
-        exit()
+        sys.exit()
     except EOFError:
         print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
-        exit()
+        sys.exit()
 #----Main Menu----#
 
 #----Stats----#
@@ -1133,10 +1122,10 @@ def show_stats():
         key_press(1)
     except KeyboardInterrupt:
         print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
-        exit()
+        sys.exit()
     except EOFError:
         print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
-        exit()
+        sys.exit()
 #----Stats----#
 
 #----Name Function----#
@@ -1165,10 +1154,10 @@ def name_pick():
             name_pick()
     except KeyboardInterrupt:
         print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
-        exit()
+        sys.exit()
     except EOFError:
         print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
-        exit()
+        sys.exit()
 #----Name Function----#
 
 #----Main Game----#
@@ -1241,5 +1230,4 @@ if __name__ == "__main__":
     if USER_NAME is None:
         name_pick()
     save_game()
-    
     main_menu()
