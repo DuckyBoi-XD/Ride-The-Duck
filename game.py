@@ -100,15 +100,16 @@ def load_game(filename="savefile_ridetheduck.json"): # access save file -JSON
                     data.get("x2 Wins", 0),
                     data.get("x3 Wins", 0),
                     data.get("x4 Wins", 0),
-                    data.get("x20 Wins", 0))
+                    data.get("x20 Wins", 0),
+                    data.get("Broke count", 0))
     except FileNotFoundError: # New player detection
         print("New player - no save file found") # confirmation message
-        return 500, None, 0, 0, 0, 0, 0 # starting items
+        return 500, None, 0, 0, 0, 0, 0, 0 # starting items
     except (ValueError, json.JSONDecodeError) as e: # corruption detection
         print(f"Corrupted save file - using defaults. Error: {e}") # confirmation message
-        return 500, None, 0, 0, 0, 0, 0 # reset values
+        return 500, None, 0, 0, 0, 0, 0, 0 # reset values
 
-def save_game(money=None, name=None, game_played=None, win2=None, win3=None, win4=None, win20=None, filename="savefile_ridetheduck.json"):
+def save_game(money=None, name=None, game_played=None, win2=None, win3=None, win4=None, win20=None, broke_count=None, filename="savefile_ridetheduck.json"):
     '''saving game data'''
     if money is None:
         money = USER_WALLET
@@ -124,6 +125,8 @@ def save_game(money=None, name=None, game_played=None, win2=None, win3=None, win
         win4 = WIN_X4
     if win20 is None:
         win20 = WIN_X20
+    if broke_count is None:
+        broke_count = BROKE_COUNT
     data = {
         "money": money, 
         "name": name, 
@@ -131,17 +134,17 @@ def save_game(money=None, name=None, game_played=None, win2=None, win3=None, win
         "x2 Wins": win2, 
         "x3 Wins": win3, 
         "x4 Wins": win4, 
-        "x20 Wins": win20
+        "x20 Wins": win20,
+        "Broke count": broke_count
     }
     json_str = json.dumps(data) # turns into "data" value
     encoded_bytes = encode_save(json_str) # grabs the encoded data
     with open(filename, "wb") as f: # opens file to prep writing
         f.write(encoded_bytes) # writes
-    print(f"Game saved: {name} with ${money}") # confirmation message
 #----Save File Money----#
 
 #----Variables----#
-USER_WALLET, USER_NAME, GAMES_PLAYED, WIN_X2, WIN_X3, WIN_X4, WIN_X20 = load_game()  # Load both money and name from save file
+USER_WALLET, USER_NAME, GAMES_PLAYED, WIN_X2, WIN_X3, WIN_X4, WIN_X20, BROKE_COUNT = load_game()  # Load both money and name from save file
 CARD_SUITS = ("♠", "♦", "♥", "♣") # creates suits for card deck creation
 USER_NAME_KNOWLEDGE = False
 WINS_TOTAL = WIN_X2 + WIN_X3 + WIN_X4 + WIN_X20
@@ -489,52 +492,56 @@ def bet_check():
         global USER_WALLET
         global bet_confirm
         global bet_amount
-        bet_error = 0
-        user_bet = None
-        bet_confirm = False
-        while True:
-            LINE()
-            print(f"{Colours.BOLD}{Colours.BLUE}🎰 RIDE THE DUCK - MAIN GAME - BET 🎰{Colours.RESET}")
-            LINE()
-
-            if bet_error == 1:
-                print(f"{Colours.RED}⚠️ Invalid bet: {user_bet} - Please use a number ⚠️{Colours.RESET}")
-            elif bet_error == 2:
-                print(f"{Colours.RED}⚠️ Invalid bet: {user_bet} - Please a number equal or bigger than 0.01 ⚠️{Colours.RESET}")
-            elif bet_error == 3:
-                print(f"{Colours.RED}⚠️ Invalid bet: {user_bet} - You are betting more money than you have in your wallet ⚠️{Colours.RESET}")
-
-            print(f"{Colours.GREEN}💰 Your Money: ${USER_WALLET}{Colours.RESET}\n"
-                  f"{Colours.CYAN}💵  How much do you want to bet? (Min $0.01) 💵{Colours.RESET}")
+        if USER_WALLET <= 0:
+            financial_aid()
+            return
+        else:
             bet_error = 0
-            user_bet = input(f"{Colours.BOLD}❯ {Colours.RESET}").strip().lower()
-            if is_float(user_bet):
-                if money_valid(user_bet):
-                    if float(user_bet) <= USER_WALLET:
-                        clear_screen()
-                        choices = arrow_menu("menu",
-                            f"{Colours.GREEN}💵 You are betting: {Colours.WHITE}${user_bet}{Colours.RESET}\n{Colours.CYAN}✅ Please confirm bet amount ✅{Colours.RESET}\n",
-                            Confirm_Redo_Cancel)
-                        if choices == 0:
+            user_bet = None
+            bet_confirm = False
+            while True:
+                LINE()
+                print(f"{Colours.BOLD}{Colours.BLUE}🎰 RIDE THE DUCK - MAIN GAME - BET 🎰{Colours.RESET}")
+                LINE()
+
+                if bet_error == 1:
+                    print(f"{Colours.RED}⚠️ Invalid bet: {user_bet} - Please use a number ⚠️{Colours.RESET}")
+                elif bet_error == 2:
+                    print(f"{Colours.RED}⚠️ Invalid bet: {user_bet} - Please a number equal or bigger than 0.01 ⚠️{Colours.RESET}")
+                elif bet_error == 3:
+                    print(f"{Colours.RED}⚠️ Invalid bet: {user_bet} - You are betting more money than you have in your wallet ⚠️{Colours.RESET}")
+
+                print(f"{Colours.GREEN}💰 Your Money: ${USER_WALLET}{Colours.RESET}\n"
+                    f"{Colours.CYAN}💵  How much do you want to bet? (Min $0.01) 💵{Colours.RESET}")
+                bet_error = 0
+                user_bet = input(f"{Colours.BOLD}❯ {Colours.RESET}").strip().lower()
+                if is_float(user_bet):
+                    if money_valid(user_bet):
+                        if float(user_bet) <= USER_WALLET:
                             clear_screen()
-                            bet_confirm = True
-                            USER_WALLET -= float(user_bet)
-                            bet_amount = float(user_bet)
-                            break
-                        elif choices == 1:
+                            choices = arrow_menu("menu",
+                                f"{Colours.GREEN}💵 You are betting: {Colours.WHITE}${user_bet}{Colours.RESET}\n{Colours.CYAN}✅ Please confirm bet amount ✅{Colours.RESET}\n",
+                                Confirm_Redo_Cancel)
+                            if choices == 0:
+                                clear_screen()
+                                bet_confirm = True
+                                USER_WALLET -= float(user_bet)
+                                bet_amount = float(user_bet)
+                                break
+                            elif choices == 1:
+                                clear_screen()
+                            elif choices == 2:
+                                clear_screen()
+                                break
+                        else:
+                            bet_error = 3
                             clear_screen()
-                        elif choices == 2:
-                            clear_screen()
-                            break
                     else:
-                        bet_error = 3
+                        bet_error = 2
                         clear_screen()
                 else:
-                    bet_error = 2
+                    bet_error = 1
                     clear_screen()
-            else:
-                bet_error = 1
-                clear_screen()
     except KeyboardInterrupt:
         print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
         exit()
@@ -1014,7 +1021,7 @@ def help_game():
             f"The Jack cards are also replaced by Ducks"
         )
         LINE()
-        arrow_key()
+        key_press(1)
     except KeyboardInterrupt:
         print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
         exit()
@@ -1026,22 +1033,22 @@ def help_game():
 
 #----Out Of Money----#
 
-def lose_game():
+def financial_aid():
     """Function to output the last message after loosing all your money"""
+    global USER_WALLET
+    global BROKE_COUNT
+    BROKE_COUNT += 1
     try:
+        clear_screen()
         LINE()
-        print(f"{Colours.BOLD}{Colours.BLUE}🏷️  RIDE THE DUCK - END 🏷️{Colours.RESET}")
+        print(f"{Colours.BOLD}{Colours.BLUE}🏷️  RIDE THE DUCK - FINANCIAL AID 🏷️{Colours.RESET}")
         LINE()
-        print(f"{Colours.BOLD}{Colours.CYAN}Stats{Colours.RESET}\n\n"
-            f"{Colours.GREEN}💰 Money: ${USER_WALLET}{Colours.RESET}\n"
-            f"{Colours.YELLOW}🏷️  Name: {USER_NAME}{Colours.RESET}\n"
-            f"{Colours.CYAN}🎮 Games Played: {GAMES_PLAYED}{Colours.RESET}\n"
-            f"{Colours.GOLD}🏆 Wins Toal: {WINS_TOTAL}{Colours.RESET}\n"
-            f"{Colours.GOLD}🏆 x2 Wins: {WIN_X2}{Colours.RESET}\n"
-            f"{Colours.GOLD}🏆 x3 Wins: {WIN_X3}{Colours.RESET}\n"
-            f"{Colours.GOLD}🏆 x4 Wins: {WIN_X4}{Colours.RESET}\n"
-            f"{Colours.GOLD}🏆 x20 Wins: {WIN_X20}{Colours.RESET}")
-        
+        print(f"{Colours.YELLOW}Due to you being BROKE, you are given {Colours.RESET}{Colours.GREEN}$10{Colours.RESET} {Colours.YELLOW}to hopefully sustain your gambling addiction\n")
+        USER_WALLET += 10
+        print(f"{Colours.GREEN}You now have ${USER_WALLET}{Colours.RESET}")
+        LINE()
+        save_game()
+        key_press(1)
     except KeyboardInterrupt:
         print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
         exit()
@@ -1054,18 +1061,19 @@ def lose_game():
 def main_menu():
     """Main game menu with arrow navigation"""
     try:
-        if USER_WALLET <= 0:
-            lose_game()
-        else:
-            options = [
-                "🎮 Play Ride the Duck",
-                "📊 View Statistics",
-                "❓ Help", 
-                "✏️  Change Name",
-                "💾 Save Game",
-                "🚪 Quit Game"
-            ]
-            while True:
+        options = [
+            "🎮 Play Ride the Duck",
+            "📊 View Statistics",
+            "❓ Help", 
+            "✏️  Change Name",
+            "💾 Save Game",
+            "🚪 Quit Game"
+        ]
+        while True:
+            if USER_WALLET <= 0:
+                financial_aid()
+                continue
+            else:
                 clear_screen()  # Clear screen for smooth menu display
                 
                 choice = arrow_menu("menu", None, options)
@@ -1113,8 +1121,8 @@ def show_stats():
             f"{Colours.GOLD}🏆 x2 Wins: {WIN_X2}{Colours.RESET}\n"
             f"{Colours.GOLD}🏆 x3 Wins: {WIN_X3}{Colours.RESET}\n"
             f"{Colours.GOLD}🏆 x4 Wins: {WIN_X4}{Colours.RESET}\n"
-            f"{Colours.GOLD}🏆 x20 Wins: {WIN_X20}{Colours.RESET}"
-
+            f"{Colours.GOLD}🏆 x20 Wins: {WIN_X20}{Colours.RESET}\n"
+            f"{Colours.RED}🪙 Broke Cont: {BROKE_COUNT}{Colours.RESET}"
         )
         LINE()
         key_press(1)
