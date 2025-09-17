@@ -1091,7 +1091,12 @@ def main_menu():
                     clear_screen()
                     name_pick()
                 elif choice == 4:
-                    save_game(USER_WALLET, USER_NAME, GAMES_PLAYED, WIN_X2, WIN_X3, WIN_X4, WIN_X20)
+                    save_game()
+                    clear_screen()
+                    LINE()
+                    print(f"{Colours.GREEN}Game Saved")
+                    LINE()
+                    key_press(1)
                 elif choice == 5 or choice == -1:  # Quit
                     clear_screen()
                     print(f"{Colours.RED}Thanks for playing! Goodbye!{Colours.RESET}")
@@ -1235,6 +1240,6 @@ if __name__ == "__main__":
     start_game()
     if USER_NAME is None:
         name_pick()
-    save_game(USER_WALLET, USER_NAME, GAMES_PLAYED, WIN_X2, WIN_X3, WIN_X4, WIN_X20)
+    save_game()
     
     main_menu()
