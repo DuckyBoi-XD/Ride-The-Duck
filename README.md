@@ -1,6 +1,6 @@
 # Ride-The-Duck
 
-Ride The Duck is a CLI, binary executable game based on the drinking game "Ride The Bus". Ride The Duck incorporates the first stage of Ride The Bus, where you need to guess if the next card is Red or Black, Over or Under (the first card), Inside or Outside (the first 2 cards), Spades, Diamonds, Hearts, or Clubs.
+Ride The Duck is a gambling, CLI, binary executable game based on the drinking game "Ride The Bus". Ride The Duck incorporates the first stage of Ride The Bus where you need to guess if the next card fits into either catagory, with each catagory giving you a better multiplier to your initial bet earning you more.
 
 ## Features
 
