@@ -53,7 +53,7 @@ To download the binary executable (TERMINAL CRAFT), you can follow these steps:
 
 4. Bypass the Apple security by:
 
-    - Double click the "game" executable file and press "Done" (NOT "Move to Bin"). Go to Settings > Privacy & Security and under Security, select Open Anyway on the game file name "game".
+    - Double click the "RTD-Game" executable file and press "Done" (NOT "Move to Bin"). Go to Settings > Privacy & Security and under Security, select Open Anyway on the game file name "RTD-Game".
 
     **or**
 
@@ -67,7 +67,7 @@ To download the binary executable (TERMINAL CRAFT), you can follow these steps:
    - Then use this command to bypass the security -
 
     ```sh
-    xattr -d com.apple.quarantine game
+    xattr -d com.apple.quarantine RTD-Game
     ```
 
 5. Double click or open the game executable file and have fun c:
