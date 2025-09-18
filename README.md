@@ -47,7 +47,7 @@ To download the binary executable (TERMINAL CRAFT), you can follow these steps:
 
 1. Go to the  releases page of Ride The Duck
 
-2. Go to the most recent version and download the file: "RTD-G MacOS arm64 tar.gz". This is the file that has the game on it.
+2. Go to the most recent version and download the file: "RTD-G '*VERSION*' MacOS arm64 tar.gz". This is the file that has the game on it.
 
 3. Go to the file location (most probably 'downloads') and open the downloaded file.
 
