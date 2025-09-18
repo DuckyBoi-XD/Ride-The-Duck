@@ -461,6 +461,7 @@ def arrow_menu(title, text, options):
 def start_game():
     '''start of game info'''
     try:
+        clear_screen()
         LINE()
         print(f"{Colours.BOLD}{Colours.BLUE}🎰 RIDE THE DUCK 🎰{Colours.RESET}\n"
             f"{Colours.GREEN}💰 Your Money: ${USER_WALLET}{Colours.RESET}\n"
@@ -498,6 +499,7 @@ def bet_check():
             user_bet = None
             bet_confirm = False
             while True:
+                clear_screen()
                 LINE()
                 print(f"{Colours.BOLD}{Colours.BLUE}🎰 RIDE THE DUCK - MAIN GAME - BET 🎰{Colours.RESET}")
                 LINE()
@@ -633,8 +635,8 @@ def RedBlack_game():
                 USER_WALLET += float(user_bet)
                 WIN_X2 += 1
                 save_game()
-                clear_screen()
 
+                clear_screen()
                 choices = arrow_menu("game-main", f"{Colours.GREEN}💰 YOU WON ${user_bet} 💰{Colours.RESET}\n", PlayOptions)
                 if choices == 0:
                     PlayOption = 1
@@ -741,8 +743,8 @@ def OverUnder_game():
                 USER_WALLET += float(user_bet)
                 WIN_X3 += 1
                 save_game()
-                clear_screen()
 
+                clear_screen()
                 choices = arrow_menu("game-main", f"{Colours.GREEN}💰 YOU WON ${user_bet} 💰{Colours.RESET}\n", PlayOptions)
                 if choices == 0:
                     PlayOption = 1
@@ -1032,6 +1034,7 @@ def financial_aid():
     global USER_WALLET
     global BROKE_COUNT
     BROKE_COUNT += 1
+    clear_screen()
     try:
         clear_screen()
         LINE()
@@ -1088,7 +1091,9 @@ def main_menu():
                     save_game()
                     clear_screen()
                     LINE()
-                    print(f"{Colours.GREEN}Game Saved")
+                    print(f"{Colours.BOLD}{Colours.BLUE}🏷️  RIDE THE DUCK - SAVE 🏷️{Colours.RESET}\n")
+                    LINE()
+                    print(f"{Colours.GREEN}Game saved successfully{Colours.RESET}")
                     LINE()
                     key_press(1)
                 elif choice == 5 or choice == -1:  # Quit
@@ -1110,6 +1115,7 @@ def show_stats():
     clear_screen()
     WINS_TOTAL = WIN_X2 + WIN_X3 + WIN_X4 + WIN_X20
     try:
+        clear_screen()
         LINE()
         print(f"{Colours.BOLD}{Colours.CYAN}📊 PLAYER STATISTICS 📊{Colours.RESET}")
         LINE()
