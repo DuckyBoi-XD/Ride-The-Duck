@@ -289,7 +289,7 @@ def key_press(option):
 
 #----Arrow Key Track----#
 def arrow_key():
-    '''reads and looks for arrow press'''
+    '''reads and looks for arrow press and WASD keys'''
     try:
         fd = sys.stdin.fileno() # find  keyboard format
         old_settings = termios.tcgetattr(fd) # saves old terminal
@@ -437,11 +437,11 @@ def arrow_menu(title, text, options):
             LINE()
             key = arrow_key()
             
-            if key == '\x1b[A':  # Up arrow
+            if key == '\x1b[A' or key.lower() == 'w':  # Up arrow or W key
                 clear_screen()
                 selected = (selected - 1) % len(options)
                 # Screen will clear on next loop iteration
-            elif key == '\x1b[B':  # Down arrow
+            elif key == '\x1b[B' or key.lower() == 's':  # Down arrow or S key
                 clear_screen()
                 selected = (selected + 1) % len(options)
                 # Screen will clear on next loop iteration

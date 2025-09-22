@@ -282,7 +282,7 @@ def key_press(option):
 
 #----Arrow Key Track----#
 def arrow_key():
-    '''reads and looks for arrow press - Windows only'''
+    '''reads and looks for arrow press and WASD keys - Windows only'''
     try:
         key = msvcrt.getch()
         if key == b'\xe0':  # Special key prefix on Windows
@@ -415,10 +415,10 @@ def arrow_menu(title, text, options):
             
             # Handle different key codes for Windows and Unix
             if os.name == 'nt':  # Windows
-                if key == '\xe0H':  # Up arrow on Windows
+                if key == '\xe0H' or key.lower() == 'w':  # Up arrow or W key on Windows
                     clear_screen()
                     selected = (selected - 1) % len(options)
-                elif key == '\xe0P':  # Down arrow on Windows
+                elif key == '\xe0P' or key.lower() == 's':  # Down arrow or S key on Windows
                     clear_screen()
                     selected = (selected + 1) % len(options)
                 elif key == '\r':  # Enter on Windows
