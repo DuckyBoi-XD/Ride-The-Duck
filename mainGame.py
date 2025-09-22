@@ -6,9 +6,16 @@ import codecs
 import random
 import time
 
-#Windows only
+#cross-platform
 import sys
-import msvcrt  # Windows
+try:
+    import msvcrt  # Windows
+    WINDOWS = True
+except ImportError:
+    WINDOWS = False
+
+import tty
+import termios
 #----Import Python Packages----#
 
 #----Colours----#
@@ -262,14 +269,23 @@ for suit in CARD_SUITS:
 
 #----Single Key Track----#
 def key_press(option):
-    '''single key tracking - Windows only'''
+    '''single key tracking - cross platform'''
     try:
         if option is 0:
             print(f"{Colours.RED}Press any key to continue{Colours.RESET}")
         elif option is 1:
             print(f"{Colours.RED}Press any key to return to menu{Colours.RESET}")
         
-        msvcrt.getch()  # Windows only
+        if WINDOWS:  # Windows
+            msvcrt.getch()
+        else:  # Unix/Linux/macOS
+            fd = sys.stdin.fileno()
+            old_settings = termios.tcgetattr(fd)
+            try:
+                tty.setraw(sys.stdin.fileno())
+                sys.stdin.read(1)
+            finally:
+                termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
         return True
     except KeyboardInterrupt:
         print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
@@ -282,12 +298,35 @@ def key_press(option):
 
 #----Arrow Key Track----#
 def arrow_key():
-    '''reads and looks for arrow press - Windows only'''
+    '''reads and looks for arrow press - cross platform'''
     try:
-        key = msvcrt.getch()
-        if key == b'\xe0':  # Special key prefix on Windows
-            key += msvcrt.getch()
-        return key.decode('latin-1', errors='ignore')
+        if WINDOWS:  # Windows
+            key = msvcrt.getch()
+            if key == b'\xe0':  # Special key prefix on Windows
+                key += msvcrt.getch()
+            return key.decode('latin-1', errors='ignore')
+        else:  # Unix/Linux/macOS
+            fd = sys.stdin.fileno()
+            old_settings = termios.tcgetattr(fd)
+            try:
+                tty.setraw(sys.stdin.fileno())
+                key = sys.stdin.read(1)
+                
+                # Check for CTRL-C and CTRL-D in raw mode
+                if ord(key) == 3:  # CTRL-C
+                    print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
+                    sys.exit()
+                elif ord(key) == 4:  # CTRL-D
+                    print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
+                    sys.exit()
+                
+                # Check for escape sequence (arrow keys)
+                if ord(key) == 27:  # ESC
+                    key += sys.stdin.read(2)  # Read the next 2 characters (for arrows)
+                    
+                return key
+            finally:
+                termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
     except KeyboardInterrupt:
         print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
         sys.exit()
@@ -395,7 +434,7 @@ def arrow_menu(title, text, options):
                 if Win is True:
                     text_outcome = f"\n{Colours.GREEN}🎉 Congratulations, you picked correct 🎉\n"
                     if game_round == 4:
-                        user_bet * 20
+                        user_bet *= 20
                         text_outcome += f"{Colours.GREEN}💰 YOU WON ${user_bet} 💰{Colours.RESET}\n"
                 elif Win is False:
                     text_outcome = f"\n{Colours.RED}❌ Hard luck, you picked wrong ❌\n"
@@ -414,7 +453,7 @@ def arrow_menu(title, text, options):
             key = arrow_key()
             
             # Handle different key codes for Windows and Unix
-            if os.name == 'nt':  # Windows
+            if WINDOWS:  # Windows
                 if key == '\xe0H':  # Up arrow on Windows
                     clear_screen()
                     selected = (selected - 1) % len(options)
@@ -425,19 +464,29 @@ def arrow_menu(title, text, options):
                     return selected
                 elif key == '\x1b':  # ESC on Windows
                     return -1
+                elif key.lower() == 'w':  # W key - up
+                    clear_screen()
+                    selected = (selected - 1) % len(options)
+                elif key.lower() == 's':  # S key - down
+                    clear_screen()
+                    selected = (selected + 1) % len(options)
             else:  # Unix/Linux/macOS
                 if key == '\x1b[A':  # Up arrow
                     clear_screen()
                     selected = (selected - 1) % len(options)
-                    # Screen will clear on next loop iteration
                 elif key == '\x1b[B':  # Down arrow
                     clear_screen()
                     selected = (selected + 1) % len(options)
-                    # Screen will clear on next loop iteration
                 elif ord(key[0]) == 13:  # Enter
                     return selected
                 elif len(key) == 1 and ord(key) == 27:  # ESC alone
                     return -1
+                elif len(key) == 1 and key.lower() == 'w':  # W key - up
+                    clear_screen()
+                    selected = (selected - 1) % len(options)
+                elif len(key) == 1 and key.lower() == 's':  # S key - down
+                    clear_screen()
+                    selected = (selected + 1) % len(options)
     except KeyboardInterrupt:
         print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
         sys.exit()
@@ -1077,10 +1126,11 @@ def main_menu():
                     clear_screen()
                     name_pick()
                 elif choice == 4:
+                    clear_screen()
                     save_game()
                     clear_screen()
                     LINE()
-                    print(f"{Colours.BOLD}{Colours.BLUE}🏷️  RIDE THE DUCK - SAVE 🏷️{Colours.RESET}\n")
+                    print(f"{Colours.BOLD}{Colours.BLUE}🏷️  RIDE THE DUCK - SAVE 🏷️{Colours.RESET}")
                     LINE()
                     print(f"{Colours.GREEN}Game saved successfully{Colours.RESET}")
                     LINE()
