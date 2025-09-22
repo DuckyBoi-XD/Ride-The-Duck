@@ -298,7 +298,7 @@ def key_press(option):
 
 #----Arrow Key Track----#
 def arrow_key():
-    '''reads and looks for arrow press - cross platform'''
+    '''reads and looks for arrow press - Windows only'''
     try:
         if WINDOWS:  # Windows
             key = msvcrt.getch()
@@ -1126,7 +1126,6 @@ def main_menu():
                     clear_screen()
                     name_pick()
                 elif choice == 4:
-                    clear_screen()
                     save_game()
                     clear_screen()
                     LINE()
