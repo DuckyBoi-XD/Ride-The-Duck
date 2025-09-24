@@ -6,7 +6,7 @@ Usage: python -m ride_the_duck
 
 if __name__ == "__main__":
     try:
-        from .main import main
+        from .mainGame import main
         main()
     except ImportError:
         # Fallback for direct execution
@@ -14,5 +14,5 @@ if __name__ == "__main__":
         import os
         current_dir = os.path.dirname(os.path.abspath(__file__))
         sys.path.insert(0, current_dir)
-        import main as main_module  # type: ignore
+        import mainGame as main_module  # type: ignore
         main_module.main()  # type: ignore
