@@ -13,10 +13,10 @@ Ride The Duck contains many different features:
 - Gambling: You are given money to gamble with, for fun.
 
 ## Gameplay
-<img width="346" height="260" alt="Picture1" src="https://github.com/user-attachments/assets/4e00b8ba-ba70-4586-9764-f3bb4eec8a01" />
-<img width="346" height="274" alt="Picture2" src="https://github.com/user-attachments/assets/70d69142-9120-4d82-be30-5c22d310490d" />
-<img width="346" height="219" alt="Picture3" src="https://github.com/user-attachments/assets/a206726d-7650-4d9a-8d3c-36f733194eb1" />
-<img width="346" height="257" alt="Picture4" src="https://github.com/user-attachments/assets/2384f1ae-ab28-496f-b001-32e18591ce00" />
+![Picture1](https://github.com/user-attachments/assets/4e00b8ba-ba70-4586-9764-f3bb4eec8a01)
+![Picture2](https://github.com/user-attachments/assets/70d69142-9120-4d82-be30-5c22d310490d)
+![Picture3](https://github.com/user-attachments/assets/a206726d-7650-4d9a-8d3c-36f733194eb1)
+![Picture4](https://github.com/user-attachments/assets/2384f1ae-ab28-496f-b001-32e18591ce00)
 
 ## How Does Ride The Duck Work?
 
