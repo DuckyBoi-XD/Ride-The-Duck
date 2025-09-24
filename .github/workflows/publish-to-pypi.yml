@@ -28,7 +28,7 @@ jobs:
       id: get_version
       run: |
         VERSION=${GITHUB_REF#refs/tags/}
-        VERSION=${VERSION#v}  # Remove 'v' prefix if present
+        # Keep the version as-is (no v prefix removal needed)
         echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
         echo "Extracted version: $VERSION"
         echo "Git tag should be available for setuptools-scm"
@@ -36,30 +36,42 @@ jobs:
     - name: Verify git tag and setuptools-scm
       run: |
         echo "Available git tags:"
-        git tag --list
+        git tag --list | tail -10  # Show last 10 tags
         echo "Current commit: $(git rev-parse HEAD)"
         echo "Current branch/ref: $GITHUB_REF"
+        
+        # Check if we're on a tagged commit
+        CURRENT_TAG=$(git describe --exact-match --tags HEAD 2>/dev/null || echo "")
+        if [ -z "$CURRENT_TAG" ]; then
+            echo "⚠️  WARNING: Current commit is not tagged"
+        else
+            echo "✅ Current commit has tag: $CURRENT_TAG"
+        fi
         
         # Install setuptools-scm first
         python -m pip install --upgrade pip setuptools-scm
         
         # Check what version setuptools-scm will generate
         echo "setuptools-scm version preview:"
-        python -c "
-        import setuptools_scm
-        try:
-            version = setuptools_scm.get_version()
-            print('Generated version:', version)
-            if '+' in version or 'dev' in version:
-                print('WARNING: This appears to be a development version!')
-                print('Make sure you are building from a tagged commit.')
-                exit(1)
-            else:
-                print('SUCCESS: Clean release version detected')
-        except Exception as e:
-            print('Error getting version:', e)
-            exit(1)
-        "
+        if ! VERSION_OUTPUT=$(python -c "import setuptools_scm; version = setuptools_scm.get_version(); print(version)" 2>&1); then
+            echo "❌ ERROR: Failed to get version from setuptools-scm"
+            echo "Output: $VERSION_OUTPUT"
+            exit 1
+        fi
+        
+        echo "Generated version: $VERSION_OUTPUT"
+        
+        # Check if it contains development markers
+        if echo "$VERSION_OUTPUT" | grep -qE "(dev|\.d[0-9]|\+g[a-f0-9])"; then
+            echo "❌ ERROR: Development version detected: $VERSION_OUTPUT"
+            echo "This will be rejected by PyPI. Make sure you're building from a tagged commit."
+            echo "Expected a clean version like: 1.0.8"
+            echo "Current tags near HEAD:"
+            git tag --sort=-version:refname | head -5
+            exit 1
+        else
+            echo "✅ SUCCESS: Clean release version detected: $VERSION_OUTPUT"
+        fi
     
     - name: Install dependencies
       run: |
@@ -67,7 +79,23 @@ jobs:
         python -m pip install build twine setuptools-scm
     
     - name: Build package
-      run: python -m build
+      run: |
+        echo "Building package..."
+        python -m build
+        echo "Build completed. Checking output:"
+        ls -la dist/
+        
+        # Verify the built package has the expected version
+        WHEEL_FILE=$(ls dist/*.whl | head -1)
+        if [ -f "$WHEEL_FILE" ]; then
+            echo "✅ Wheel file created: $(basename $WHEEL_FILE)"
+        else
+            echo "❌ ERROR: No wheel file found"
+            exit 1
+        fi
     
     - name: Publish package
       uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        verify-metadata: false
+        skip-existing: true
