@@ -12,6 +12,9 @@ license = {text = "MIT"}
 authors = [
     {name = "Braeden Sy Tan", email = "braedenjairsytan@icloud.com"}
 ]
+maintainers = [
+    {name = "Braeden Sy Tan", email = "braedenjairsytan@icloud.com"}
+]
 keywords = ["game", "cards", "gambling", "terminal", "console", "entertainment"]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
@@ -40,3 +43,4 @@ ride-the-duck = "ride_the_duck.main:main"
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["ride_the_duck*"]
+exclude = ["tests*"]
