@@ -1287,10 +1287,14 @@ def main_game():
 
 #----Main Game----#
 
-if __name__ == "__main__":
+def main():
+    """Main entry point for the game."""
     clear_screen()
     start_game()
     if USER_NAME is None:
         name_pick()
     save_game()
     main_menu()
+
+if __name__ == "__main__":
+    main()
