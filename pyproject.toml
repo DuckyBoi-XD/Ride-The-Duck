@@ -1,10 +1,10 @@
 [build-system]
-requires = ["setuptools>=61.0", "wheel"]
+requires = ["setuptools>=61.0", "wheel", "setuptools-scm"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "ride-the-duck"
-version = "1.0.3"
+dynamic = ["version"]
 description = "A terminal-based gambling card game inspired by 'Ride The Bus'"
 readme = "README.md"
 requires-python = ">=3.7"
@@ -45,3 +45,6 @@ RTD = "ride_the_duck.__main__:console_entry"
 where = ["."]
 include = ["ride_the_duck*"]
 exclude = ["tests*"]
+
+[tool.setuptools_scm]
+write_to = "ride_the_duck/_version.py"
