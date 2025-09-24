@@ -36,14 +36,17 @@ jobs:
     - name: Verify git tag and setuptools-scm
       run: |
         echo "Available git tags:"
-        git tag --list | tail -10  # Show last 10 tags
+        git tag --list | tail -10
         echo "Current commit: $(git rev-parse HEAD)"
         echo "Current branch/ref: $GITHUB_REF"
         
         # Check if we're on a tagged commit
         CURRENT_TAG=$(git describe --exact-match --tags HEAD 2>/dev/null || echo "")
         if [ -z "$CURRENT_TAG" ]; then
-            echo "⚠️  WARNING: Current commit is not tagged"
+            echo "❌ ERROR: Current commit is not tagged!"
+            echo "setuptools-scm requires the exact commit to be tagged."
+            echo "This will result in a development version that PyPI will reject."
+            exit 1
         else
             echo "✅ Current commit has tag: $CURRENT_TAG"
         fi
@@ -61,13 +64,13 @@ jobs:
         
         echo "Generated version: $VERSION_OUTPUT"
         
-        # Check if it contains development markers
-        if echo "$VERSION_OUTPUT" | grep -qE "(dev|\.d[0-9]|\+g[a-f0-9])"; then
+        # Check if it contains development markers (more strict check)
+        if [[ "$VERSION_OUTPUT" == *"dev"* ]] || [[ "$VERSION_OUTPUT" == *"+g"* ]] || [[ "$VERSION_OUTPUT" == *".d"* ]]; then
             echo "❌ ERROR: Development version detected: $VERSION_OUTPUT"
-            echo "This will be rejected by PyPI. Make sure you're building from a tagged commit."
-            echo "Expected a clean version like: 1.0.8"
+            echo "This will be rejected by PyPI. The commit must be exactly on a tagged commit."
             echo "Current tags near HEAD:"
             git tag --sort=-version:refname | head -5
+            echo "Expected a clean version like: 1.0.8"
             exit 1
         else
             echo "✅ SUCCESS: Clean release version detected: $VERSION_OUTPUT"
