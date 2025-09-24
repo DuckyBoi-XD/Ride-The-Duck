@@ -38,7 +38,8 @@ Repository = "https://github.com/DuckyBoi-XD/Ride-The-Duck"
 Issues = "https://github.com/DuckyBoi-XD/Ride-The-Duck/issues"
 
 [project.scripts]
-RTD = "ride_the_duck:main"
+ride-the-duck = "ride_the_duck.__main__:console_entry"
+RTD = "ride_the_duck.__main__:console_entry"
 
 [tool.setuptools.packages.find]
 where = ["."]
