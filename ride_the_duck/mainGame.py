@@ -1282,8 +1282,7 @@ def main_game():
                 elif PlayOption == 2:
                     break
         else:
-            break
-        
+            break   
 
 #----Main Game----#
 
