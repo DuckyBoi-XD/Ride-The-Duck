@@ -1,4 +1,7 @@
 #----Import Python Packages----#
+# Cross-platform input handling: termios/tty only available on Unix, msvcrt on Windows.
+# All usage is guarded by platform checks.
+
 import json
 import base64
 import os

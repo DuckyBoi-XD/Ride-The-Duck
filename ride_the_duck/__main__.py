@@ -14,8 +14,13 @@ def console_entry():
         from .mainGame import main as game_main
         game_main()
     except ImportError as e:
-        print(f"Error importing mainGame: {e}")
-        print("Please ensure the package is properly installed.")
+        if "termios" in str(e):
+            print("Error importing mainGame: No module named 'termios'")
+            print("This error occurs on Windows. The game should work, but some features may be limited.")
+            print("If you see this error and the game does not start, please update to the latest version.")
+        else:
+            print(f"Error importing mainGame: {e}")
+            print("Please ensure the package is properly installed.")
         sys.exit(1)
     except KeyboardInterrupt:
         print("\nGame interrupted by user.")
