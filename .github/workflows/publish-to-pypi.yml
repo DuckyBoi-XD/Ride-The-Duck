@@ -123,11 +123,12 @@ jobs:
             echo "❌ FATAL ERROR: Version changed between verification and build!"
             echo "Expected: $EXPECTED_VERSION"
             echo "Build version: $BUILD_VERSION"
-            echo ""
-            echo "DEBUGGING setuptools-scm state:"
-            python -c "import setuptools_scm; import os; print('Current directory:', os.getcwd()); print('Git describe:', setuptools_scm.get_version())"
             false
         fi
+        
+        # Set SETUPTOOLS_SCM_PRETEND_VERSION to force the correct version
+        export SETUPTOOLS_SCM_PRETEND_VERSION="$EXPECTED_VERSION"
+        echo "Set SETUPTOOLS_SCM_PRETEND_VERSION to: $SETUPTOOLS_SCM_PRETEND_VERSION"
         
         python -m build
         echo "Build completed. Checking output:"
@@ -143,7 +144,7 @@ jobs:
             if echo "$(basename $WHEEL_FILE)" | grep -q "dev\|+g"; then
                 echo "❌ FATAL ERROR: Wheel file contains development version markers!"
                 echo "Wheel: $(basename $WHEEL_FILE)"
-                echo "This should not happen after verification passed!"
+                echo "This should not happen with SETUPTOOLS_SCM_PRETEND_VERSION set!"
                 false
             fi
         else
@@ -157,7 +158,7 @@ jobs:
             if echo "$(basename $TAR_FILE)" | grep -q "dev\|+g"; then
                 echo "❌ FATAL ERROR: Source file contains development version markers!"
                 echo "Tarball: $(basename $TAR_FILE)"
-                echo "This should not happen after verification passed!"
+                echo "This should not happen with SETUPTOOLS_SCM_PRETEND_VERSION set!"
                 false
             fi
         else

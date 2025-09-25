@@ -8,7 +8,8 @@ dynamic = ["version"]
 description = "A terminal-based gambling card game inspired by 'Ride The Bus'"
 readme = "README.md"
 requires-python = ">=3.7"
-license = {text = "MIT"}
+[project.license]
+text = "MIT"
 authors = [
     {name = "Braeden Sy Tan", email = "braedenjairsytan@icloud.com"}
 ]
@@ -17,19 +18,15 @@ maintainers = [
 ]
 keywords = ["game", "cards", "gambling", "terminal", "console", "entertainment"]
 classifiers = [
-    "Development Status :: 5 - Production/Stable",
+    "Development Status :: 4 - Beta",
     "Intended Audience :: End Users/Desktop",
-    "Topic :: Games/Entertainment",
-    "License :: OSI Approved :: MIT License",
+    "Topic :: Games/Entertainment :: Arcade",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
-    "Operating System :: OS Independent",
-    "Environment :: Console",
 ]
 
 [project.urls]
