@@ -7,35 +7,10 @@ This allows the package to be run with:
 - RTD (after pip install)
 """
 
-# CRITICAL: Set up mocks IMMEDIATELY before any other code
 import sys
-import os
-
-# Windows compatibility - must be the FIRST thing that runs
-if os.name == "nt":
-    import types
-    
-    # Ensure termios mock is available before ANY other imports
-    if 'termios' not in sys.modules:
-        termios = types.ModuleType('termios')
-        termios.TCSADRAIN = 1
-        termios.TCSAFLUSH = 2
-        termios.TCSANOW = 0
-        termios.tcgetattr = lambda fd: [0, 0, 0, 0, 0, 0, []]
-        termios.tcsetattr = lambda fd, when, attrs: None
-        sys.modules['termios'] = termios
-    
-    if 'tty' not in sys.modules:
-        tty = types.ModuleType('tty')
-        tty.setraw = lambda fd, when=2: None
-        tty.setcbreak = lambda fd, when=2: None
-        sys.modules['tty'] = tty
 
 def console_entry():
     """Entry point for console commands (ride-the-duck, RTD)."""
-    if os.name == "nt":
-        print("Running on Windows - terminal compatibility enabled.")
-    
     try:
         from .mainGame import main as game_main
         game_main()

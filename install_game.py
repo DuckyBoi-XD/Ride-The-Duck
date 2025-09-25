@@ -12,12 +12,8 @@ from pathlib import Path
 def get_user_bin_path():
     """Get the user's Python bin path."""
     python_version = f"{sys.version_info.major}.{sys.version_info.minor}"
-    if sys.platform == "darwin":  # macOS
-        return Path.home() / "Library" / "Python" / python_version / "bin"
-    elif sys.platform.startswith("linux"):  # Linux
-        return Path.home() / ".local" / "bin"
-    else:  # Windows
-        return Path.home() / "AppData" / "Local" / "Programs" / "Python" / f"Python{python_version.replace('.', '')}" / "Scripts"
+    # macOS only
+    return Path.home() / "Library" / "Python" / python_version / "bin"
 
 def get_shell_config():
     """Get the shell configuration file."""

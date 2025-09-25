@@ -17,13 +17,8 @@ try:
 except ImportError as e:
     def main():
         """Fallback main function if mainGame can't be imported."""
-        if "termios" in str(e):
-            print("Error importing mainGame: No module named 'termios'")
-            print("This error occurs on Windows. The game should work, but some features may be limited.")
-            print("If you see this error and the game does not start, please update to the latest version.")
-        else:
-            print(f"Error: Could not import mainGame module: {e}")
-            print("Please check that all required files are present.")
+        print(f"Error: Could not import mainGame module: {e}")
+        print("Please check that all required files are present.")
         import sys
         sys.exit(1)
 
