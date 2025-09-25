@@ -71,9 +71,22 @@ jobs:
             echo "Current tags near HEAD:"
             git tag --sort=-version:refname | head -5
             echo "Expected a clean version like: 1.0.8"
+            echo ""
+            echo "DEBUGGING INFO:"
+            echo "Current commit: $(git rev-parse HEAD)"
+            echo "Tag commit: $(git rev-list -n 1 1.0.8 2>/dev/null || echo 'Tag not found')"
+            echo "Commits since tag: $(git rev-list --count HEAD ^1.0.8 2>/dev/null || echo 'Cannot calculate')"
             exit 1
         else
             echo "✅ SUCCESS: Clean release version detected: $VERSION_OUTPUT"
+            # Double-check: ensure version matches expected tag
+            EXPECTED_VERSION="${GITHUB_REF#refs/tags/}"
+            if [[ "$VERSION_OUTPUT" != "$EXPECTED_VERSION" ]]; then
+                echo "❌ ERROR: Version mismatch!"
+                echo "Expected: $EXPECTED_VERSION"
+                echo "Generated: $VERSION_OUTPUT"
+                exit 1
+            fi
         fi
     
     - name: Install dependencies
