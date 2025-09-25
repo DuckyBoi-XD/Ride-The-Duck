@@ -65,29 +65,38 @@ jobs:
         echo "Generated version: $VERSION_OUTPUT"
         
         # Check if it contains development markers (more strict check)
-        if [[ "$VERSION_OUTPUT" == *"dev"* ]] || [[ "$VERSION_OUTPUT" == *"+g"* ]] || [[ "$VERSION_OUTPUT" == *".d"* ]]; then
+        echo "Checking version for development markers..."
+        if [[ "$VERSION_OUTPUT" =~ dev ]] || [[ "$VERSION_OUTPUT" =~ \+g ]] || [[ "$VERSION_OUTPUT" =~ \.d[0-9] ]]; then
             echo "❌ ERROR: Development version detected: $VERSION_OUTPUT"
             echo "This will be rejected by PyPI. The commit must be exactly on a tagged commit."
             echo "Current tags near HEAD:"
             git tag --sort=-version:refname | head -5
-            echo "Expected a clean version like: 1.0.8"
+            echo "Expected a clean version like: 1.0.9"
             echo ""
             echo "DEBUGGING INFO:"
             echo "Current commit: $(git rev-parse HEAD)"
-            echo "Tag commit: $(git rev-list -n 1 1.0.8 2>/dev/null || echo 'Tag not found')"
-            echo "Commits since tag: $(git rev-list --count HEAD ^1.0.8 2>/dev/null || echo 'Cannot calculate')"
+            CURRENT_TAG="${GITHUB_REF#refs/tags/}"
+            echo "Expected tag: $CURRENT_TAG"
+            echo "Tag commit: $(git rev-list -n 1 $CURRENT_TAG 2>/dev/null || echo 'Tag not found')"
+            echo "Commits since tag: $(git rev-list --count HEAD ^$CURRENT_TAG 2>/dev/null || echo 'Cannot calculate')"
+            echo ""
+            echo "WORKFLOW WILL EXIT NOW TO PREVENT PYPI ERROR"
             exit 1
-        else
-            echo "✅ SUCCESS: Clean release version detected: $VERSION_OUTPUT"
-            # Double-check: ensure version matches expected tag
-            EXPECTED_VERSION="${GITHUB_REF#refs/tags/}"
-            if [[ "$VERSION_OUTPUT" != "$EXPECTED_VERSION" ]]; then
-                echo "❌ ERROR: Version mismatch!"
-                echo "Expected: $EXPECTED_VERSION"
-                echo "Generated: $VERSION_OUTPUT"
-                exit 1
-            fi
         fi
+        
+        echo "✅ SUCCESS: Clean release version detected: $VERSION_OUTPUT"
+        
+        # Double-check: ensure version matches expected tag
+        EXPECTED_VERSION="${GITHUB_REF#refs/tags/}"
+        if [[ "$VERSION_OUTPUT" != "$EXPECTED_VERSION" ]]; then
+            echo "❌ ERROR: Version mismatch!"
+            echo "Expected: $EXPECTED_VERSION"
+            echo "Generated: $VERSION_OUTPUT" 
+            echo "WORKFLOW WILL EXIT NOW TO PREVENT PYPI ERROR"
+            exit 1
+        fi
+        
+        echo "✅ SUCCESS: Version matches expected tag: $VERSION_OUTPUT"
     
     - name: Install dependencies
       run: |
