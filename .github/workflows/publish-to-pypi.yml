@@ -35,6 +35,8 @@ jobs:
     
     - name: Verify git tag and setuptools-scm
       run: |
+        set -e  # Exit immediately on any error
+        
         echo "Available git tags:"
         git tag --list | tail -10
         echo "Current commit: $(git rev-parse HEAD)"
@@ -43,10 +45,10 @@ jobs:
         # Check if we're on a tagged commit
         CURRENT_TAG=$(git describe --exact-match --tags HEAD 2>/dev/null || echo "")
         if [ -z "$CURRENT_TAG" ]; then
-            echo "❌ ERROR: Current commit is not tagged!"
+            echo "❌ FATAL ERROR: Current commit is not tagged!"
             echo "setuptools-scm requires the exact commit to be tagged."
             echo "This will result in a development version that PyPI will reject."
-            exit 1
+            false  # Force failure
         else
             echo "✅ Current commit has tag: $CURRENT_TAG"
         fi
@@ -56,22 +58,22 @@ jobs:
         
         # Check what version setuptools-scm will generate
         echo "setuptools-scm version preview:"
-        if ! VERSION_OUTPUT=$(python -c "import setuptools_scm; version = setuptools_scm.get_version(); print(version)" 2>&1); then
-            echo "❌ ERROR: Failed to get version from setuptools-scm"
+        VERSION_OUTPUT=$(python -c "import setuptools_scm; version = setuptools_scm.get_version(); print(version)" 2>&1)
+        if [ $? -ne 0 ]; then
+            echo "❌ FATAL ERROR: Failed to get version from setuptools-scm"
             echo "Output: $VERSION_OUTPUT"
-            exit 1
+            false  # Force failure
         fi
         
         echo "Generated version: $VERSION_OUTPUT"
         
-        # Check if it contains development markers (more strict check)
+        # ABSOLUTE CHECK: Any dev version fails immediately
         echo "Checking version for development markers..."
-        if [[ "$VERSION_OUTPUT" =~ dev ]] || [[ "$VERSION_OUTPUT" =~ \+g ]] || [[ "$VERSION_OUTPUT" =~ \.d[0-9] ]]; then
-            echo "❌ ERROR: Development version detected: $VERSION_OUTPUT"
+        if echo "$VERSION_OUTPUT" | grep -q "dev\|+g\|\.d[0-9]"; then
+            echo "❌ FATAL ERROR: Development version detected: $VERSION_OUTPUT"
             echo "This will be rejected by PyPI. The commit must be exactly on a tagged commit."
             echo "Current tags near HEAD:"
             git tag --sort=-version:refname | head -5
-            echo "Expected a clean version like: 1.0.9"
             echo ""
             echo "DEBUGGING INFO:"
             echo "Current commit: $(git rev-parse HEAD)"
@@ -80,23 +82,24 @@ jobs:
             echo "Tag commit: $(git rev-list -n 1 $CURRENT_TAG 2>/dev/null || echo 'Tag not found')"
             echo "Commits since tag: $(git rev-list --count HEAD ^$CURRENT_TAG 2>/dev/null || echo 'Cannot calculate')"
             echo ""
-            echo "WORKFLOW WILL EXIT NOW TO PREVENT PYPI ERROR"
-            exit 1
+            echo "🛑 STOPPING WORKFLOW TO PREVENT PYPI UPLOAD ERROR 🛑"
+            false  # Force failure
         fi
         
         echo "✅ SUCCESS: Clean release version detected: $VERSION_OUTPUT"
         
-        # Double-check: ensure version matches expected tag
+        # ABSOLUTE CHECK: Version must match tag exactly
         EXPECTED_VERSION="${GITHUB_REF#refs/tags/}"
-        if [[ "$VERSION_OUTPUT" != "$EXPECTED_VERSION" ]]; then
-            echo "❌ ERROR: Version mismatch!"
+        if [ "$VERSION_OUTPUT" != "$EXPECTED_VERSION" ]; then
+            echo "❌ FATAL ERROR: Version mismatch!"
             echo "Expected: $EXPECTED_VERSION"
             echo "Generated: $VERSION_OUTPUT" 
-            echo "WORKFLOW WILL EXIT NOW TO PREVENT PYPI ERROR"
-            exit 1
+            echo "🛑 STOPPING WORKFLOW TO PREVENT PYPI UPLOAD ERROR 🛑"
+            false  # Force failure
         fi
         
         echo "✅ SUCCESS: Version matches expected tag: $VERSION_OUTPUT"
+        echo "🎉 ALL CHECKS PASSED - PROCEEDING WITH BUILD 🎉"
     
     - name: Install dependencies
       run: |
@@ -106,17 +109,60 @@ jobs:
     - name: Build package
       run: |
         echo "Building package..."
+        
+        # Clean any previous build artifacts
+        rm -rf dist/ build/ *.egg-info/
+        
+        # Verify setuptools-scm version again before building
+        echo "Checking setuptools-scm version before build:"
+        BUILD_VERSION=$(python -c "import setuptools_scm; version = setuptools_scm.get_version(); print(version)")
+        echo "Version for build: $BUILD_VERSION"
+        
+        EXPECTED_VERSION="${GITHUB_REF#refs/tags/}"
+        if [ "$BUILD_VERSION" != "$EXPECTED_VERSION" ]; then
+            echo "❌ FATAL ERROR: Version changed between verification and build!"
+            echo "Expected: $EXPECTED_VERSION"
+            echo "Build version: $BUILD_VERSION"
+            echo ""
+            echo "DEBUGGING setuptools-scm state:"
+            python -c "import setuptools_scm; import os; print('Current directory:', os.getcwd()); print('Git describe:', setuptools_scm.get_version())"
+            false
+        fi
+        
         python -m build
         echo "Build completed. Checking output:"
         ls -la dist/
         
         # Verify the built package has the expected version
         WHEEL_FILE=$(ls dist/*.whl | head -1)
+        TAR_FILE=$(ls dist/*.tar.gz | head -1)
+        
         if [ -f "$WHEEL_FILE" ]; then
             echo "✅ Wheel file created: $(basename $WHEEL_FILE)"
+            # Check if wheel filename contains dev version
+            if echo "$(basename $WHEEL_FILE)" | grep -q "dev\|+g"; then
+                echo "❌ FATAL ERROR: Wheel file contains development version markers!"
+                echo "Wheel: $(basename $WHEEL_FILE)"
+                echo "This should not happen after verification passed!"
+                false
+            fi
         else
             echo "❌ ERROR: No wheel file found"
-            exit 1
+            false
+        fi
+        
+        if [ -f "$TAR_FILE" ]; then
+            echo "✅ Source file created: $(basename $TAR_FILE)"
+            # Check if tarball filename contains dev version
+            if echo "$(basename $TAR_FILE)" | grep -q "dev\|+g"; then
+                echo "❌ FATAL ERROR: Source file contains development version markers!"
+                echo "Tarball: $(basename $TAR_FILE)"
+                echo "This should not happen after verification passed!"
+                false
+            fi
+        else
+            echo "❌ ERROR: No source file found"
+            false
         fi
     
     - name: Publish package
