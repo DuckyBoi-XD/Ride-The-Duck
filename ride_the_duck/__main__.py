@@ -26,8 +26,7 @@ def console_entry():
 
 def main():
     """Main entry point when called as python -m ride_the_duck."""
-    import sys
-    sys.exit(console_entry())
+    console_entry()
 
 if __name__ == "__main__":
     main()
