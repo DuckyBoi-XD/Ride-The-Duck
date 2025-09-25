@@ -14,8 +14,13 @@ try:
 except ImportError:
     WINDOWS = False
 
-import tty
-import termios
+# Only import termios/tty on Unix-like systems
+try:
+    import tty
+    import termios
+    HAS_TERMIOS = True
+except ImportError:
+    HAS_TERMIOS = False
 #----Import Python Packages----#
 
 #----Colours----#
@@ -88,10 +93,10 @@ def decode_save(encoded_bytes):
     json_str = base64.b64decode(b64).decode('utf-8')
     return json_str
 
-def load_game(filename="savefile_ridetheduck.json"): # access save file -JSON
+def load_game(): # access save file -JSON
     '''loading save file - returns both money and name'''
     config_dir = os.path.expanduser("~/.config/ride-the-duck")  # store in user's $HOME/.config/ride-the-duck
-    save_path = os.path.join(config_dir, "savefile.bin")        # as savefile.bin in that dir
+    save_path = os.path.join(config_dir, "RTDSaveFile.bin")        # as RTDSaveFile.bin in that dir
     try:
         with open(save_path, "rb") as f:
             encoded_bytes = f.read()
@@ -113,7 +118,7 @@ def load_game(filename="savefile_ridetheduck.json"): # access save file -JSON
         print(f"Corrupted save file - using defaults. Error: {e}")
         return 500, None, 0, 0, 0, 0, 0, 0
 
-def save_game(money=None, name=None, game_played=None, win2=None, win3=None, win4=None, win20=None, broke_count=None, filename="savefile_ridetheduck.json"):
+def save_game(money=None, name=None, game_played=None, win2=None, win3=None, win4=None, win20=None, broke_count=None):
     '''saving game data'''
     if money is None:
         money = USER_WALLET
@@ -145,7 +150,7 @@ def save_game(money=None, name=None, game_played=None, win2=None, win3=None, win
     encoded_bytes = encode_save(json_str)
     config_dir = os.path.expanduser("~/.config/ride-the-duck")
     os.makedirs(config_dir, exist_ok=True)
-    save_path = os.path.join(config_dir, "savefile.bin")
+    save_path = os.path.join(config_dir, "RTDSaveFile.bin")
     with open(save_path, "wb") as f:
         f.write(encoded_bytes)
 #----Save File Money----#
@@ -278,7 +283,7 @@ def key_press(option):
         
         if WINDOWS:  # Windows
             msvcrt.getch()
-        else:  # Unix/Linux/macOS
+        elif HAS_TERMIOS:  # Unix/Linux/macOS with termios
             fd = sys.stdin.fileno()
             old_settings = termios.tcgetattr(fd)
             try:
@@ -286,6 +291,8 @@ def key_press(option):
                 sys.stdin.read(1)
             finally:
                 termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+        else:  # Fallback for systems without termios
+            input("Press Enter to continue...")
         return True
     except KeyboardInterrupt:
         print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
@@ -298,14 +305,14 @@ def key_press(option):
 
 #----Arrow Key Track----#
 def arrow_key():
-    '''reads and looks for arrow press - Windows only'''
+    '''reads and looks for arrow press - cross platform'''
     try:
         if WINDOWS:  # Windows
             key = msvcrt.getch()
             if key == b'\xe0':  # Special key prefix on Windows
                 key += msvcrt.getch()
             return key.decode('latin-1', errors='ignore')
-        else:  # Unix/Linux/macOS
+        elif HAS_TERMIOS:  # Unix/Linux/macOS with termios
             fd = sys.stdin.fileno()
             old_settings = termios.tcgetattr(fd)
             try:
@@ -327,6 +334,8 @@ def arrow_key():
                 return key
             finally:
                 termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+        else:  # Fallback for systems without termios
+            return input("Enter your choice (w/s for up/down, Enter to select): ").strip()
     except KeyboardInterrupt:
         print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
         sys.exit()
@@ -470,23 +479,34 @@ def arrow_menu(title, text, options):
                 elif key.lower() == 's':  # S key - down
                     clear_screen()
                     selected = (selected + 1) % len(options)
-            else:  # Unix/Linux/macOS
-                if key == '\x1b[A':  # Up arrow
-                    clear_screen()
-                    selected = (selected - 1) % len(options)
-                elif key == '\x1b[B':  # Down arrow
-                    clear_screen()
-                    selected = (selected + 1) % len(options)
-                elif ord(key[0]) == 13:  # Enter
-                    return selected
-                elif len(key) == 1 and ord(key) == 27:  # ESC alone
-                    return -1
-                elif len(key) == 1 and key.lower() == 'w':  # W key - up
-                    clear_screen()
-                    selected = (selected - 1) % len(options)
-                elif len(key) == 1 and key.lower() == 's':  # S key - down
-                    clear_screen()
-                    selected = (selected + 1) % len(options)
+            else:  # Unix/Linux/macOS or fallback
+                if HAS_TERMIOS:
+                    if key == '\x1b[A':  # Up arrow
+                        clear_screen()
+                        selected = (selected - 1) % len(options)
+                    elif key == '\x1b[B':  # Down arrow
+                        clear_screen()
+                        selected = (selected + 1) % len(options)
+                    elif ord(key[0]) == 13:  # Enter
+                        return selected
+                    elif len(key) == 1 and ord(key) == 27:  # ESC alone
+                        return -1
+                    elif len(key) == 1 and key.lower() == 'w':  # W key - up
+                        clear_screen()
+                        selected = (selected - 1) % len(options)
+                    elif len(key) == 1 and key.lower() == 's':  # S key - down
+                        clear_screen()
+                        selected = (selected + 1) % len(options)
+                else:
+                    # Fallback for systems without termios - parse input
+                    if key.lower() in ['w', 'up']:
+                        clear_screen()
+                        selected = (selected - 1) % len(options)
+                    elif key.lower() in ['s', 'down']:
+                        clear_screen()
+                        selected = (selected + 1) % len(options)
+                    elif key.lower() in ['enter', '']:
+                        return selected
     except KeyboardInterrupt:
         print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
         sys.exit()
@@ -824,7 +844,7 @@ def InOut_game():
         game_round = 3
         MULTIPLIER["x4"] = 1
         Win = None
-        choices = arrow_menu("game-main", "\n".join(card_output) + (f"\n{Colours.CYAN}Pick inside or outsite{Colours.RESET}\n"), InOutPick)
+        choices = arrow_menu("game-main", "\n".join(card_output) + (f"\n{Colours.CYAN}Pick inside or outside{Colours.RESET}\n"), InOutPick)
         if choices == 0:
             io_pick = "inside"
         elif choices == 1:
@@ -1068,7 +1088,7 @@ def help_game():
 #----Out Of Money----#
 
 def financial_aid():
-    """Function to output the last message after loosing all your money"""
+    """Function to output the last message after losing all your money"""
     global USER_WALLET
     global BROKE_COUNT
     BROKE_COUNT += 1
@@ -1122,7 +1142,7 @@ def main_menu():
                 elif choice == 2:  # tips
                     clear_screen()
                     help_game()
-                elif choice == 3:  # CHange name
+                elif choice == 3:  # Change name
                     clear_screen()
                     name_pick()
                 elif choice == 4:
@@ -1160,12 +1180,12 @@ def show_stats():
         print(f"{Colours.GREEN}💰 Money: ${USER_WALLET}{Colours.RESET}\n"
             f"{Colours.YELLOW}🏷️  Name: {USER_NAME}{Colours.RESET}\n"
             f"{Colours.CYAN}🎮 Games Played: {GAMES_PLAYED}{Colours.RESET}\n"
-            f"{Colours.GOLD}🏆 Wins Toal: {WINS_TOTAL}{Colours.RESET}\n"
+            f"{Colours.GOLD}🏆 Wins Total: {WINS_TOTAL}{Colours.RESET}\n"
             f"{Colours.GOLD}🏆 x2 Wins: {WIN_X2}{Colours.RESET}\n"
             f"{Colours.GOLD}🏆 x3 Wins: {WIN_X3}{Colours.RESET}\n"
             f"{Colours.GOLD}🏆 x4 Wins: {WIN_X4}{Colours.RESET}\n"
             f"{Colours.GOLD}🏆 x20 Wins: {WIN_X20}{Colours.RESET}\n"
-            f"{Colours.RED}🪙 Broke Cont: {BROKE_COUNT}{Colours.RESET}"
+            f"{Colours.RED}🪙 Broke Count: {BROKE_COUNT}{Colours.RESET}"
         )
         LINE()
         key_press(1)

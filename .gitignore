@@ -209,8 +209,9 @@ __marimo__/
 ######################
 ## project specific ##
 
-# save file
-SaveFile_RideTheDuck.json
-savefile_ridetheduck.json
+# Save files
+RTDSaveFile.bin
+savefile.bin
+*.save
 ######################
 .DS_Store
