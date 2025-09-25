@@ -8,23 +8,15 @@ import os
 import codecs
 import random
 import time
-
-#cross-platform
 import sys
+
 try:
     import msvcrt  # Windows
-    WINDOWS = True
+    WINDOWS = os.name == "nt"
 except ImportError:
-    WINDOWS = False
+    WINDOWS = os.name == "nt"
 
-# Only import termios/tty on Unix-like systems
-try:
-    import tty
-    import termios
-    HAS_TERMIOS = True
-except ImportError:
-    HAS_TERMIOS = False
-#----Import Python Packages----#
+HAS_TERMIOS = not WINDOWS
 
 #----Colours----#
 class Colours:
@@ -52,6 +44,15 @@ class Colours:
     
     RESET = '\033[0m'
 #----Colours----#
+
+# Enable ANSI escape codes on Windows 10+ terminal
+if WINDOWS:
+    try:
+        import ctypes
+        kernel32 = ctypes.windll.kernel32
+        kernel32.SetConsoleMode(kernel32.GetStdHandle(-11), 7)
+    except Exception:
+        pass
 
 #----Save File Money----#
 
@@ -96,9 +97,20 @@ def decode_save(encoded_bytes):
     json_str = base64.b64decode(b64).decode('utf-8')
     return json_str
 
+def get_config_dir():
+    '''Return platform-appropriate config directory'''
+    if WINDOWS:
+        appdata = os.environ.get("APPDATA")
+        if appdata:
+            return os.path.join(appdata, "ride-the-duck")
+        else:
+            return os.path.expanduser("~/ride-the-duck")
+    else:
+        return os.path.expanduser("~/.config/ride-the-duck")
+
 def load_game(): # access save file -JSON
     '''loading save file - returns both money and name'''
-    config_dir = os.path.expanduser("~/.config/ride-the-duck")  # store in user's $HOME/.config/ride-the-duck
+    config_dir = get_config_dir()
     save_path = os.path.join(config_dir, "RTDSaveFile.bin")        # as RTDSaveFile.bin in that dir
     try:
         with open(save_path, "rb") as f:
@@ -151,7 +163,7 @@ def save_game(money=None, name=None, game_played=None, win2=None, win3=None, win
     }
     json_str = json.dumps(data)
     encoded_bytes = encode_save(json_str)
-    config_dir = os.path.expanduser("~/.config/ride-the-duck")
+    config_dir = get_config_dir()
     os.makedirs(config_dir, exist_ok=True)
     save_path = os.path.join(config_dir, "RTDSaveFile.bin")
     with open(save_path, "wb") as f:
@@ -279,22 +291,13 @@ for suit in CARD_SUITS:
 def key_press(option):
     '''single key tracking - cross platform'''
     try:
-        if option is 0:
+        if option == 0:
             print(f"{Colours.RED}Press any key to continue{Colours.RESET}")
-        elif option is 1:
+        elif option == 1:
             print(f"{Colours.RED}Press any key to return to menu{Colours.RESET}")
-        
-        if WINDOWS:  # Windows
+        if WINDOWS and 'msvcrt' in sys.modules:
             msvcrt.getch()
-        elif HAS_TERMIOS:  # Unix/Linux/macOS with termios
-            fd = sys.stdin.fileno()
-            old_settings = termios.tcgetattr(fd)
-            try:
-                tty.setraw(sys.stdin.fileno())
-                sys.stdin.read(1)
-            finally:
-                termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
-        else:  # Fallback for systems without termios
+        else:
             input("Press Enter to continue...")
         return True
     except KeyboardInterrupt:
@@ -310,34 +313,12 @@ def key_press(option):
 def arrow_key():
     '''reads and looks for arrow press - cross platform'''
     try:
-        if WINDOWS:  # Windows
+        if WINDOWS and 'msvcrt' in sys.modules:
             key = msvcrt.getch()
-            if key == b'\xe0':  # Special key prefix on Windows
+            if key == b'\xe0':
                 key += msvcrt.getch()
             return key.decode('latin-1', errors='ignore')
-        elif HAS_TERMIOS:  # Unix/Linux/macOS with termios
-            fd = sys.stdin.fileno()
-            old_settings = termios.tcgetattr(fd)
-            try:
-                tty.setraw(sys.stdin.fileno())
-                key = sys.stdin.read(1)
-                
-                # Check for CTRL-C and CTRL-D in raw mode
-                if ord(key) == 3:  # CTRL-C
-                    print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
-                    sys.exit()
-                elif ord(key) == 4:  # CTRL-D
-                    print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
-                    sys.exit()
-                
-                # Check for escape sequence (arrow keys)
-                if ord(key) == 27:  # ESC
-                    key += sys.stdin.read(2)  # Read the next 2 characters (for arrows)
-                    
-                return key
-            finally:
-                termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
-        else:  # Fallback for systems without termios
+        else:
             return input("Enter your choice (w/s for up/down, Enter to select): ").strip()
     except KeyboardInterrupt:
         print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
@@ -654,7 +635,7 @@ def RedBlack_game():
         gc_rank = card_key[:-1]
         gc_suit = card_key[-1]
 
-        card_colour = Colours.RED if gc_suit in ("♦", "♥") else Colours.BLACK if gc_suit in ("♠", "♣") else {Colours.BLACK}
+        card_colour = Colours.RED if gc_suit in ("♦", "♥") else Colours.BLACK if gc_suit in ("♠", "♣") else Colours.BLACK
 
 
         rb_top = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}╭──────╮{Colours.RESET}  "
@@ -754,7 +735,7 @@ def OverUnder_game():
         gc_rank = card_key[:-1]
         gc_suit = card_key[-1]
 
-        card_colour = Colours.RED if gc_suit in ("♦", "♥") else Colours.BLACK if gc_suit in ("♠", "♣") else {Colours.BLACK}
+        card_colour = Colours.RED if gc_suit in ("♦", "♥") else Colours.BLACK if gc_suit in ("♠", "♣") else Colours.BLACK
 
 
         ou_top = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}╭──────╮{Colours.RESET}  "
@@ -863,7 +844,7 @@ def InOut_game():
         gc_rank = card_key[:-1]
         gc_suit = card_key[-1]
 
-        card_colour = Colours.RED if gc_suit in ("♦", "♥") else Colours.BLACK if gc_suit in ("♠", "♣") else {Colours.BLACK}
+        card_colour = Colours.RED if gc_suit in ("♦", "♥") else Colours.BLACK if gc_suit in ("♠", "♣") else Colours.BLACK
 
 
         io_top = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}╭──────╮{Colours.RESET}  "
@@ -986,7 +967,7 @@ def Suits_game():
         gc_rank = card_key[:-1]
         gc_suit = card_key[-1]
 
-        card_colour = Colours.RED if gc_suit in ("♦", "♥") else Colours.BLACK if gc_suit in ("♠", "♣") else {Colours.BLACK}
+        card_colour = Colours.RED if gc_suit in ("♦", "♥") else Colours.BLACK if gc_suit in ("♠", "♣") else Colours.BLACK
 
 
         s_top = f"{Colours.BG_WHITE}{Colours.BOLD}{card_colour}╭──────╮{Colours.RESET}  "
