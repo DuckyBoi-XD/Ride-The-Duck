@@ -10,13 +10,28 @@ import random
 import time
 import sys
 
-try:
-    import msvcrt  # Windows
-    WINDOWS = os.name == "nt"
-except ImportError:
-    WINDOWS = os.name == "nt"
-
+# Platform detection
+WINDOWS = os.name == "nt"
 HAS_TERMIOS = not WINDOWS
+
+# Windows-specific imports
+if WINDOWS:
+    try:
+        import msvcrt
+        HAS_MSVCRT = True
+    except ImportError:
+        HAS_MSVCRT = False
+else:
+    HAS_MSVCRT = False
+
+# Enable ANSI colors on Windows 10+
+if WINDOWS:
+    try:
+        import ctypes
+        kernel32 = ctypes.windll.kernel32
+        kernel32.SetConsoleMode(kernel32.GetStdHandle(-11), 7)
+    except Exception:
+        pass  # Ignore if ANSI colors can't be enabled
 
 #----Colours----#
 class Colours:
@@ -44,15 +59,6 @@ class Colours:
     
     RESET = '\033[0m'
 #----Colours----#
-
-# Enable ANSI escape codes on Windows 10+ terminal
-if WINDOWS:
-    try:
-        import ctypes
-        kernel32 = ctypes.windll.kernel32
-        kernel32.SetConsoleMode(kernel32.GetStdHandle(-11), 7)
-    except Exception:
-        pass
 
 #----Save File Money----#
 
@@ -184,13 +190,13 @@ Win = None
 game_round = 1
 continue_game = False
 PlayOption = 0
-gc_rank = {}
-gc_suit = {}
+gc_rank = ""
+gc_suit = ""
 game_card_deck = {}
-card_value_1 = {}
-card_value_2 = {}
-card_value_3 = {}
-card_value_4 = {}
+card_value_1 = 0
+card_value_2 = 0
+card_value_3 = 0
+card_value_4 = 0
 game_card = {}
 card_output = ""
 bet_amount = None
@@ -295,16 +301,32 @@ def key_press(option):
             print(f"{Colours.RED}Press any key to continue{Colours.RESET}")
         elif option == 1:
             print(f"{Colours.RED}Press any key to return to menu{Colours.RESET}")
-        if WINDOWS and 'msvcrt' in sys.modules:
-            msvcrt.getch()
+        
+        if WINDOWS:
+            if HAS_MSVCRT:
+                import msvcrt
+                msvcrt.getch()
+            else:
+                input("Press Enter to continue...")
+        elif not WINDOWS:
+            # Only try termios on non-Windows systems
+            try:
+                import tty
+                import termios
+                fd = sys.stdin.fileno()
+                old_settings = termios.tcgetattr(fd)
+                try:
+                    tty.setraw(sys.stdin.fileno())
+                    sys.stdin.read(1)
+                finally:
+                    termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+            except (ImportError, OSError):
+                input("Press Enter to continue...")
         else:
             input("Press Enter to continue...")
         return True
-    except KeyboardInterrupt:
-        print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
-        sys.exit()
-    except EOFError:
-        print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
+    except (KeyboardInterrupt, EOFError):
+        print(f"\n{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
         sys.exit()
 
 #----Single Key Track----#
@@ -313,18 +335,44 @@ def key_press(option):
 def arrow_key():
     '''reads and looks for arrow press - cross platform'''
     try:
-        if WINDOWS and 'msvcrt' in sys.modules:
+        if WINDOWS and HAS_MSVCRT:
+            import msvcrt
             key = msvcrt.getch()
-            if key == b'\xe0':
+            if key == b'\xe0':  # Special key prefix on Windows
                 key += msvcrt.getch()
             return key.decode('latin-1', errors='ignore')
+        elif not WINDOWS:
+            # Only try termios on non-Windows systems
+            try:
+                import tty
+                import termios
+                fd = sys.stdin.fileno()
+                old_settings = termios.tcgetattr(fd)
+                try:
+                    tty.setraw(sys.stdin.fileno())
+                    key = sys.stdin.read(1)
+                    
+                    # Check for CTRL-C and CTRL-D in raw mode
+                    if ord(key) == 3:  # CTRL-C
+                        print(f"\n{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
+                        sys.exit()
+                    elif ord(key) == 4:  # CTRL-D
+                        print(f"\n{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
+                        sys.exit()
+                    
+                    # Check for escape sequence (arrow keys)
+                    if ord(key) == 27:  # ESC
+                        key += sys.stdin.read(2)  # Read the next 2 characters (for arrows)
+                        
+                    return key
+                finally:
+                    termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+            except (ImportError, OSError):
+                return input("Enter your choice (w/s for up/down, Enter to select): ").strip()
         else:
             return input("Enter your choice (w/s for up/down, Enter to select): ").strip()
-    except KeyboardInterrupt:
-        print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
-        sys.exit()
-    except EOFError:
-        print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
+    except (KeyboardInterrupt, EOFError):
+        print(f"\n{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
         sys.exit()
 #----Arrow Key Track----#
 
@@ -446,57 +494,48 @@ def arrow_menu(title, text, options):
             key = arrow_key()
             
             # Handle different key codes for Windows and Unix
-            if WINDOWS:  # Windows
+            if WINDOWS and HAS_MSVCRT:  # Windows
                 if key == '\xe0H':  # Up arrow on Windows
-                    clear_screen()
                     selected = (selected - 1) % len(options)
                 elif key == '\xe0P':  # Down arrow on Windows
-                    clear_screen()
                     selected = (selected + 1) % len(options)
                 elif key == '\r':  # Enter on Windows
                     return selected
                 elif key == '\x1b':  # ESC on Windows
                     return -1
-                elif key.lower() == 'w':  # W key - up
-                    clear_screen()
+                elif len(key) == 1 and key.lower() == 'w':  # W key - up
                     selected = (selected - 1) % len(options)
-                elif key.lower() == 's':  # S key - down
-                    clear_screen()
+                elif len(key) == 1 and key.lower() == 's':  # S key - down
                     selected = (selected + 1) % len(options)
             else:  # Unix/Linux/macOS or fallback
-                if HAS_TERMIOS:
+                if HAS_TERMIOS and len(key) > 1:
                     if key == '\x1b[A':  # Up arrow
-                        clear_screen()
                         selected = (selected - 1) % len(options)
                     elif key == '\x1b[B':  # Down arrow
-                        clear_screen()
                         selected = (selected + 1) % len(options)
                     elif ord(key[0]) == 13:  # Enter
                         return selected
                     elif len(key) == 1 and ord(key) == 27:  # ESC alone
                         return -1
-                    elif len(key) == 1 and key.lower() == 'w':  # W key - up
-                        clear_screen()
+                elif len(key) == 1:
+                    if key.lower() == 'w':  # W key - up
                         selected = (selected - 1) % len(options)
-                    elif len(key) == 1 and key.lower() == 's':  # S key - down
-                        clear_screen()
+                    elif key.lower() == 's':  # S key - down
                         selected = (selected + 1) % len(options)
+                    elif key == '\r' or key == '\n':  # Enter
+                        return selected
                 else:
-                    # Fallback for systems without termios - parse input
+                    # Fallback for text input
                     if key.lower() in ['w', 'up']:
-                        clear_screen()
                         selected = (selected - 1) % len(options)
                     elif key.lower() in ['s', 'down']:
-                        clear_screen()
                         selected = (selected + 1) % len(options)
                     elif key.lower() in ['enter', '']:
                         return selected
-    except KeyboardInterrupt:
-        print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
+    except (KeyboardInterrupt, EOFError):
+        print(f"\n{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
         sys.exit()
-    except EOFError:
-        print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
-        sys.exit()
+
 #----Arrow Key Menu System----#
 
 #----Start Game----#
@@ -549,7 +588,7 @@ def bet_check():
                 if bet_error == 1:
                     print(f"{Colours.RED}⚠️ Invalid bet: {user_bet} - Please use a number ⚠️{Colours.RESET}")
                 elif bet_error == 2:
-                    print(f"{Colours.RED}⚠️ Invalid bet: {user_bet} - Please a number equal or bigger than 0.01 ⚠️{Colours.RESET}")
+                    print(f"{Colours.RED}⚠️ Invalid bet: {user_bet} - Please enter a number equal or bigger than 0.01 ⚠️{Colours.RESET}")
                 elif bet_error == 3:
                     print(f"{Colours.RED}⚠️ Invalid bet: {user_bet} - You are betting more money than you have in your wallet ⚠️{Colours.RESET}")
 
@@ -557,12 +596,13 @@ def bet_check():
                     f"{Colours.CYAN}💵  How much do you want to bet? (Min $0.01) 💵{Colours.RESET}")
                 bet_error = 0
                 try:
-                    user_bet = input(f"{Colours.BOLD}❯ {Colours.RESET}").strip().lower()
+                    user_bet = input(f"{Colours.BOLD}❯ {Colours.RESET}").strip()
                 except (KeyboardInterrupt, EOFError):
                     print(f"\n{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
                     sys.exit()
+                
                 if is_float(user_bet):
-                    if money_valid(user_bet):
+                    if money_valid(user_bet) and float(user_bet) >= 0.01:
                         if float(user_bet) <= USER_WALLET:
                             clear_screen()
                             choices = arrow_menu("menu",
@@ -588,11 +628,8 @@ def bet_check():
                 else:
                     bet_error = 1
                     clear_screen()
-    except KeyboardInterrupt:
-        print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
-        sys.exit()
-    except EOFError:
-        print(f"{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
+    except (KeyboardInterrupt, EOFError):
+        print(f"\n{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
         sys.exit()
 
 #----Betting check Function----#
