@@ -10,19 +10,16 @@ import random
 import time
 import sys
 
-# Platform detection
-WINDOWS = os.name == "nt"
-HAS_TERMIOS = not WINDOWS
-
-# Windows-specific imports
-if WINDOWS:
-    try:
-        import msvcrt
-        HAS_MSVCRT = True
-    except ImportError:
-        HAS_MSVCRT = False
+# Cross-platform input handling
+if sys.platform.startswith('win'):
+    # Windows-specific imports
+    import msvcrt
+    WINDOWS = True
 else:
-    HAS_MSVCRT = False
+    # Unix-specific imports
+    import termios
+    import tty
+    WINDOWS = False
 
 # Enable ANSI colors on Windows 10+
 if WINDOWS:
@@ -303,27 +300,16 @@ def key_press(option):
             print(f"{Colours.RED}Press any key to return to menu{Colours.RESET}")
         
         if WINDOWS:
-            if HAS_MSVCRT:
-                import msvcrt
-                msvcrt.getch()
-            else:
-                input("Press Enter to continue...")
-        elif not WINDOWS:
-            # Only try termios on non-Windows systems
-            try:
-                import tty
-                import termios
-                fd = sys.stdin.fileno()
-                old_settings = termios.tcgetattr(fd)
-                try:
-                    tty.setraw(sys.stdin.fileno())
-                    sys.stdin.read(1)
-                finally:
-                    termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
-            except (ImportError, OSError):
-                input("Press Enter to continue...")
+            msvcrt.getch()
         else:
-            input("Press Enter to continue...")
+            # Unix/Linux/macOS with termios
+            fd = sys.stdin.fileno()
+            old_settings = termios.tcgetattr(fd)
+            try:
+                tty.setraw(sys.stdin.fileno())
+                sys.stdin.read(1)
+            finally:
+                termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
         return True
     except (KeyboardInterrupt, EOFError):
         print(f"\n{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
@@ -335,42 +321,34 @@ def key_press(option):
 def arrow_key():
     '''reads and looks for arrow press - cross platform'''
     try:
-        if WINDOWS and HAS_MSVCRT:
-            import msvcrt
+        if WINDOWS:
             key = msvcrt.getch()
             if key == b'\xe0':  # Special key prefix on Windows
                 key += msvcrt.getch()
             return key.decode('latin-1', errors='ignore')
-        elif not WINDOWS:
-            # Only try termios on non-Windows systems
-            try:
-                import tty
-                import termios
-                fd = sys.stdin.fileno()
-                old_settings = termios.tcgetattr(fd)
-                try:
-                    tty.setraw(sys.stdin.fileno())
-                    key = sys.stdin.read(1)
-                    
-                    # Check for CTRL-C and CTRL-D in raw mode
-                    if ord(key) == 3:  # CTRL-C
-                        print(f"\n{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
-                        sys.exit()
-                    elif ord(key) == 4:  # CTRL-D
-                        print(f"\n{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
-                        sys.exit()
-                    
-                    # Check for escape sequence (arrow keys)
-                    if ord(key) == 27:  # ESC
-                        key += sys.stdin.read(2)  # Read the next 2 characters (for arrows)
-                        
-                    return key
-                finally:
-                    termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
-            except (ImportError, OSError):
-                return input("Enter your choice (w/s for up/down, Enter to select): ").strip()
         else:
-            return input("Enter your choice (w/s for up/down, Enter to select): ").strip()
+            # Unix/Linux/macOS
+            fd = sys.stdin.fileno()
+            old_settings = termios.tcgetattr(fd)
+            try:
+                tty.setraw(sys.stdin.fileno())
+                key = sys.stdin.read(1)
+                
+                # Check for CTRL-C and CTRL-D in raw mode
+                if ord(key) == 3:  # CTRL-C
+                    print(f"\n{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
+                    sys.exit()
+                elif ord(key) == 4:  # CTRL-D
+                    print(f"\n{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
+                    sys.exit()
+                
+                # Check for escape sequence (arrow keys)
+                if ord(key) == 27:  # ESC
+                    key += sys.stdin.read(2)  # Read the next 2 characters (for arrows)
+                    
+                return key
+            finally:
+                termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
     except (KeyboardInterrupt, EOFError):
         print(f"\n{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
         sys.exit()
@@ -494,7 +472,7 @@ def arrow_menu(title, text, options):
             key = arrow_key()
             
             # Handle different key codes for Windows and Unix
-            if WINDOWS and HAS_MSVCRT:  # Windows
+            if WINDOWS:  # Windows
                 if key == '\xe0H':  # Up arrow on Windows
                     selected = (selected - 1) % len(options)
                 elif key == '\xe0P':  # Down arrow on Windows
@@ -507,8 +485,8 @@ def arrow_menu(title, text, options):
                     selected = (selected - 1) % len(options)
                 elif len(key) == 1 and key.lower() == 's':  # S key - down
                     selected = (selected + 1) % len(options)
-            else:  # Unix/Linux/macOS or fallback
-                if HAS_TERMIOS and len(key) > 1:
+            else:  # Unix/Linux/macOS
+                if len(key) > 1:
                     if key == '\x1b[A':  # Up arrow
                         selected = (selected - 1) % len(options)
                     elif key == '\x1b[B':  # Down arrow
@@ -523,14 +501,6 @@ def arrow_menu(title, text, options):
                     elif key.lower() == 's':  # S key - down
                         selected = (selected + 1) % len(options)
                     elif key == '\r' or key == '\n':  # Enter
-                        return selected
-                else:
-                    # Fallback for text input
-                    if key.lower() in ['w', 'up']:
-                        selected = (selected - 1) % len(options)
-                    elif key.lower() in ['s', 'down']:
-                        selected = (selected + 1) % len(options)
-                    elif key.lower() in ['enter', '']:
                         return selected
     except (KeyboardInterrupt, EOFError):
         print(f"\n{Colours.RED}Thanks for playing Ride The Duck{Colours.RESET}")
