@@ -11,6 +11,7 @@ Ride The Duck contains many different features:
 - ASCII: Part of the game's interface is made using ASCII, which gives a cool visual effect.
 - ANSI escape codes: The game's text is configured with colour to pop out.
 - PyPi: You can play the game using PyPi packages / pip
+- Duck: Ducks are added to replace Jacks
 - Gambling: You are given money to gamble with, for fun.
 
 ## Gameplay
