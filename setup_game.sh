@@ -5,7 +5,59 @@ set -e  # Exit on any error
 
 echo "🦆 Installing Ride The Duck..."
 
-# Install the package
+# Try pipx first, then fallback to pip --user
+echo "📦 Trying pipx installation (recommended)..."
+if command -v pipx >/dev/null 2>&1; then
+    if pipx install ride-the-duck >/dev/null 2>&1; then
+        echo "✅ Package installed successfully with pipx!"
+        
+        # Verify the installation worked
+        PIPX_BIN_DIR="$HOME/.local/bin"
+        if [[ -f "$PIPX_BIN_DIR/RTD" ]]; then
+            echo "✅ RTD command found at $PIPX_BIN_DIR/RTD"
+        else
+            echo "⚠️  RTD command not found in $PIPX_BIN_DIR"
+        fi
+        
+        # Check if pipx bin directory is in PATH
+        PIPX_BIN_DIR="$HOME/.local/bin"
+        if [[ ":$PATH:" != *":$PIPX_BIN_DIR:"* ]]; then
+            echo "🔧 Adding pipx bin directory to PATH..."
+            export PATH="$PIPX_BIN_DIR:$PATH"
+            
+            # Add to shell config for persistence
+            SHELL_NAME=$(basename "$SHELL")
+            if [[ "$SHELL_NAME" == "zsh" ]]; then
+                SHELL_RC="$HOME/.zshrc"
+            elif [[ "$SHELL_NAME" == "bash" ]]; then
+                SHELL_RC="$HOME/.bashrc"
+            else
+                SHELL_RC="$HOME/.profile"
+            fi
+            
+            if ! grep -q "$PIPX_BIN_DIR" "$SHELL_RC" 2>/dev/null; then
+                if echo "export PATH=\"$PIPX_BIN_DIR:\$PATH\"" >> "$SHELL_RC" 2>/dev/null; then
+                    echo "✅ Added pipx PATH to $SHELL_RC"
+                fi
+            fi
+        fi
+        
+        echo ""
+        echo "You can now run the game with:"
+        echo "  ride-the-duck"
+        echo "  RTD" 
+        echo "  python3 -m ride_the_duck"
+        echo ""
+        echo "Happy gaming! 🦆"
+        exit 0
+    else
+        echo "⚠️  pipx install failed, trying pip --user..."
+    fi
+else
+    echo "⚠️  pipx not found, trying pip --user..."
+fi
+
+# Install the package with pip --user
 python3 -m pip install --user ride-the-duck
 
 # Set up PATH
