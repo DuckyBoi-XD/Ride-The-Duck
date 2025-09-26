@@ -138,6 +138,8 @@ For this you would need to download/have Python installed (most systems should a
 
 ### Pypi Pipx
 
+In Terminal:
+
 1. Install: `pipx install ride-the-duck`
 2. Play: `RTD`
 
