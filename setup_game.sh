@@ -1,5 +1,6 @@
 #!/bin/bash
-# Simple installer for Ride The Duck with pipx/pip support
+# One-time installer for Ride The Duck
+# After running this, just type: RTD
 
 set -e
 
@@ -13,7 +14,7 @@ add_to_path() {
     # Add to current session
     export PATH="$dir:$PATH"
     
-    # Add to shell config
+    # Add to shell config for future sessions
     case "$(basename "$SHELL")" in
         zsh) shell_rc="$HOME/.zshrc" ;;
         bash) shell_rc="$HOME/.bashrc" ;;
@@ -21,37 +22,22 @@ add_to_path() {
     esac
     
     if ! grep -q "$dir" "$shell_rc" 2>/dev/null; then
-        echo "export PATH=\"$dir:\$PATH\"" >> "$shell_rc" 2>/dev/null && \
-            echo "✅ Added $dir to $shell_rc" || \
-            echo "⚠️  Could not modify $shell_rc"
+        echo "export PATH=\"$dir:\$PATH\"" >> "$shell_rc" 2>/dev/null
     fi
 }
 
-# Try pipx first
-if command -v pipx >/dev/null 2>&1 && pipx install ride-the-duck >/dev/null 2>&1; then
-    echo "✅ Installed with pipx!"
-    
-    # Find where pipx put the commands
-    for dir in "$HOME/.local/bin" "$HOME/.local/share/man"; do
-        if [[ -f "$dir/RTD" ]]; then
-            echo "✅ Found RTD at $dir/RTD"
-            add_to_path "$dir"
-            echo -e "\nRun: RTD or ride-the-duck or python3 -m ride_the_duck"
-            echo "Happy gaming! 🦆"
-            exit 0
-        fi
-    done
+# Try pipx first (best option)
+if command -v pipx >/dev/null 2>&1; then
+    pipx install ride-the-duck >/dev/null 2>&1 || true
+    add_to_path "$HOME/.local/bin"
+    echo "✅ Installed! You can now run: RTD"
+    exit 0
 fi
 
 # Fallback to pip --user
-echo "📦 Installing with pip --user..."
-python3 -m pip install --user ride-the-duck
-
-# Set up PATH for pip --user
+python3 -m pip install --user ride-the-duck >/dev/null 2>&1
 python_version=$(python3 -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')")
-user_bin="$HOME/Library/Python/$python_version/bin"
-add_to_path "$user_bin"
+add_to_path "$HOME/Library/Python/$python_version/bin"
 
-echo -e "\n✅ Installation complete!"
-echo "Run: RTD or ride-the-duck or python3 -m ride_the_duck"
-echo "Happy gaming! 🦆"
+echo "✅ Installed! You can now run: RTD"
+echo "💡 You may need to restart your terminal first"

@@ -135,3 +135,11 @@ For this you would need to download/have Python installed (most systems should a
     To run the game, all you need to do is to use the command 'RTD' or 'ride-the-duck'
 
 4. Have fun C:
+
+### Pypi Pipx
+
+1. Install: `pipx install ride-the-duck`
+2. Play: `RTD`
+
+*Make sure pipx is install (pip install pipx)*
+*If RTD command is not found, run `pipx ensurepath` first to set up your PATH.*

@@ -14,7 +14,7 @@ license = {text = "MIT"}
 keywords = ["game", "cards", "gambling", "terminal"]
 classifiers = [
     "Development Status :: 4 - Beta",
-    "Intended Audience :: End Users/Desktop",
+    "Intended Audience :: End Users/Desktop", 
     "Topic :: Games/Entertainment :: Arcade",
     "Programming Language :: Python :: 3"
 ]
