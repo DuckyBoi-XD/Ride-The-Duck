@@ -33,10 +33,13 @@ When you play the main game, you first need to insert how much you want to bet. 
 
 After completing each stage, you're able to cash out and collect your bet with the multiplier of the round or continue and try to collect a higher multiplier.
 
-The first round is guessing if the next/first card is going to be Red or Black. Completing this will give you a 2x multiplier on your initial bet.
-The second round is guessing if the next card is going to be over or under the first card. Completing this will give you a 3x multiplier on your initial bet.
-The third round is guessing if the next card is going to be between the first 2 cards or outside them. Completing this will give you a 4x multiplier on your initial bet.
-Lastly, the fourth round is guessing the suit of the next/last card. Completing this will give you a 20x multiplier on your initial bet.
+The first round is guessing if the next/first card is going to be Red or Black. Completing this will give you a **2x** multiplier on your initial bet.
+
+The second round is guessing if the next card is going to be over or under the first card. Completing this will give you a **3x** multiplier on your initial bet.
+
+The third round is guessing if the next card is going to be between the first 2 cards or outside them. Completing this will give you a **4x** multiplier on your initial bet.
+
+Lastly, the fourth round is guessing the suit of the next/last card. Completing this will give you a **20x** multiplier on your initial bet.
 
 On the last stage, you can only cash out, earning the holy 20x multiplier.
 
@@ -50,7 +53,7 @@ To download the binary executable (TERMINAL CRAFT), you can follow these steps:
 
 2. Go to the most recent version and download the file: "RTD-G '*VERSION*' MacOS arm64 tar.gz". This is the file that has the game on it.
 
-3. Go to the file location (most probably 'downloads') and open the downloaded file.
+3. Go to the file location (most likely 'downloads') and open the downloaded file.
 
 4. Bypass the Apple security by:
 
@@ -58,7 +61,7 @@ To download the binary executable (TERMINAL CRAFT), you can follow these steps:
 
     **or**
 
-   - Go to your terminal and insert the file directory where the file is -
+   - Go to your terminal and enter the file directory where the file is -
     Example:
 
     ```sh
@@ -73,13 +76,13 @@ To download the binary executable (TERMINAL CRAFT), you can follow these steps:
 
 5. Double click or open the game executable file and have fun c:
 
-If you're not comfortable with letting your guard down and bypassing the security, you can message me on Slack (Soon to be changed tho) [@DuckyBoi_XD](https://hackclub.slack.com/team/U08TJ79P0G4) or [Email](braedenjairsytan@icloud.com) and I'll try to respond asap to send you the file that shouldn't require any security bypass
+If you're not comfortable with letting your guard down and bypassing the security, you can message me on Slack (soon to be changed) [@DuckyBoi_XD](https://hackclub.slack.com/team/U08TJ79P0G4) or [Email](braedenjairsytan@icloud.com) and I'll try to respond ASAP to send you the file that shouldn't require any security bypass
 
 ### PyPi (Unix Only)
 
-For this you would need to download/have python (Most systems should already have it installed)
+For this you would need to download/have Python installed (most systems should already have it installed)
 
-1. Check for pip or python in your terminal
+1. Check for pip or Python in your terminal
 
     ```sh
     python --version
@@ -125,10 +128,10 @@ For this you would need to download/have python (Most systems should already hav
     python -m pip --version
     ```
 
-    If you get a confirmation about ride-the-duck beign installed then you should be good to go.
+    If you get a confirmation about ride-the-duck being installed then you should be good to go.
 
 3. Run game
 
-    To run the game, all you need to do is to use the command "RTD" or "ride-the-duck"
+    To run the game, all you need to do is to use the command 'RTD' or 'ride-the-duck'
 
 4. Have fun C:

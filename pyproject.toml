@@ -9,25 +9,14 @@ description = "A terminal-based gambling card game inspired by 'Ride The Bus'"
 readme = "README.md"
 requires-python = ">=3.8"
 dependencies = []
-[project.license]
-text = "MIT"
-authors = [
-    {name = "Braeden Sy Tan", email = "braedenjairsytan@icloud.com"}
-]
-maintainers = [
-    {name = "Braeden Sy Tan", email = "braedenjairsytan@icloud.com"}
-]
-keywords = ["game", "cards", "gambling", "terminal", "console", "entertainment"]
+authors = [{name = "Braeden Sy Tan", email = "braedenjairsytan@icloud.com"}]
+license = {text = "MIT"}
+keywords = ["game", "cards", "gambling", "terminal"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: End Users/Desktop",
     "Topic :: Games/Entertainment :: Arcade",
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3"
 ]
 
 [project.urls]
@@ -47,4 +36,3 @@ exclude = ["tests*"]
 [tool.setuptools_scm]
 write_to = "ride_the_duck/_version.py"
 fallback_version = "0.0.0"
-# Don't use tag_regex, let setuptools-scm auto-detect numeric tags
