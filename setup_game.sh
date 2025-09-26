@@ -11,16 +11,25 @@ if command -v pipx >/dev/null 2>&1; then
     if pipx install ride-the-duck >/dev/null 2>&1; then
         echo "✅ Package installed successfully with pipx!"
         
-        # Verify the installation worked
+        # Verify the installation worked and find where pipx installed it
         PIPX_BIN_DIR="$HOME/.local/bin"
+        
+        # Check common pipx bin locations
+        if [[ ! -d "$PIPX_BIN_DIR" ]]; then
+            # Try alternative pipx bin directory
+            PIPX_BIN_DIR="$(pipx environment --value PIPX_BIN_DIR 2>/dev/null || echo "$HOME/.local/bin")"
+        fi
+        
+        echo "📍 Checking for commands in $PIPX_BIN_DIR"
         if [[ -f "$PIPX_BIN_DIR/RTD" ]]; then
             echo "✅ RTD command found at $PIPX_BIN_DIR/RTD"
         else
             echo "⚠️  RTD command not found in $PIPX_BIN_DIR"
+            echo "📍 Available ride-the-duck commands:"
+            ls -la "$PIPX_BIN_DIR" 2>/dev/null | grep -E "(ride|RTD)" || echo "   No ride-the-duck commands found"
         fi
         
         # Check if pipx bin directory is in PATH
-        PIPX_BIN_DIR="$HOME/.local/bin"
         if [[ ":$PATH:" != *":$PIPX_BIN_DIR:"* ]]; then
             echo "🔧 Adding pipx bin directory to PATH..."
             export PATH="$PIPX_BIN_DIR:$PATH"
@@ -40,6 +49,8 @@ if command -v pipx >/dev/null 2>&1; then
                     echo "✅ Added pipx PATH to $SHELL_RC"
                 fi
             fi
+        else
+            echo "✅ pipx bin directory already in PATH"
         fi
         
         echo ""
@@ -51,7 +62,7 @@ if command -v pipx >/dev/null 2>&1; then
         echo "Happy gaming! 🦆"
         exit 0
     else
-        echo "⚠️  pipx install failed, trying pip --user..."
+        echo "⚠️  pipx install from local directory failed, trying pip --user..."
     fi
 else
     echo "⚠️  pipx not found, trying pip --user..."
