@@ -104,8 +104,8 @@ def load_game(): # access save file -JSON
     except FileNotFoundError:
         print("New player - no save file found")
         return 500, None, 0, 0, 0, 0, 0, 0
-    except (ValueError, json.JSONDecodeError) as e:
-        print(f"Corrupted save file - using defaults. Error: {e}")
+    except (ValueError, json.JSONDecodeError) as error:
+        print(f"Corrupted save file - using defaults. Error: {error}")
         return 500, None, 0, 0, 0, 0, 0, 0
 
 def save_game(money=None, name=None, game_played=None, win2=None, win3=None, win4=None, win20=None, broke_count=None):
@@ -420,7 +420,9 @@ def arrow_menu(title, text, options):
                         text_outcome += f"{Colours.GREEN}💰 YOU WON ${user_bet} 💰{Colours.RESET}\n"
                 elif Win is False:
                     text_outcome = f"\n{Colours.RED}❌ Hard luck, you picked wrong ❌\n"
-                text = text + text_outcome
+                
+                if text_outcome is not None:
+                    text = (text or "") + text_outcome
 
             if text is not None:
                 print(text)
@@ -582,7 +584,7 @@ def RedBlack_game():
             user_colour = 3
         clear_screen()
 
-        game_card_deck = CardDeck
+        game_card_deck = CardDeck.copy()  # Create a copy instead of reference
 
         card_key, card_value_1 = random.choice(list(game_card_deck.items()))
         game_card[card_key] = card_value_1
