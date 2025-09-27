@@ -1,18 +1,19 @@
 # Ride-The-Duck
 
-Ride The Duck is a gambling, CLI, binary executable game based on the drinking game "Ride The Bus". Ride The Duck incorporates the first stage of Ride The Bus, where you need to guess if the next card fits into either category, with each category giving you a better multiplier to your initial bet, earning you more.
+Ride The Duck is a gambling, CLI, binary executable game based on the drinking game "Ride The Bus." Ride The Duck incorporates the first stage of Ride The Bus, where you need to guess if the next card fits into either category, with each category giving you a better multiplier to your initial bet, earning you more.
 
 ## Features
 
 Ride The Duck contains many different features:
 
 - Save file: When exiting the terminal or the game, your data (money, name, stats) will be saved.
-- CLI: The game appears and runs on the Command Line Interface for a tech and hacky vibe.
+- CLI: The game appears and runs on the Command Line Interface for a techy and hacky vibe.
 - ASCII: Part of the game's interface is made using ASCII, which gives a cool visual effect.
-- ANSI escape codes: The game's text is configured with colour to pop out.
-- PyPi: You can play the game using PyPi packages / pip
-- Duck: Ducks are added to replace Jacks
+- ANSI escape codes: The game's text is configured with color to pop out.
+- PyPI: You can play the game using PyPI packages / pip.
+- Duck: Ducks are added to replace Jacks.
 - Gambling: You are given money to gamble with, for fun.
+- macOS Compatibility: Runs on macOS and maybe Linux... not really a feature but I can't make it compatible with Windows (If this game gets enough support I'll try to do it).
 
 ## Gameplay
 <img width="346" height="260" alt="Picture1" src="https://github.com/user-attachments/assets/4e00b8ba-ba70-4586-9764-f3bb4eec8a01" />
@@ -22,7 +23,7 @@ Ride The Duck contains many different features:
 
 ## How Do You Play Ride The Duck?
 
-When you play the main game, you first need to insert how much you want to bet. After you complete the bet stage, there are 4 rounds, each round giving you a better multiplier for your money.
+When you play the main game, you first need to enter how much you want to bet. After you complete the bet stage, there are 4 rounds, each round giving you a better multiplier for your money.
 
 1. Red or Black x2
 
@@ -44,46 +45,44 @@ Lastly, the fourth round is guessing the suit of the next/last card. Completing 
 
 On the last stage, you can only cash out, earning the holy 20x multiplier.
 
-## How to play
+## How to play (macOS ONLY, Potentially Linux)
 
-### Binary Executable (MacOS arm 64 ONLY)
+### Binary Executable (macOS arm64 ONLY)
 
 To download the binary executable (TERMINAL CRAFT), you can follow these steps:
 
-1. Go to the  releases page of Ride The Duck
+1. Go to the releases page of Ride The Duck.
 
-2. Go to the most recent version and download the file: "RTD-G '*VERSION*' MacOS arm64 tar.gz". This is the file that has the game on it.
+2. Go to the most recent version and download the file: "RTD-G '*VERSION*' macOS arm64 tar.gz". This is the file that has the game on it.
 
-3. Go to the file location (most likely 'downloads') and open the downloaded file.
+3. Go to the file location (most likely 'Downloads') and open the downloaded file.
 
 4. Bypass the Apple security by:
-
     - Double click the "RTD-Game" executable file and press "Done" (NOT "Move to Bin"). Go to Settings > Privacy & Security and under Security, select Open Anyway on the game file name "RTD-Game".
 
     **or**
 
-   - Go to your terminal and enter the file directory where the file is -
-    Example:
+        Example:
 
-    ```sh
-    cd /Users/"UserName"/downloads 
-    ```
+        ```sh
+        cd /Users/"UserName"/Downloads 
+        ```
 
-   - Then use this command to bypass the security -
+        Then use this command to bypass the security:
 
-    ```sh
-    xattr -d com.apple.quarantine RTD-Game
-    ```
+        ```sh
+        xattr -d com.apple.quarantine RTD-Game
+        ```
 
 5. Double click or open the game executable file and have fun c:
 
-If you're not comfortable with letting your guard down and bypassing the security, you can message me on Slack (soon to be changed) [@DuckyBoi_XD](https://hackclub.slack.com/team/U08TJ79P0G4) or [Email](braedenjairsytan@icloud.com) and I'll try to respond ASAP to send you the file that shouldn't require any security bypass
+If you're not comfortable with letting your guard down and bypassing the security, you can message me on Slack (soon to be changed) [@DuckyBoi_XD](https://hackclub.slack.com/team/U08TJ79P0G4) or [Email](braedenjairsytan@icloud.com) and I'll try to respond ASAP to send you the file that shouldn't require any security bypass.
 
-### PyPi (Unix Only)
+### PyPI (macOS Only, Maybe Linux)
 
-For this you would need to download/have Python installed (most systems should already have it installed)
+For this you need to have Python installed (most systems should already have it installed).
 
-1. Check for pip or Python in your terminal
+1. Check for pip or Python in your terminal:
 
     ```sh
     python --version
@@ -107,11 +106,11 @@ For this you would need to download/have Python installed (most systems should a
     pip3 --version
     ```
 
-    If you get a response with a version number then you should be all set. If your Python is 3.8 or above then it should be good. If your pip 21.3 or above then it should be good.
+    If you get a response with a version number then you should be all set. If your Python is 3.8 or above then it should be good. If your pip is 21.3 or above then it should be good.
 
 2. Install Ride The Duck
 
-    In your terminal, install Ride The Duck by using one of these commands
+    In your terminal, install Ride The Duck by using one of these commands:
 
     ```sh
     pip3 install ride-the-duck
@@ -126,23 +125,23 @@ For this you would need to download/have Python installed (most systems should a
     or
 
     ```sh
-    python -m pip --version
+    python -m pip install ride-the-duck
     ```
 
     If you get a confirmation about ride-the-duck being installed then you should be good to go.
 
 3. Run game
 
-    To run the game, all you need to do is to use the command 'RTD' or 'ride-the-duck'
+    To run the game, all you need to do is use the command 'RTD' or 'ride-the-duck'.
 
 4. Have fun C:
 
-### Pypi Pipx
+### PyPI Pipx (macOS ONLY, Maybe Linux)
 
 In Terminal:
 
 1. Install: `pipx install ride-the-duck`
 2. Play: `RTD`
 
-*Make sure pipx is install (pip install pipx)*
+*Make sure pipx is installed (`pip install pipx`).*
 *If RTD command is not found, run `pipx ensurepath` first to set up your PATH.*
